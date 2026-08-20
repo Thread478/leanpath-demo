@@ -17,13 +17,17 @@
     .quiz{width:min(900px,100%)}.quiz-top{height:66px;padding:0 25px;display:grid;grid-template-columns:40px 1fr 45px;align-items:center;gap:18px}.progress{height:10px;border-radius:8px;background:#e8eeeb;overflow:hidden}.progress i{display:block;width:0;height:100%;background:var(--mint);transition:.2s}.quiz-body{min-height:480px;padding:45px 52px;display:grid;grid-template-columns:.9fr 1.1fr;gap:40px}.quiz h2{margin:5px 0 12px;font-size:28px;line-height:1.35}.quiz .desc{color:var(--muted);font-size:12px}.quiz-card{align-self:start;overflow:hidden;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 25px #24443714}.quiz-card pre{margin:0;padding:24px 19px;background:#24342e;color:#ddf3e7;white-space:pre-wrap;font:12px/1.7 ui-monospace,monospace}.answers{padding:15px;display:grid;gap:9px}.answers button{min-height:46px;padding:8px 12px;display:flex;align-items:center;gap:11px;border:1px solid #dce4e0;border-bottom-width:3px;border-radius:11px;background:#fff;text-align:left}.answers button.selected{border-color:var(--mint);background:var(--pale)}.answers button.ok{border-color:#45bd91;background:#e9f9f2}.answers button.bad{border-color:#df6972;background:#fff0f1}.quiz-foot{min-height:80px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line)}.quiz-foot.good{background:#eaf9f3}.quiz-foot.wrong{background:#fff0f1}.action{min-width:130px;height:44px;border:0;border-radius:11px;background:var(--mint);color:#fff;box-shadow:0 4px #299572;font-weight:900}.action:disabled{background:#e2e7e4;color:#a0aaa5;box-shadow:0 4px #ccd3cf}.message b{display:block;color:var(--deep)}
     .mobile-top,.mobile-nav{display:none}@media(max-width:1100px){.rail{display:none}.main{width:min(680px,calc(100% - 290px));margin-left:calc(230px + (100vw - 230px - min(680px,calc(100vw - 290px)))/2)}}
     @media(max-width:720px){.side{display:none}.mobile-top{position:sticky;z-index:20;top:0;height:64px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#ffffffef;backdrop-filter:blur(10px)}.mobile-top .brand{font-size:18px}.mobile-top .logo{width:32px;height:32px;font-size:20px}.main{width:100%;margin:0;padding:24px 13px 88px}.hero h1{font-size:27px}.hero p:last-child{font-size:11px}.path{gap:23px}.banner{min-height:86px;padding:15px 13px}.banner h2{font-size:15px}.count{display:none}.lessons{padding:24px 10px}.lesson{width:88%;gap:10px}.lesson:nth-child(4n+1){transform:translateX(-18px)}.lesson:nth-child(4n+2){transform:translateX(7px)}.lesson:nth-child(4n+3){transform:translateX(22px)}.node{width:57px;height:52px}.node.current{width:62px;height:56px}.copy b{font-size:11px}.mobile-nav{position:fixed;z-index:25;inset:auto 0 0;height:66px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:#ffffffef}.mobile-nav button,.mobile-nav a{display:grid;place-content:center;gap:1px;border:0;background:none;color:#7d8a84;font-size:9px;text-align:center}.mobile-nav b{font-size:19px}.overlay{padding:0}.modal{width:100%;height:100vh;max-height:100vh;border-radius:0}.ref-layout{height:calc(100vh - 76px);display:flex;flex-direction:column}.tabs{padding:9px;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.tabs button{flex:none;height:40px}.ref{padding:23px 16px}.ref h3{font-size:23px}.call{grid-template-columns:1fr;gap:4px}.quiz-body{min-height:0;padding:21px 16px 100px;display:block;overflow:auto}.quiz h2{font-size:23px}.quiz-card{margin-top:18px}.quiz-foot{position:fixed;inset:auto 0 0;background:#fff}.message{max-width:150px;font-size:10px}}
+    .node{position:relative}.node.done:after{content:"✓";position:absolute;right:-5px;top:-6px;width:20px;height:20px;display:grid;place-items:center;border:3px solid #fff;border-radius:50%;background:#237a5b;color:#fff;font:900 10px/1 sans-serif}
+    .bar:after{display:none}.bar i{display:block;width:0;height:100%;border-radius:inherit;background:var(--mint);transition:width .35s ease}
+    .tabs{overflow-y:auto}.source-note{margin:18px 0 0;padding:11px 13px;border-radius:10px;background:#f4f7f5;color:#74817b;font-size:9px}.source-note a{color:var(--deep);text-decoration:underline}
+    .reward{display:inline-block;margin-top:12px;padding:4px 9px;border-radius:999px;background:var(--pale);color:var(--deep);font-size:10px;font-weight:900}.toast{position:fixed;z-index:80;left:50%;bottom:28px;transform:translate(-50%,18px);padding:12px 18px;border-radius:12px;background:#20352e;color:#fff;box-shadow:0 12px 35px #14251f55;font-weight:800;opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translate(-50%,0);opacity:1}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
   <aside class="side">
     <a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a>
-    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>课程地图</a><button onclick="openQuiz()"><i>◎</i>练习场</button><button onclick="openRef()"><i>⌘</i>语法手册</button><a href="#progress"><i>♙</i>我的进度</a></nav>
+    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>课程地图</a><button onclick="openQuiz('daily')"><i>◎</i>练习场</button><button onclick="openRef()"><i>⌘</i>语法手册</button><a href="#progress"><i>♙</i>我的进度</a></nav>
     <div class="powered"><b>∃　Powered by Lean 4</b>形式化，从第一步开始</div>
   </aside>
   <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a><b>🔥 5　◆ <span data-xp>120</span></b></header>
@@ -31,50 +35,351 @@
     <section class="hero"><p class="eyebrow">LEAN 4 · 零基础路径</p><h1>把数学，写成可以运行的证明。</h1><p>从类型与函数出发，一步步抵达集合、代数与拓扑。</p></section>
     <div class="path" id="map"></div>
   </main>
-  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ 5</span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，证明就会越来越自然。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)">12 / 20 XP</small></h3><div class="bar"></div><p>再完成 1 个练习就能达成！</p></section><section class="card tip"><h3>💡　今日 Lean 小知识</h3><p>命题也是一种类型，而证明就是这个类型的一个项。</p><code>#check And.intro</code></section></aside>
-  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>课程</a><button onclick="openQuiz()"><b>◎</b>练习</button><button onclick="openRef()"><b>⌘</b>手册</button></nav>
+  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ 5</span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，证明就会越来越自然。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / 20 XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3>💡　今日 Lean 小知识</h3><p>命题也是一种类型，而证明就是这个类型的一个项。</p><code>#check And.intro</code></section></aside>
+  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>课程</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openRef()"><b>⌘</b>手册</button></nav>
 
   <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 语法手册">
     <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2>Lean 4 语法手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
   </div>
 
-  <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="定义函数练习">
-    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ 5</b></header><div class="quiz-body"><section><p class="eyebrow">定义函数 · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc">def 创建一个有名字、可计算的新定义。参数类型与返回类型让 Lean 可以逐项检查。</p></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后让 Lean 检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
+  <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 互动练习">
+    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ 5</b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">基础练习</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后让 Lean 检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
   </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const units=[
-      {n:1,t:'与 Lean 初次见面',d:'表达式、类型、定义与 #check',lessons:[['λ','Hello, Lean!','认识项与类型','done'],['∷','类型与表达式','Nat · Bool · String','done'],['ƒ','定义函数','def · fun · let','current'],['⌁','快速练习','巩固本单元','locked'],['⌁','单元宝箱','+50 XP','locked']]},
-      {n:2,t:'命题与证明',d:'theorem、example 与常用策略',lessons:[['P','命题即类型','Prop · → · ∧ · ∨','locked'],['⊢','证明策略','intro · exact · apply','locked'],['=','等式改写','rfl · rw · simp','locked'],['↗','引用定理','命名空间与补全','locked']]},
-      {n:3,t:'集合与函数',d:'Set、像、原像与集合论证明',lessons:[['∈','集合的定义','Set α · ∈ · ⊆','locked'],['∩','集合运算','∪ · ∩ · ∖','locked'],['↦','像与原像',"f '' s · f ⁻¹' t",'locked'],['≃','外延性','ext · constructor','locked']]},
-      {n:4,t:'结构与代数',d:'structure、class 与类型类推断',lessons:[['◇','自定义结构','structure · where','locked'],['·','群与幺半群','Group · Monoid','locked'],['ℝ','环与域','Ring · Field','locked'],['⚙','实例与调用','instance · inferInstance','locked']]},
-      {n:5,t:'拓扑初步',d:'拓扑空间、开集与连续性',lessons:[['𝒯','拓扑空间','TopologicalSpace','locked'],['○','开集与闭集','IsOpen · IsClosed','locked'],['∿','连续映射','Continuous','locked'],['→','邻域与极限','𝓝 · Tendsto','locked']]}
-    ];
-    document.querySelector('#map').innerHTML=units.map(u=>`<section class="unit"><header class="banner u${u.n}"><span class="num">单元 ${u.n}</span><div><h2>${u.t}</h2><p>${u.d}</p></div><span class="count">${u.n===1?'2 / 5':'0 / 4'}</span></header><div class="lessons">${u.lessons.map(l=>`<div class="lesson"><button class="node ${l[3]}" onclick="${l[3]==='locked'?"locked()":"openQuiz()"}" aria-label="${l[1]}">${l[0]}</button><button class="copy" onclick="${l[3]==='locked'?"locked()":"openQuiz()"}"><b>${l[1]}</b><small>${l[2]}</small></button></div>`).join('')}</div></section>`).join('');
-    function locked(){alert('先完成上一个关卡，就能解锁这里。')}
+    const STORAGE_KEY = "leanpath-progress-v2";
+    const DAILY_GOAL = 20;
+    const UNIT_ORDER = ["hello", "types", "define", "practice", "chest"];
 
-    const refs=[
-      {id:'basic',s:'λ',l:'基础语法',t:'类型、函数与计算',sum:'表达式都有类型；def 创建可展开的定义，#eval 执行可计算表达式。',code:'#check Nat\n#check (fun x : Nat => x + 1)\n\ndef twice (n : Nat) : Nat := n + n\n#eval twice 21\n\nstructure Point where\n  x : Float\n  y : Float',calls:[['#check expr','查看表达式类型'],['#eval expr','求值'],['Point.mk 1.0 2.0','调用结构构造器']]},
-      {id:'proof',s:'⊢',l:'定理证明',t:'命题、策略与引用',sum:'theorem 给证明命名；by 进入策略模式。已知定理可以像函数一样直接调用。',code:'theorem add_zero_demo (n : Nat) :\n    n + 0 = n := by\n  simp\n\nexample (P Q : Prop) (hP : P)\n    (hPQ : P → Q) : Q := by\n  exact hPQ hP\n\n#check Nat.add_comm\n#check And.intro',calls:[['exact h','精确交付目标类型的证明'],['apply h','反向套用定理'],['rw [h] / simp','等式改写与化简']]},
-      {id:'sets',s:'∈',l:'集合',t:'集合、子集、像与原像',sum:'在 Mathlib 中，Set α 本质上是 α → Prop；成员关系就是让元素满足谓词。',code:"import Mathlib\n\ndef evens : Set ℕ := {n | Even n}\n\nexample {α : Type*} (s t : Set α) :\n    s ∩ t ⊆ s := by\n  intro x hx\n  exact hx.1\n\nexample {α β : Type*} (f : α → β)\n    (t : Set β) :\n    f ⁻¹' t = {x | f x ∈ t} := rfl",calls:[['x ∈ s / s ⊆ t','成员与子集'],['s ∪ t / s ∩ t','并与交'],["f '' s / f ⁻¹' t",'像与原像']]},
-      {id:'algebra',s:'G',l:'代数结构',t:'结构、类型类与群',sum:'[Group G] 让 Lean 自动寻找 G 上的群实例，并据此解释 *、1 与逆元。',code:'import Mathlib\n\nvariable {G : Type*} [Group G]\n\n#synth Group G\n#check mul_one\n#check mul_assoc\n\nexample (g : G) : g * 1 = g := by\n  exact mul_one g\n\nexample (a b c : G) :\n    a * (b * c) = (a * b) * c := by\n  symm\n  exact mul_assoc a b c',calls:[['[Monoid M] / [Group G]','要求类型类实例'],['#synth Group G','检查实例推断'],['mul_assoc / mul_one','引用通用代数定理']]},
-      {id:'topology',s:'𝒯',l:'拓扑',t:'拓扑空间与连续映射',sum:'[TopologicalSpace X] 携带 X 上的拓扑；Continuous f 表达映射 f 的连续性。',code:'import Mathlib\n\nvariable {X Y Z : Type*}\nvariable [TopologicalSpace X]\nvariable [TopologicalSpace Y]\nvariable [TopologicalSpace Z]\n\n#check IsOpen\n#check Continuous\n#check continuous_id\n\nexample (f : X → Y) (g : Y → Z)\n    (hf : Continuous f) (hg : Continuous g) :\n    Continuous (g ∘ f) := by\n  exact hg.comp hf',calls:[['IsOpen s / IsClosed s','开集与闭集'],['Continuous f','连续性'],['hg.comp hf','调用连续映射的复合定理']]}
+    const units = [
+      {n:1,t:"与 Lean 初次见面",d:"表达式、类型、定义与 #check",lessons:[
+        {id:"hello",icon:"λ",title:"Hello, Lean!",sub:"认识项与类型"},
+        {id:"types",icon:"∷",title:"类型与表达式",sub:"Nat · Bool · String"},
+        {id:"define",icon:"ƒ",title:"定义函数",sub:"def · fun · let"},
+        {id:"practice",icon:"⌁",title:"快速练习",sub:"综合复习 · +20 XP"},
+        {id:"chest",icon:"◆",title:"单元宝箱",sub:"+50 XP"}
+      ]},
+      {n:2,t:"命题与证明",d:"theorem、example 与常用策略",lessons:[
+        {icon:"P",title:"命题即类型",sub:"Prop · → · ∧ · ∨"},
+        {icon:"⊢",title:"证明策略",sub:"intro · exact · apply"},
+        {icon:"=",title:"等式改写",sub:"rfl · rw · simp"},
+        {icon:"↗",title:"引用定理",sub:"命名空间与补全"}
+      ]},
+      {n:3,t:"集合与函数",d:"Set、像、原像与集合论证明",lessons:[
+        {icon:"∈",title:"集合的定义",sub:"Set α · ∈ · ⊆"},
+        {icon:"∩",title:"集合运算",sub:"∪ · ∩ · ∖"},
+        {icon:"↦",title:"像与原像",sub:"f '' s · f ⁻¹' t"},
+        {icon:"≃",title:"外延性",sub:"ext · constructor"}
+      ]},
+      {n:4,t:"结构与代数",d:"structure、class 与类型类推断",lessons:[
+        {icon:"◇",title:"自定义结构",sub:"structure · where"},
+        {icon:"·",title:"群与幺半群",sub:"Group · Monoid"},
+        {icon:"ℝ",title:"环与域",sub:"Ring · Field"},
+        {icon:"⚙",title:"实例与调用",sub:"instance · #synth"}
+      ]},
+      {n:5,t:"拓扑初步",d:"拓扑空间、开集与连续性",lessons:[
+        {icon:"𝒯",title:"拓扑空间",sub:"TopologicalSpace"},
+        {icon:"○",title:"开集与闭集",sub:"IsOpen · IsClosed"},
+        {icon:"∿",title:"连续映射",sub:"Continuous"},
+        {icon:"→",title:"邻域与极限",sub:"𝓝 · Tendsto"}
+      ]}
     ];
-    let activeRef='basic';
-    function renderRef(){const t=refs.find(x=>x.id===activeRef);document.querySelector('#tabs').innerHTML=refs.map(x=>`<button class="${x.id===activeRef?'active':''}" onclick="activeRef='${x.id}';renderRef()"><span>${x.s}</span>${x.l}</button>`).join('');document.querySelector('#refContent').innerHTML=`<p class="label">${t.l} · QUICK REFERENCE</p><h3>${t.t}</h3><p class="summary">${t.sum}</p><div class="code"><div class="code-head"><span>example.lean</span><button onclick="copyRef()">复制代码</button></div><pre><code>${escapeHtml(t.code)}</code></pre></div><section class="calls"><h4>定义与调用要点</h4>${t.calls.map(c=>`<div class="call"><code>${escapeHtml(c[0])}</code><span>${c[1]}</span></div>`).join('')}</section>`}
-    function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
-    function openRef(){renderRef();document.querySelector('#refOverlay').classList.remove('hidden');document.body.style.overflow='hidden'}function closeRef(){document.querySelector('#refOverlay').classList.add('hidden');document.body.style.overflow=''}function copyRef(){navigator.clipboard?.writeText(refs.find(x=>x.id===activeRef).code)}
 
-    const questions=[
-      {p:'哪个关键字开始一个具名定义？',c:'___ twice (n : Nat) : Nat := n + n',o:['def','theorem','example'],a:'def'},
-      {p:'补全平方函数中的运算符。',c:'def square (n : Nat) : Nat := n ___ n',o:['*','∧','→'],a:'*'},
-      {p:'哪段代码是匿名的加一函数？',c:'#check (___ : Nat → Nat)',o:['fun x => x + 1','def x := x + 1','theorem x + 1'],a:'fun x => x + 1'}
+    function todayKey() {
+      const now = new Date();
+      return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+    }
+
+    function loadProgress() {
+      const fallback = {xp:120,dailyXp:0,dailyDate:todayKey(),completed:[],dailyPracticeDate:""};
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if (saved && typeof saved === "object") {
+          fallback.xp = Number.isFinite(Number(saved.xp)) ? Number(saved.xp) : 120;
+          fallback.dailyXp = Number.isFinite(Number(saved.dailyXp)) ? Number(saved.dailyXp) : 0;
+          fallback.dailyDate = saved.dailyDate || todayKey();
+          fallback.completed = Array.isArray(saved.completed) ? saved.completed.filter(function(id){return UNIT_ORDER.includes(id);}) : [];
+          fallback.dailyPracticeDate = saved.dailyPracticeDate || "";
+        } else {
+          const oldXp = Number(localStorage.getItem("leanpath-xp"));
+          if (Number.isFinite(oldXp) && oldXp > 0) fallback.xp = oldXp;
+        }
+      } catch (error) {}
+      if (fallback.dailyDate !== todayKey()) {
+        fallback.dailyDate = todayKey();
+        fallback.dailyXp = 0;
+      }
+      return fallback;
+    }
+
+    let progressState = loadProgress();
+
+    function saveProgress() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState)); } catch (error) {}
+    }
+
+    function lessonStatus(lesson, unitNumber) {
+      if (unitNumber !== 1 || !lesson.id) return "locked";
+      if (progressState.completed.includes(lesson.id)) return "done";
+      const index = UNIT_ORDER.indexOf(lesson.id);
+      const previousDone = UNIT_ORDER.slice(0, index).every(function(id){return progressState.completed.includes(id);});
+      return previousDone ? "current" : "locked";
+    }
+
+    function renderMap() {
+      document.querySelector("#map").innerHTML = units.map(function(unit) {
+        const completedCount = unit.lessons.filter(function(lesson){return lessonStatus(lesson, unit.n) === "done";}).length;
+        const lessonHtml = unit.lessons.map(function(lesson) {
+          const status = lessonStatus(lesson, unit.n);
+          const action = status === "locked" ? "locked()" : "openLesson('" + lesson.id + "')";
+          return '<div class="lesson"><button class="node ' + status + '" onclick="' + action + '" aria-label="' + lesson.title + '">' + lesson.icon + '</button><button class="copy" onclick="' + action + '"><b>' + lesson.title + '</b><small>' + lesson.sub + '</small></button></div>';
+        }).join("");
+        return '<section class="unit"><header class="banner u' + unit.n + '"><span class="num">单元 ' + unit.n + '</span><div><h2>' + unit.t + '</h2><p>' + unit.d + '</p></div><span class="count">' + completedCount + ' / ' + unit.lessons.length + '</span></header><div class="lessons">' + lessonHtml + '</div></section>';
+      }).join("");
+    }
+
+    function renderDashboard() {
+      if (progressState.dailyDate !== todayKey()) {
+        progressState.dailyDate = todayKey();
+        progressState.dailyXp = 0;
+        saveProgress();
+      }
+      document.querySelectorAll("[data-xp]").forEach(function(el){el.textContent = progressState.xp;});
+      document.querySelectorAll("[data-daily-xp]").forEach(function(el){el.textContent = progressState.dailyXp;});
+      document.querySelectorAll("[data-goal-bar]").forEach(function(el){el.style.width = Math.min(100, progressState.dailyXp / DAILY_GOAL * 100) + "%";});
+      const remaining = Math.max(0, DAILY_GOAL - progressState.dailyXp);
+      document.querySelectorAll("[data-goal-text]").forEach(function(el){
+        el.textContent = remaining ? "再获得 " + remaining + " XP 就能达成！" : "今日目标已达成，继续保持！";
+      });
+    }
+
+    function locked() {
+      showToast("先完成上一个关卡，就能解锁这里。");
+    }
+
+    function openLesson(id) {
+      if (lessonStatus({id:id}, 1) === "locked") return locked();
+      if (id === "chest") return claimChest();
+      openQuiz(id);
+    }
+
+    function awardProgress(id, xp) {
+      let gained = 0;
+      if (id === "daily") {
+        if (progressState.dailyPracticeDate !== todayKey()) {
+          progressState.dailyPracticeDate = todayKey();
+          gained = xp;
+        }
+      } else if (!progressState.completed.includes(id)) {
+        progressState.completed.push(id);
+        gained = xp;
+      }
+      if (gained > 0) {
+        progressState.xp += gained;
+        progressState.dailyXp += gained;
+        progressState.dailyDate = todayKey();
+        saveProgress();
+      }
+      renderMap();
+      renderDashboard();
+      return gained;
+    }
+
+    function claimChest() {
+      const gained = awardProgress("chest", 50);
+      showToast(gained ? "单元宝箱已开启：+50 XP" : "这个宝箱已经领取过了。");
+    }
+
+    const refs = [
+      {id:"basic",s:"λ",l:"基础命令",t:"检查、求值与定义",sum:"Lean 中每个表达式都有类型。#check 只查看类型，#eval 计算结果；def 为值或函数建立可复用的名字。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Functions-and-Definitions/",code:"#check Nat\n#check (42 : Nat)\n#eval 2 ^ 5\n\ndef double (n : Nat) : Nat := n + n\ndef inc := fun n : Nat => n + 1\n\n#eval double (inc 3)",calls:[["#check expr","查看表达式的类型，不执行它"],["#eval expr","计算可执行表达式的值"],["def name (x : α) : β := ...","建立具名定义"],["let x := value","在局部表达式或证明中绑定名字"]]},
+      {id:"functions",s:"→",l:"类型与函数",t:"函数类型、匿名函数与多态",sum:"A → B 是从 A 到 B 的函数类型；fun 创建匿名函数。花括号参数通常让 Lean 从上下文自动推断。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Polymorphism/",code:"#check Nat → Nat\n#check (fun x : Nat => x + 1)\n\ndef id' {α : Type} (x : α) : α := x\n\ndef compose {α β γ : Type}\n    (g : β → γ) (f : α → β) : α → γ :=\n  fun x => g (f x)\n\n#eval compose (fun x => x * 2) (fun x => x + 1) 4",calls:[["(x : Nat)","显式参数与类型标注"],["{α : Type}","可从上下文推断的隐式参数"],["f x","函数应用不写括号"],["fun x => body","匿名函数 λx ↦ body"]]},
+      {id:"data",s:"∷",l:"归纳类型",t:"构造器、模式匹配与递归",sum:"inductive 枚举数据的全部构造方式；模式匹配逐一处理构造器，也是定义递归函数的核心方式。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Datatypes-and-Patterns/",code:"inductive Color where\n  | red | green | blue\n  deriving Repr\n\nopen Color\n\ndef colorCode : Color → Nat\n  | red => 0\n  | green => 1\n  | blue => 2\n\ndef length' {α : Type} : List α → Nat\n  | [] => 0\n  | _ :: xs => 1 + length' xs\n\n#eval colorCode green\n#eval length' [10, 20, 30]",calls:[["inductive T where","声明新的归纳类型"],["| constructor ...","声明构造器或匹配分支"],["[] / x :: xs","列表的空与非空模式"],["deriving Repr","自动生成可打印实例"]]},
+      {id:"structures",s:"◇",l:"结构与实例",t:"结构、类型类与实例推断",sum:"structure 把字段打包成新类型。class 是可由 Lean 自动搜索的结构，instance 注册一个具体实现。",source:"Theorem Proving in Lean 4",url:"https://lean-lang.org/theorem_proving_in_lean4/Type-Classes/",code:"structure Point where\n  x : Int\n  y : Int\n  deriving Repr\n\ndef origin : Point := { x := 0, y := 0 }\n#eval origin.x\n\nclass Named (α : Type) where\n  name : α → String\n\ninstance : Named Point where\n  name _ := \"point\"\n\n#synth Named Point\n#eval Named.name origin",calls:[["p.x","调用结构字段或投影"],["{ x := 0, y := 0 }","用字段语法构造结构"],["[Group G]","要求并自动推断类型类实例"],["#synth C α","检查 Lean 能否找到实例"]]},
+      {id:"proof",s:"⊢",l:"命题与定理",t:"Prop、证明项与定理引用",sum:"命题是 Prop 中的类型，证明是该命题类型的项。theorem 给证明命名，之后可以像函数一样把它用于新目标。",source:"Theorem Proving in Lean 4",url:"https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/",code:"theorem imp_trans (P Q R : Prop)\n    (hPQ : P → Q) (hQR : Q → R) : P → R := by\n  intro hP\n  exact hQR (hPQ hP)\n\nexample (P Q : Prop) (hP : P) (hQ : Q) : P ∧ Q :=\n  And.intro hP hQ\n\n#check imp_trans\n#check Nat.add_comm",calls:[["theorem name ... : P := proof","声明并命名定理"],["example ... : P := proof","练习或测试一个未命名结论"],["hQR (hPQ hP)","像调用函数一样调用证明"],["#check theoremName","检查定理完整类型"]]},
+      {id:"tactics",s:"↻",l:"证明策略",t:"目标分解、改写与化简",sum:"by 进入策略模式。intro 引入前提，constructor 拆分合取，rw 按等式改写，simp 使用化简引理完成常见目标。",source:"Theorem Proving in Lean 4",url:"https://lean-lang.org/theorem_proving_in_lean4/Tactics/",code:"example (P Q : Prop) : P ∧ Q → Q ∧ P := by\n  intro h\n  constructor\n  · exact h.2\n  · exact h.1\n\nexample (a b c : Nat) (h : a = b) : a + c = b + c := by\n  rw [h]\n\nexample (n : Nat) : n + 0 = n := by\n  simp",calls:[["intro x","把 → 或 ∀ 的输入放入上下文"],["exact h / apply h","直接交付证明 / 反向套用定理"],["constructor / cases h","拆分构造目标 / 分析假设"],["rw [h] / simp","等式改写 / 自动化简"]]},
+      {id:"sets",s:"∈",l:"集合与函数",t:"成员、子集、像与原像",sum:"在 Mathlib 中 Set α 可看作 α → Prop。证明子集就是取任意成员；证明集合相等通常使用 ext 外延性。",source:"Mathematics in Lean",url:"https://leanprover-community.github.io/mathematics_in_lean/C04_Sets_and_Functions.html",code:"import Mathlib\n\nopen Set\nvariable {α β : Type*}\n\nexample (s t : Set α) : s ∩ t ⊆ s := by\n  intro x hx\n  exact hx.1\n\nexample (f : α → β) (t : Set β) :\n    f ⁻¹' t = {x | f x ∈ t} := rfl\n\nexample (s t : Set α) (h : ∀ x, x ∈ s ↔ x ∈ t) : s = t := by\n  ext x\n  exact h x",calls:[["x ∈ s / s ⊆ t","成员关系与子集"],["s ∪ t / s ∩ t / sᶜ","并、交、补集"],["f '' s / f ⁻¹' t","像与原像"],["ext x","把集合相等化为逐点成员等价"]]},
+      {id:"algebra",s:"G",l:"代数结构",t:"幺半群、群、环与通用定理",sum:"Mathlib 用类型类组织代数层级。变量只需声明所需结构，就能复用 mul_assoc、one_mul 等适用于所有实例的定理。",source:"Mathematics in Lean",url:"https://leanprover-community.github.io/mathematics_in_lean/C09_Groups_and_Rings.html",code:"import Mathlib\n\nvariable {M G R : Type*}\nvariable [Monoid M] [Group G] [CommRing R]\n\n#synth Monoid M\n#check mul_assoc\n\nexample (x : M) : 1 * x = x := by\n  simpa using one_mul x\n\nexample (g : G) : g⁻¹ * g = 1 := by\n  simp\n\nexample (a b : R) : (a + b) ^ 2 = a ^ 2 + 2*a*b + b ^ 2 := by\n  ring",calls:[["[Monoid M] / [Group G]","要求乘法、单位元以及逆元结构"],["[Ring R] / [Field K]","要求环或域结构"],["mul_assoc / one_mul","引用结构上的通用定理"],["simp / ring","化简群式 / 归一化交换环等式"]]},
+      {id:"topology",s:"𝒯",l:"拓扑",t:"开闭集、连续映射与极限",sum:"[TopologicalSpace X] 提供 X 上的拓扑。Continuous f 表示连续性；Filter.Tendsto 是极限、收敛与连续性的统一底层语言。",source:"Mathematics in Lean",url:"https://leanprover-community.github.io/mathematics_in_lean/C11_Topology.html",code:"import Mathlib\n\nvariable {X Y Z : Type*}\nvariable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]\n\n#check IsOpen\n#check IsClosed\n#check Continuous\n#check Filter.Tendsto\n\nexample (f : X → Y) (g : Y → Z)\n    (hf : Continuous f) (hg : Continuous g) :\n    Continuous (g ∘ f) := by\n  exact hg.comp hf\n\n#check continuous_id",calls:[["IsOpen s / IsClosed s","集合是开集 / 闭集"],["Continuous f","函数连续"],["hg.comp hf","调用连续映射复合定理"],["Filter.Tendsto f l₁ l₂","f 把滤子 l₁ 趋向 l₂"]]},
+      {id:"modules",s:"⌘",l:"组织与引用",t:"导入、命名空间与作用域",sum:"import 引入模块；namespace 防止名字冲突；open 缩短限定名。引用陌生定理前可用 #check 确认参数与命名空间。",source:"Theorem Proving in Lean 4",url:"https://lean-lang.org/theorem_proving_in_lean4/Interacting-with-Lean/",code:"import Mathlib\n\nnamespace Geometry\n\nstructure Point where\n  x : Int\n  y : Int\n\ndef swap (p : Point) : Point :=\n  { x := p.y, y := p.x }\n\nsection\n  variable (p : Point)\n  #check swap p\nend\n\nend Geometry\n\n#check Geometry.swap\n#check Set.image",calls:[["import Mathlib","导入 Mathlib 的常用模块"],["namespace N ... end N","把定义放入命名空间"],["open Set","在当前作用域省略 Set. 前缀"],["N.theoremName","使用完整限定名引用定理"]]}
     ];
-    let step=0,selected='',checked=false;
-    function openQuiz(){step=0;selected='';checked=false;renderQuiz();document.querySelector('#quizOverlay').classList.remove('hidden');document.body.style.overflow='hidden'}function closeQuiz(){document.querySelector('#quizOverlay').classList.add('hidden');document.body.style.overflow=''}
-    function renderQuiz(){const q=questions[step];document.querySelector('#stepNumber').textContent=step+1;document.querySelector('#quizPrompt').textContent=q.p;document.querySelector('#quizCode').textContent=q.c;document.querySelector('#quizProgress').style.width=((step+(checked&&selected===q.a?1:0))/questions.length*100)+'%';document.querySelector('#answers').innerHTML=q.o.map((o,i)=>`<button class="${selected===o?'selected':''} ${checked&&o===q.a?'ok':''} ${checked&&selected===o&&o!==q.a?'bad':''}" onclick="selectAnswer('${o.replaceAll("'","\\'")}')"><span>${i+1}</span><code>${escapeHtml(o)}</code></button>`).join('');const btn=document.querySelector('#checkBtn');btn.disabled=!selected;btn.textContent=checked&&selected===q.a?(step===questions.length-1?'完成 · +20 XP':'继续'):checked?'再试一次':'检查答案';const foot=document.querySelector('#quizFoot');foot.className='quiz-foot '+(checked?(selected===q.a?'good':'wrong'):'');document.querySelector('#message').innerHTML=checked?(selected===q.a?'<b>证明通过！</b>Lean 接受了这个答案。':'<b style="color:#bd5059">还差一点</b>对照类型，再试一次。'):'选择答案，然后让 Lean 检查。'}
-    function selectAnswer(v){if(checked)return;selected=v;renderQuiz()}function checkAnswer(){const q=questions[step];if(!selected)return;if(!checked){checked=true;renderQuiz();return}if(selected!==q.a){selected='';checked=false;renderQuiz();return}if(step<questions.length-1){step++;selected='';checked=false;renderQuiz();return}if(!localStorage.getItem('leanpath-done')){const xp=Number(localStorage.getItem('leanpath-xp')||120)+20;localStorage.setItem('leanpath-xp',xp);localStorage.setItem('leanpath-done','1');document.querySelectorAll('[data-xp]').forEach(el=>el.textContent=xp)}closeQuiz()}
-    const savedXp=localStorage.getItem('leanpath-xp');if(savedXp)document.querySelectorAll('[data-xp]').forEach(el=>el.textContent=savedXp);document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeRef();closeQuiz()}});
+
+    let activeRef = "basic";
+
+    function escapeHtml(value) {
+      return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function renderRef() {
+      const topic = refs.find(function(item){return item.id === activeRef;});
+      document.querySelector("#tabs").innerHTML = refs.map(function(item){
+        return '<button class="' + (item.id === activeRef ? "active" : "") + '" onclick="activeRef=\'' + item.id + '\';renderRef()"><span>' + item.s + '</span>' + item.l + '</button>';
+      }).join("");
+      document.querySelector("#refContent").innerHTML =
+        '<p class="label">' + topic.l + ' · QUICK REFERENCE</p><h3>' + topic.t + '</h3><p class="summary">' + topic.sum + '</p>' +
+        '<div class="code"><div class="code-head"><span>example.lean</span><button onclick="copyRef()">复制代码</button></div><pre><code>' + escapeHtml(topic.code) + '</code></pre></div>' +
+        '<section class="calls"><h4>定义与调用要点</h4>' + topic.calls.map(function(call){return '<div class="call"><code>' + escapeHtml(call[0]) + '</code><span>' + call[1] + '</span></div>';}).join("") + '</section>' +
+        '<p class="source-note">本页内容参考并重新整理自 <a href="' + topic.url + '" target="_blank" rel="noreferrer">' + topic.source + '</a>，示例为本站重写。</p>';
+    }
+
+    function openRef() {
+      renderRef();
+      document.querySelector("#refOverlay").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeRef() {
+      document.querySelector("#refOverlay").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    function copyRef() {
+      const topic = refs.find(function(item){return item.id === activeRef;});
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(topic.code).then(function(){showToast("代码已复制。");});
+      }
+    }
+
+    const decks = {
+      hello:{label:"Hello, Lean!",desc:"先区分“查看类型”和“计算结果”，认识 Lean 最基本的交互命令。",xp:10,questions:[
+        {p:"这个表达式的类型是什么？",c:"#check (2 + 3)",o:["Nat","Bool","String"],a:0,e:"#check 显示类型；两个自然数相加仍是 Nat。"},
+        {p:"Lean 会计算出哪个结果？",c:"#eval 2 + 3",o:["Nat","5","true"],a:1,e:"#eval 执行表达式，因此结果是 5。"},
+        {p:"字符串字面量属于哪个类型？",c:"#check \"hello, Lean!\"",o:["Char","String","Prop"],a:1,e:"双引号括起的是 String；单个字符使用 Char。"}
+      ]},
+      types:{label:"类型与表达式",desc:"练习基础类型、类型标注以及从输入类型到输出类型的函数箭头。",xp:10,questions:[
+        {p:"true 的类型是什么？",c:"#check true",o:["Bool","Prop","Nat"],a:0,e:"true 是布尔值，类型为 Bool；命题中的 True 才属于 Prop。"},
+        {p:"哪一种类型表示“输入 Nat，输出 Nat”的函数？",c:"def next (n : Nat) : Nat := n + 1",o:["Nat × Nat","Nat → Nat","Nat = Nat"],a:1,e:"箭头 A → B 表示从 A 到 B 的函数类型。"},
+        {p:"这个匿名函数的完整类型是什么？",c:"#check (fun x : Nat => x + 1)",o:["Nat","Nat → Nat","Type"],a:1,e:"它接收一个 Nat 并返回一个 Nat。"}
+      ]},
+      define:{label:"定义函数",desc:"用 def 声明具名函数，用 fun 写匿名函数，并让参数与返回类型保持一致。",xp:15,questions:[
+        {p:"哪个关键字开始一个具名定义？",c:"___ twice (n : Nat) : Nat := n + n",o:["def","theorem","example"],a:0,e:"def 创建有名字且可计算的定义。"},
+        {p:"补全平方函数中的运算符。",c:"def square (n : Nat) : Nat := n ___ n",o:["*","∧","→"],a:0,e:"* 是乘法；∧ 构造合取命题，→ 构造函数类型。"},
+        {p:"哪段代码是匿名的加一函数？",c:"#check (___ : Nat → Nat)",o:["fun x => x + 1","def x := x + 1","theorem x + 1"],a:0,e:"fun x => ... 创建匿名函数。"}
+      ]},
+      practice:{label:"快速练习",desc:"把前三关的知识混合起来；完成后将解锁单元宝箱。",xp:20,questions:[
+        {p:"哪条命令会真正计算 double 4？",c:"def double (n : Nat) := n + n",o:["#check double 4","#eval double 4","#synth double 4"],a:1,e:"#eval 运行可计算表达式；#check 只显示类型。"},
+        {p:"补全文件顶层的具名定义。",c:"___ answer : Nat := 42\n#eval answer",o:["let","def","intro"],a:1,e:"在文件顶层需要用 def 建立定义；let 通常出现在表达式内部。"},
+        {p:"这个函数调用会得到什么？",c:"def inc (n : Nat) := n + 1\n#eval inc 5",o:["5","6","Nat → Nat"],a:1,e:"把 5 代入 n + 1，计算结果为 6。"},
+        {p:"哪个写法给参数 n 标注 Nat 类型？",c:"def triple ___ := n + n + n",o:["(n : Nat)","[n : Nat]","{n = Nat}"],a:0,e:"圆括号 (n : Nat) 是显式参数及其类型标注。"}
+      ]},
+      daily:{label:"练习场",desc:"一组独立的混合复习题，不会和关卡题库重复；每日首次完成可获得 XP。",xp:5,questions:[
+        {p:"哪个符号表示“是某集合的元素”？",c:"x ___ s",o:["∈","⊆","→"],a:0,e:"x ∈ s 表示 x 是集合 s 的成员。"},
+        {p:"如何要求 G 具有群结构？",c:"variable {G : Type*} ___",o:["[Group G]","(Group → G)","{G = Group}"],a:0,e:"方括号参数让 Lean 通过类型类系统寻找 Group G 实例。"},
+        {p:"已知 hf 与 hg 连续，如何证明复合连续？",c:"hf : Continuous f\nhg : Continuous g\n⊢ Continuous (g ∘ f)",o:["hg.comp hf","hf + hg","rw [Continuous]"],a:0,e:"连续映射的 comp 定理按外层 hg、内层 hf 的顺序调用。"},
+        {p:"哪个关键字为证明建立可引用名字？",c:"___ add_zero_demo (n : Nat) : n + 0 = n := by simp",o:["theorem","structure","inductive"],a:0,e:"theorem 声明具名定理，之后可用名字引用。"},
+        {p:"哪个策略最适合完成 n + 0 = n？",c:"example (n : Nat) : n + 0 = n := by\n  ___",o:["simp","intro","cases n with"],a:0,e:"simp 会使用 Nat.add_zero 等化简规则。"}
+      ]}
+    };
+
+    let activeDeckId = "hello";
+    let step = 0;
+    let selected = -1;
+    let checked = false;
+
+    function deckRewardAvailable(id) {
+      if (id === "daily") return progressState.dailyPracticeDate !== todayKey();
+      return !progressState.completed.includes(id);
+    }
+
+    function openQuiz(id) {
+      activeDeckId = decks[id] ? id : "daily";
+      step = 0;
+      selected = -1;
+      checked = false;
+      renderQuiz();
+      document.querySelector("#quizOverlay").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeQuiz() {
+      document.querySelector("#quizOverlay").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    function renderQuiz() {
+      const deck = decks[activeDeckId];
+      const question = deck.questions[step];
+      const correct = checked && selected === question.a;
+      document.querySelector("#quizLabel").textContent = deck.label;
+      document.querySelector("#stepNumber").textContent = step + 1;
+      document.querySelector("#quizPrompt").textContent = question.p;
+      document.querySelector("#quizDesc").textContent = deck.desc;
+      document.querySelector("#quizReward").textContent = deckRewardAvailable(activeDeckId) ? "首次完成 +" + deck.xp + " XP" : "已领取奖励 · 可继续复习";
+      document.querySelector("#quizCode").textContent = question.c;
+      document.querySelector("#quizProgress").style.width = ((step + (correct ? 1 : 0)) / deck.questions.length * 100) + "%";
+      document.querySelector("#answers").innerHTML = question.o.map(function(option, index){
+        const classes = (selected === index ? "selected " : "") + (checked && index === question.a ? "ok " : "") + (checked && selected === index && index !== question.a ? "bad" : "");
+        return '<button class="' + classes + '" onclick="selectAnswer(' + index + ')"><span>' + (index + 1) + '</span><code>' + escapeHtml(option) + '</code></button>';
+      }).join("");
+      const button = document.querySelector("#checkBtn");
+      button.disabled = selected < 0;
+      if (correct) {
+        button.textContent = step === deck.questions.length - 1 ? (deckRewardAvailable(activeDeckId) ? "完成 · +" + deck.xp + " XP" : "完成复习") : "继续";
+      } else {
+        button.textContent = checked ? "再试一次" : "检查答案";
+      }
+      const foot = document.querySelector("#quizFoot");
+      foot.className = "quiz-foot " + (checked ? (correct ? "good" : "wrong") : "");
+      document.querySelector("#message").innerHTML = checked ? (correct ? "<b>证明通过！</b>" + question.e : '<b style="color:#bd5059">还差一点</b>对照类型，再试一次。') : "选择答案，然后让 Lean 检查。";
+    }
+
+    function selectAnswer(index) {
+      if (checked) return;
+      selected = index;
+      renderQuiz();
+    }
+
+    function checkAnswer() {
+      const deck = decks[activeDeckId];
+      const question = deck.questions[step];
+      if (selected < 0) return;
+      if (!checked) {
+        checked = true;
+        renderQuiz();
+        return;
+      }
+      if (selected !== question.a) {
+        selected = -1;
+        checked = false;
+        renderQuiz();
+        return;
+      }
+      if (step < deck.questions.length - 1) {
+        step += 1;
+        selected = -1;
+        checked = false;
+        renderQuiz();
+        return;
+      }
+      const gained = awardProgress(activeDeckId, deck.xp);
+      closeQuiz();
+      if (gained) {
+        const nextText = activeDeckId === "practice" ? "，单元宝箱已解锁。" : "";
+        showToast("完成 " + deck.label + "：+" + gained + " XP" + nextText);
+      } else {
+        showToast("复习完成，本关奖励已领取。");
+      }
+    }
+
+    let toastTimer;
+    function showToast(message) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){toast.classList.remove("show");}, 2400);
+    }
+
+    renderMap();
+    renderDashboard();
+    saveProgress();
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        closeRef();
+        closeQuiz();
+      }
+    });
   </script>
 </body>
 </html>
