@@ -21,36 +21,43 @@
     .bar:after{display:none}.bar i{display:block;width:0;height:100%;border-radius:inherit;background:var(--mint);transition:width .35s ease}
     .tabs{overflow-y:auto}.source-note{margin:18px 0 0;padding:11px 13px;border-radius:10px;background:#f4f7f5;color:#74817b;font-size:9px}.source-note a{color:var(--deep);text-decoration:underline}
     .reward{display:inline-block;margin-top:12px;padding:4px 9px;border-radius:999px;background:var(--pale);color:var(--deep);font-size:10px;font-weight:900}.toast{position:fixed;z-index:80;left:50%;bottom:28px;transform:translate(-50%,18px);padding:12px 18px;border-radius:12px;background:#20352e;color:#fff;box-shadow:0 12px 35px #14251f55;font-weight:800;opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translate(-50%,0);opacity:1}
+    .progress-modal{width:min(760px,100%)}.progress-body{max-height:calc(100vh - 128px);overflow:auto;padding:28px}.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{padding:18px;border:1px solid var(--line);border-radius:14px;background:#f8faf9}.metric small,.metric b{display:block}.metric small{color:var(--muted);font-size:9px}.metric b{margin-top:4px;color:var(--deep);font-size:23px}.unit-progress-list{margin-top:24px;display:grid;gap:12px}.unit-progress{padding:14px 15px;border:1px solid var(--line);border-radius:13px}.unit-progress header{display:flex;justify-content:space-between;gap:12px}.unit-progress header b{font-size:11px}.unit-progress header span{color:var(--muted);font-size:9px}.mini-bar{height:7px;margin-top:10px;overflow:hidden;border-radius:7px;background:#edf1ef}.mini-bar i{display:block;height:100%;border-radius:inherit;background:var(--mint)}.progress-actions{margin-top:20px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line)}.progress-actions p{margin:0;color:var(--muted);font-size:9px}.refill{height:40px;padding:0 15px;border:0;border-radius:10px;background:#fff0f1;color:#bd5059;font-weight:800}.heart-pop{animation:heartPop .25s ease}@keyframes heartPop{50%{transform:scale(1.22)}}
+    @media(max-width:720px){.mobile-nav{grid-template-columns:repeat(5,1fr)}.progress-summary{grid-template-columns:1fr}.progress-body{padding:20px 16px 90px}.progress-actions{align-items:stretch;flex-direction:column}.refill{width:100%}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
   <aside class="side">
     <a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a>
-    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>课程地图</a><button onclick="openQuiz('daily')"><i>◎</i>练习场</button><button onclick="openRef()"><i>⌘</i>语法手册</button><a href="#progress"><i>♙</i>我的进度</a></nav>
+    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>课程地图</a><button onclick="openQuiz('daily')"><i>◎</i>练习场</button><button onclick="openRef()"><i>⌘</i>语法手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
     <div class="powered"><b>∃　Powered by Lean 4</b>形式化，从第一步开始</div>
   </aside>
-  <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a><b>🔥 5　◆ <span data-xp>120</span></b></header>
+  <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
   <main class="main" id="learn">
     <section class="hero"><p class="eyebrow">LEAN 4 · 零基础路径</p><h1>把数学，写成可以运行的证明。</h1><p>从类型与函数出发，一步步抵达集合、代数与拓扑。</p></section>
     <div class="path" id="map"></div>
   </main>
-  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ 5</span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，证明就会越来越自然。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / 20 XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3>💡　今日 Lean 小知识</h3><p>命题也是一种类型，而证明就是这个类型的一个项。</p><code>#check And.intro</code></section></aside>
-  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>课程</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openRef()"><b>⌘</b>手册</button></nav>
+  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，证明就会越来越自然。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / 20 XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3>💡　今日 Lean 小知识</h3><p>命题也是一种类型，而证明就是这个类型的一个项。</p><code>#check And.intro</code></section></aside>
+  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>课程</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
 
   <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 语法手册">
     <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2>Lean 4 语法手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
   </div>
 
+  <div class="overlay hidden" id="progressOverlay" role="dialog" aria-modal="true" aria-label="我的学习进度">
+    <div class="modal progress-modal"><header class="modal-head"><div><span class="logo">♙</span><h2>我的学习进度</h2></div><button class="close" onclick="closeProgress()" aria-label="关闭">×</button></header><article class="progress-body"><div class="progress-summary"><section class="metric"><small>累计经验</small><b><span id="progressTotalXp">120</span> XP</b></section><section class="metric"><small>今日经验</small><b><span id="progressDailyXp">0</span> XP</b></section><section class="metric"><small>当前红心</small><b style="color:#dc6670">♥ <span id="progressHearts">5</span> / 5</b></section></div><div class="unit-progress-list" id="progressUnits"></div><div class="progress-actions"><p>学习数据保存在当前浏览器。红心每天自动补满，也可在 Demo 中手动恢复。</p><button class="refill" onclick="refillHearts()">恢复 5 颗红心</button></div></article></div>
+  </div>
+
   <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 互动练习">
-    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ 5</b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">基础练习</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后让 Lean 检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
+    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ <span data-hearts>5</span></b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">基础练习</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后让 Lean 检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     const STORAGE_KEY = "leanpath-progress-v2";
     const DAILY_GOAL = 20;
-    const UNIT_ORDER = ["hello", "types", "define", "practice", "chest"];
+    const COURSE_ORDER = ["hello", "types", "define", "practice", "chest", "prop", "strategy", "rewrite", "reuse"];
+    const PREREQUISITES = {hello:null,types:"hello",define:"types",practice:"define",chest:"practice",prop:"practice",strategy:"prop",rewrite:"strategy",reuse:"rewrite"};
 
     const units = [
       {n:1,t:"与 Lean 初次见面",d:"表达式、类型、定义与 #check",lessons:[
@@ -61,10 +68,10 @@
         {id:"chest",icon:"◆",title:"单元宝箱",sub:"+50 XP"}
       ]},
       {n:2,t:"命题与证明",d:"theorem、example 与常用策略",lessons:[
-        {icon:"P",title:"命题即类型",sub:"Prop · → · ∧ · ∨"},
-        {icon:"⊢",title:"证明策略",sub:"intro · exact · apply"},
-        {icon:"=",title:"等式改写",sub:"rfl · rw · simp"},
-        {icon:"↗",title:"引用定理",sub:"命名空间与补全"}
+        {id:"prop",icon:"P",title:"命题即类型",sub:"Prop · → · ∧ · ∨"},
+        {id:"strategy",icon:"⊢",title:"证明策略",sub:"intro · exact · apply"},
+        {id:"rewrite",icon:"=",title:"等式改写",sub:"rfl · rw · simp"},
+        {id:"reuse",icon:"↗",title:"引用定理",sub:"命名空间与补全"}
       ]},
       {n:3,t:"集合与函数",d:"Set、像、原像与集合论证明",lessons:[
         {icon:"∈",title:"集合的定义",sub:"Set α · ∈ · ⊆"},
@@ -92,15 +99,17 @@
     }
 
     function loadProgress() {
-      const fallback = {xp:120,dailyXp:0,dailyDate:todayKey(),completed:[],dailyPracticeDate:""};
+      const fallback = {xp:120,dailyXp:0,dailyDate:todayKey(),completed:[],dailyPracticeDate:"",hearts:5,heartsDate:todayKey()};
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
         if (saved && typeof saved === "object") {
           fallback.xp = Number.isFinite(Number(saved.xp)) ? Number(saved.xp) : 120;
           fallback.dailyXp = Number.isFinite(Number(saved.dailyXp)) ? Number(saved.dailyXp) : 0;
           fallback.dailyDate = saved.dailyDate || todayKey();
-          fallback.completed = Array.isArray(saved.completed) ? saved.completed.filter(function(id){return UNIT_ORDER.includes(id);}) : [];
+          fallback.completed = Array.isArray(saved.completed) ? saved.completed.filter(function(id){return COURSE_ORDER.includes(id);}) : [];
           fallback.dailyPracticeDate = saved.dailyPracticeDate || "";
+          fallback.hearts = Number.isFinite(Number(saved.hearts)) ? Math.max(0, Math.min(5, Number(saved.hearts))) : 5;
+          fallback.heartsDate = saved.heartsDate || todayKey();
         } else {
           const oldXp = Number(localStorage.getItem("leanpath-xp"));
           if (Number.isFinite(oldXp) && oldXp > 0) fallback.xp = oldXp;
@@ -109,6 +118,10 @@
       if (fallback.dailyDate !== todayKey()) {
         fallback.dailyDate = todayKey();
         fallback.dailyXp = 0;
+      }
+      if (fallback.heartsDate !== todayKey()) {
+        fallback.heartsDate = todayKey();
+        fallback.hearts = 5;
       }
       return fallback;
     }
@@ -119,19 +132,21 @@
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState)); } catch (error) {}
     }
 
-    function lessonStatus(lesson, unitNumber) {
-      if (unitNumber !== 1 || !lesson.id) return "locked";
+    function lessonStatus(lesson) {
+      if (!lesson.id) return "locked";
       if (progressState.completed.includes(lesson.id)) return "done";
-      const index = UNIT_ORDER.indexOf(lesson.id);
-      const previousDone = UNIT_ORDER.slice(0, index).every(function(id){return progressState.completed.includes(id);});
+      const index = COURSE_ORDER.indexOf(lesson.id);
+      if (index < 0) return "locked";
+      const prerequisite = PREREQUISITES[lesson.id];
+      const previousDone = prerequisite === null || progressState.completed.includes(prerequisite);
       return previousDone ? "current" : "locked";
     }
 
     function renderMap() {
       document.querySelector("#map").innerHTML = units.map(function(unit) {
-        const completedCount = unit.lessons.filter(function(lesson){return lessonStatus(lesson, unit.n) === "done";}).length;
+        const completedCount = unit.lessons.filter(function(lesson){return lessonStatus(lesson) === "done";}).length;
         const lessonHtml = unit.lessons.map(function(lesson) {
-          const status = lessonStatus(lesson, unit.n);
+          const status = lessonStatus(lesson);
           const action = status === "locked" ? "locked()" : "openLesson('" + lesson.id + "')";
           return '<div class="lesson"><button class="node ' + status + '" onclick="' + action + '" aria-label="' + lesson.title + '">' + lesson.icon + '</button><button class="copy" onclick="' + action + '"><b>' + lesson.title + '</b><small>' + lesson.sub + '</small></button></div>';
         }).join("");
@@ -140,13 +155,21 @@
     }
 
     function renderDashboard() {
+      let changed = false;
       if (progressState.dailyDate !== todayKey()) {
         progressState.dailyDate = todayKey();
         progressState.dailyXp = 0;
-        saveProgress();
+        changed = true;
       }
+      if (progressState.heartsDate !== todayKey()) {
+        progressState.heartsDate = todayKey();
+        progressState.hearts = 5;
+        changed = true;
+      }
+      if (changed) saveProgress();
       document.querySelectorAll("[data-xp]").forEach(function(el){el.textContent = progressState.xp;});
       document.querySelectorAll("[data-daily-xp]").forEach(function(el){el.textContent = progressState.dailyXp;});
+      document.querySelectorAll("[data-hearts]").forEach(function(el){el.textContent = progressState.hearts;});
       document.querySelectorAll("[data-goal-bar]").forEach(function(el){el.style.width = Math.min(100, progressState.dailyXp / DAILY_GOAL * 100) + "%";});
       const remaining = Math.max(0, DAILY_GOAL - progressState.dailyXp);
       document.querySelectorAll("[data-goal-text]").forEach(function(el){
@@ -159,9 +182,50 @@
     }
 
     function openLesson(id) {
-      if (lessonStatus({id:id}, 1) === "locked") return locked();
+      if (lessonStatus({id:id}) === "locked") return locked();
       if (id === "chest") return claimChest();
       openQuiz(id);
+    }
+
+    function renderProgress() {
+      document.querySelector("#progressTotalXp").textContent = progressState.xp;
+      document.querySelector("#progressDailyXp").textContent = progressState.dailyXp;
+      document.querySelector("#progressHearts").textContent = progressState.hearts;
+      document.querySelector("#progressUnits").innerHTML = units.map(function(unit) {
+        const total = unit.lessons.length;
+        const done = unit.lessons.filter(function(lesson){return lesson.id && progressState.completed.includes(lesson.id);}).length;
+        const percent = total ? Math.round(done / total * 100) : 0;
+        return '<section class="unit-progress"><header><b>单元 ' + unit.n + ' · ' + unit.t + '</b><span>' + done + ' / ' + total + '</span></header><div class="mini-bar"><i style="width:' + percent + '%"></i></div></section>';
+      }).join("");
+    }
+
+    function openProgress() {
+      renderProgress();
+      document.querySelector("#progressOverlay").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeProgress() {
+      document.querySelector("#progressOverlay").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    function refillHearts() {
+      progressState.hearts = 5;
+      progressState.heartsDate = todayKey();
+      saveProgress();
+      renderDashboard();
+      renderProgress();
+      document.querySelectorAll("[data-hearts]").forEach(function(el){el.classList.add("heart-pop");setTimeout(function(){el.classList.remove("heart-pop");}, 300);});
+      showToast("红心已恢复为 5 颗。");
+    }
+
+    function loseHeart() {
+      progressState.hearts = Math.max(0, progressState.hearts - 1);
+      progressState.heartsDate = todayKey();
+      saveProgress();
+      renderDashboard();
+      return progressState.hearts;
     }
 
     function awardProgress(id, xp) {
@@ -188,7 +252,7 @@
 
     function claimChest() {
       const gained = awardProgress("chest", 50);
-      showToast(gained ? "单元宝箱已开启：+50 XP" : "这个宝箱已经领取过了。");
+      showToast(gained ? "单元宝箱已开启：+50 XP，单元二已解锁。" : "这个宝箱已经领取过了。");
     }
 
     const refs = [
@@ -262,6 +326,26 @@
         {p:"这个函数调用会得到什么？",c:"def inc (n : Nat) := n + 1\n#eval inc 5",o:["5","6","Nat → Nat"],a:1,e:"把 5 代入 n + 1，计算结果为 6。"},
         {p:"哪个写法给参数 n 标注 Nat 类型？",c:"def triple ___ := n + n + n",o:["(n : Nat)","[n : Nat]","{n = Nat}"],a:0,e:"圆括号 (n : Nat) 是显式参数及其类型标注。"}
       ]},
+      prop:{label:"命题即类型",desc:"进入单元二：区分布尔值与命题，并把蕴含、合取理解为新的类型。",xp:12,questions:[
+        {p:"等式命题 2 = 2 属于哪个类型？",c:"#check (2 = 2)",o:["Bool","Prop","Nat"],a:1,e:"等式 2 = 2 是一个命题，因此它的类型是 Prop。"},
+        {p:"P → Q 在命题语境中表示什么？",c:"variable (P Q : Prop)\n#check P → Q",o:["P 蕴含 Q","P 与 Q 的合取","从 Type 到 Type"],a:0,e:"证明 P → Q 就是给出一个把 P 的证明变成 Q 的证明的函数。"},
+        {p:"哪个符号表示两个命题同时成立？",c:"variable (P Q : Prop)\n#check P ___ Q",o:["∧","∨","¬"],a:0,e:"P ∧ Q 是合取；它的证明同时包含 P 与 Q 的证明。"}
+      ]},
+      strategy:{label:"证明策略",desc:"使用 intro、exact 和 apply 操作当前目标与上下文中的假设。",xp:15,questions:[
+        {p:"证明 P → P 时，首先用哪个策略引入前提？",c:"example (P : Prop) : P → P := by\n  ___ h",o:["intro","rw","simp"],a:0,e:"intro h 把箭头左侧的 P 作为假设 h 放进上下文。"},
+        {p:"上下文已有 h : P，如何直接完成目标 P？",c:"h : P\n⊢ P",o:["exact h","apply P","intro h"],a:0,e:"exact 接受一个类型与当前目标完全一致的证明项。"},
+        {p:"已有 hPQ : P → Q，目标是 Q，应该如何反向套用？",c:"hPQ : P → Q\n⊢ Q",o:["apply hPQ","rw [Q]","constructor"],a:0,e:"apply hPQ 把目标 Q 转换为新的目标 P。"}
+      ]},
+      rewrite:{label:"等式改写",desc:"练习反身性、按等式替换，以及利用已登记引理进行自动化简。",xp:15,questions:[
+        {p:"哪个策略直接证明表达式与自身相等？",c:"example (n : Nat) : n = n := by\n  ___",o:["rfl","intro","cases"],a:0,e:"rfl 使用等式的反身性，适用于两侧定义上相同的目标。"},
+        {p:"已知 h : a = b，如何把目标中的 a 改写成 b？",c:"h : a = b\n⊢ a + c = b + c",o:["rw [h]","exact a","intro b"],a:0,e:"rw [h] 按 h 从左向右替换，并在本题中直接关闭目标。"},
+        {p:"哪个策略最适合化简 n + 0 = n？",c:"example (n : Nat) : n + 0 = n := by\n  ___",o:["simp","apply n","constructor"],a:0,e:"simp 使用 Nat.add_zero 等化简引理。"}
+      ]},
+      reuse:{label:"引用定理",desc:"学习检查定理签名、使用命名空间限定名，并把已有定理作为证明项调用。",xp:20,questions:[
+        {p:"引用陌生定理前，用什么命令查看完整类型？",c:"___ Nat.add_comm",o:["#check","#eval","#synth"],a:0,e:"#check 会显示定理的全部参数与结论。"},
+        {p:"自然数加法交换律的完整限定名是什么？",c:"#check ___",o:["Nat.add_comm","Set.add_comm","Group.Nat"],a:0,e:"Nat 命名空间中的 add_comm 是自然数加法交换律。"},
+        {p:"已有定理 add_zero_demo，如何在新证明中直接引用？",c:"theorem add_zero_demo (n : Nat) : n + 0 = n := by simp\n\nexample (n : Nat) : n + 0 = n := by\n  ___",o:["exact add_zero_demo n","intro add_zero_demo","rw [Nat]"],a:0,e:"具名定理可以像函数一样接收参数，并由 exact 交付给当前目标。"}
+      ]},
       daily:{label:"练习场",desc:"一组独立的混合复习题，不会和关卡题库重复；每日首次完成可获得 XP。",xp:5,questions:[
         {p:"哪个符号表示“是某集合的元素”？",c:"x ___ s",o:["∈","⊆","→"],a:0,e:"x ∈ s 表示 x 是集合 s 的成员。"},
         {p:"如何要求 G 具有群结构？",c:"variable {G : Type*} ___",o:["[Group G]","(Group → G)","{G = Group}"],a:0,e:"方括号参数让 Lean 通过类型类系统寻找 Group G 实例。"},
@@ -282,6 +366,11 @@
     }
 
     function openQuiz(id) {
+      if (progressState.hearts <= 0) {
+        openProgress();
+        showToast("红心已用完，请先恢复红心再继续答题。");
+        return;
+      }
       activeDeckId = decks[id] ? id : "daily";
       step = 0;
       selected = -1;
@@ -316,11 +405,11 @@
       if (correct) {
         button.textContent = step === deck.questions.length - 1 ? (deckRewardAvailable(activeDeckId) ? "完成 · +" + deck.xp + " XP" : "完成复习") : "继续";
       } else {
-        button.textContent = checked ? "再试一次" : "检查答案";
+        button.textContent = checked ? (progressState.hearts > 0 ? "再试一次" : "恢复红心") : "检查答案";
       }
       const foot = document.querySelector("#quizFoot");
       foot.className = "quiz-foot " + (checked ? (correct ? "good" : "wrong") : "");
-      document.querySelector("#message").innerHTML = checked ? (correct ? "<b>证明通过！</b>" + question.e : '<b style="color:#bd5059">还差一点</b>对照类型，再试一次。') : "选择答案，然后让 Lean 检查。";
+      document.querySelector("#message").innerHTML = checked ? (correct ? "<b>证明通过！</b>" + question.e : '<b style="color:#bd5059">回答错误 · −1 红心</b>' + (progressState.hearts > 0 ? "对照类型，再试一次。" : "红心已用完，请先恢复。")) : "选择答案，然后让 Lean 检查。";
     }
 
     function selectAnswer(index) {
@@ -335,10 +424,17 @@
       if (selected < 0) return;
       if (!checked) {
         checked = true;
+        if (selected !== question.a) loseHeart();
         renderQuiz();
         return;
       }
       if (selected !== question.a) {
+        if (progressState.hearts <= 0) {
+          closeQuiz();
+          openProgress();
+          showToast("红心已用完，请恢复后继续。");
+          return;
+        }
         selected = -1;
         checked = false;
         renderQuiz();
@@ -354,7 +450,7 @@
       const gained = awardProgress(activeDeckId, deck.xp);
       closeQuiz();
       if (gained) {
-        const nextText = activeDeckId === "practice" ? "，单元宝箱已解锁。" : "";
+        const nextText = activeDeckId === "practice" ? "，单元宝箱与单元二已解锁。" : "";
         showToast("完成 " + deck.label + "：+" + gained + " XP" + nextText);
       } else {
         showToast("复习完成，本关奖励已领取。");
@@ -378,6 +474,7 @@
       if (event.key === "Escape") {
         closeRef();
         closeQuiz();
+        closeProgress();
       }
     });
   </script>
