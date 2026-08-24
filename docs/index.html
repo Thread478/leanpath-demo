@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="像闯关一样学习 Lean 4：从基础语法到集合、代数结构与拓扑。">
-  <title>LeanPath — Lean 4 互动学习</title>
+  <meta name="description" content="像闯关一样学习 Lean 4 物理学形式化：从量纲、单位与运动学，到守恒律、振动和轨道模型。">
+  <title>LeanPath Physics — 物理学形式化互动学习</title>
   <style>
     :root{--ink:#26352f;--muted:#718079;--line:#e3eae6;--mint:#56c9a2;--deep:#26936d;--pale:#e9f9f3;--paper:#fafcfb}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button,a{font:inherit;color:inherit}button{cursor:pointer}a{text-decoration:none}
-    .brand{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:900;color:#21453a}.logo{width:38px;height:38px;display:grid;place-items:center;border-radius:12px 12px 12px 4px;background:var(--mint);color:#fff;font:700 25px Georgia;box-shadow:inset 0 -3px #279874}
+    .brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;color:#21453a}.logo{width:38px;height:38px;display:grid;place-items:center;border-radius:12px 12px 12px 4px;background:var(--mint);color:#fff;font:700 25px Georgia;box-shadow:inset 0 -3px #279874}
     .side{position:fixed;z-index:10;inset:0 auto 0 0;width:230px;padding:28px 20px;border-right:1px solid var(--line);background:#fff}.nav{display:grid;gap:8px;margin-top:40px}.nav a,.nav button{height:48px;padding:0 14px;display:flex;align-items:center;gap:14px;border:0;border-radius:13px;background:transparent;color:#69766f;font-weight:700;text-align:left}.nav .active,.nav a:hover,.nav button:hover{color:var(--deep);background:var(--pale)}.nav i{width:24px;font-size:20px;font-style:normal;text-align:center}.powered{position:absolute;right:20px;bottom:22px;left:20px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#f6f8f7;font-size:10px}.powered b{display:block;font-size:11px}
     .main{width:min(680px,calc(100% - 565px));margin-left:calc(230px + max(42px,(100vw - 1240px)/2));padding:50px 0 80px}.hero{padding:0 5px 27px}.eyebrow{margin:0;color:var(--deep);font-size:10px;font-weight:900;letter-spacing:1.5px}.hero h1{margin:8px 0 7px;color:#213e34;font-size:38px;line-height:1.22;letter-spacing:-1.5px}.hero p:last-child{margin:0;color:var(--muted);font-size:13px}.path{display:grid;gap:32px}.unit{overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 10px 30px #3356480d}.banner{min-height:94px;padding:18px 21px;display:flex;align-items:center;gap:15px;color:#fff}.banner.u1{background:linear-gradient(125deg,#49bd94,#70d4b3)}.banner.u2{background:linear-gradient(125deg,#826ed1,#a18ce7)}.banner.u3{background:linear-gradient(125deg,#dd7061,#ef9586)}.banner.u4{background:linear-gradient(125deg,#d7973a,#ebbc72)}.banner.u5{background:linear-gradient(125deg,#429db2,#67becf)}.num{padding:7px 9px;border:1px solid #ffffff66;border-radius:9px;background:#ffffff1c;font-size:10px;font-weight:900}.banner h2{margin:0;font-size:17px}.banner p{margin:3px 0 0;color:#ffffffcc;font-size:10px}.count{margin-left:auto;color:#ffffffcc;font-size:10px;font-weight:800}
     .lessons{position:relative;padding:29px 24px;display:grid;gap:10px}.lessons:before{content:"";position:absolute;top:56px;bottom:55px;left:50%;width:3px;transform:translateX(-50%);background:repeating-linear-gradient(#e4eae7 0 6px,transparent 6px 12px)}.lesson{position:relative;z-index:1;width:70%;min-height:76px;margin:auto;display:flex;align-items:center;gap:16px}.lesson:nth-child(4n+1){transform:translateX(-38px)}.lesson:nth-child(4n+2){transform:translateX(18px);flex-direction:row-reverse;text-align:right}.lesson:nth-child(4n+3){transform:translateX(48px)}.lesson:nth-child(4n){transform:translateX(-6px);flex-direction:row-reverse;text-align:right}.node{width:64px;height:58px;flex:none;border:0;border-radius:50%;background:var(--mint);color:#fff;box-shadow:0 6px #299772,0 9px 18px #348d6e2c;font:800 20px ui-monospace,monospace}.node.current{width:70px;height:63px;box-shadow:0 6px #258e6b,0 0 0 9px var(--pale)}.node.locked{background:#e4e9e6;color:#a5aeaa;box-shadow:0 6px #cdd4d0}.copy{border:0;background:none;text-align:inherit}.copy b,.copy small{display:block}.copy b{font-size:12px}.copy small{margin-top:3px;color:#89958f;font-size:9px}.locked+.copy b{color:#9aa49f}
@@ -30,83 +30,66 @@
 </head>
 <body>
   <aside class="side">
-    <a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a>
-    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>课程地图</a><button onclick="openQuiz('daily')"><i>◎</i>练习场</button><button onclick="openWriting()"><i>✎</i>Lean 写作</button><button onclick="openRef()"><i>⌘</i>语法手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
-    <div class="powered"><b>∃　Powered by Lean 4</b>形式化，从第一步开始</div>
+    <a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a>
+    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>学习路线</a><button onclick="openQuiz('daily')"><i>◎</i>物理练习场</button><button onclick="openWriting()"><i>✎</i>物理写作</button><button onclick="openRef()"><i>⌘</i>形式化手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
+    <div class="powered"><b>∃　Powered by Lean 4</b><span id="poweredText">物理模型可讨论，推导过程可检查</span></div>
   </aside>
-  <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span>LeanPath</a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
+  <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
   <main class="main" id="learn">
-    <section class="hero"><p class="eyebrow">LEAN 4 · 零基础路径</p><h1>把数学，写成可以运行的证明。</h1><p>从类型与函数出发，一步步抵达集合、代数与拓扑。</p></section>
+    <section class="hero"><p class="eyebrow" id="heroEyebrow">LEAN 4 · 物理学形式化路径</p><h1 id="heroTitle">把物理定律，写成可检查的证明。</h1><p id="heroSubtitle">从量纲与运动学出发，逐步进入守恒律、振动、轨道与 Physlib。</p></section>
     <div class="path" id="map"></div>
   </main>
-  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，证明就会越来越自然。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / 20 XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3>💡　今日 Lean 小知识</h3><p>命题也是一种类型，而证明就是这个类型的一个项。</p><code>#check And.intro</code></section></aside>
-  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>课程</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openWriting()"><b>✎</b>写作</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
+  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，让模型、假设与证明逐渐连成一条线。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / <span data-daily-goal>20</span> XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3 id="tipTitle">💡　今日形式化物理小知识</h3><p id="tipText">量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。</p><code id="tipCode">Quantity speedDim → Quantity timeDim → Quantity lengthDim</code></section></aside>
+  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>路线</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openWriting()"><b>✎</b>物理写作</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
 
-  <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 语法手册">
-    <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2>Lean 4 语法手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
+  <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理形式化手册">
+    <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2 id="handbookTitle">Lean 4 物理形式化手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
   </div>
 
   <div class="overlay hidden" id="progressOverlay" role="dialog" aria-modal="true" aria-label="我的学习进度">
-    <div class="modal progress-modal"><header class="modal-head"><div><span class="logo">♙</span><h2>我的学习进度</h2></div><button class="close" onclick="closeProgress()" aria-label="关闭">×</button></header><article class="progress-body"><div class="progress-summary"><section class="metric"><small>累计经验</small><b><span id="progressTotalXp">120</span> XP</b></section><section class="metric"><small>今日经验</small><b><span id="progressDailyXp">0</span> XP</b></section><section class="metric"><small>当前红心</small><b style="color:#dc6670">♥ <span id="progressHearts">5</span> / 5</b></section><section class="metric"><small>Lean 写作</small><b><span id="progressWriting">0</span> / 10</b></section></div><div class="unit-progress-list" id="progressUnits"></div><div class="progress-actions"><p>学习数据保存在当前浏览器。红心每天自动补满，也可在 Demo 中手动恢复。</p><button class="refill" onclick="refillHearts()">恢复 5 颗红心</button></div></article></div>
+    <div class="modal progress-modal"><header class="modal-head"><div><span class="logo">♙</span><h2>我的学习进度</h2></div><button class="close" onclick="closeProgress()" aria-label="关闭">×</button></header><article class="progress-body"><div class="progress-summary"><section class="metric"><small>累计经验</small><b><span id="progressTotalXp">120</span> XP</b></section><section class="metric"><small>今日经验</small><b><span id="progressDailyXp">0</span> XP</b></section><section class="metric"><small>当前红心</small><b style="color:#dc6670">♥ <span id="progressHearts">5</span> / 5</b></section><section class="metric"><small>物理写作</small><b><span id="progressWriting">0</span> / <span id="progressWritingTotal">0</span></b></section></div><div class="unit-progress-list" id="progressUnits"></div><div class="progress-actions"><p>学习数据保存在当前浏览器。红心每天自动补满，也可在 Demo 中手动恢复。</p><button class="refill" onclick="refillHearts()">恢复 5 颗红心</button></div></article></div>
   </div>
 
-  <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 互动练习">
-    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ <span data-hearts>5</span></b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">基础练习</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后让 Lean 检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
+  <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理互动练习">
+    <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ <span data-hearts>5</span></b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">物理量与类型</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
   </div>
   <div class="overlay concept-overlay hidden" id="conceptOverlay" role="dialog" aria-modal="true" aria-label="新语法说明">
     <article class="modal concept-modal"><span class="concept-badge">✦ 第一次遇见</span><h2 id="conceptTitle"></h2><p id="conceptBody"></p><pre class="concept-code"><code id="conceptCode"></code></pre><div class="concept-actions"><small>确认后不再自动展示，可在语法手册中随时复习。</small><button class="action" onclick="dismissConceptGuide()">明白，开始答题</button></div></article>
   </div>
   <div class="overlay hidden" id="writingOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 写作训练">
-    <div class="modal writing-modal"><header class="modal-head"><div><span class="logo">✎</span><h2>Lean 4 写作训练</h2></div><button class="close" onclick="closeWriting()" aria-label="关闭">×</button></header><div class="writing-layout"><aside class="writing-side"><section class="writing-summary"><b id="writingSummary">0 / 10 已通过</b><small>由 Lean 内核判定 · 顺序解锁</small></section><nav class="writing-task-list" id="writingTaskList"></nav></aside><main class="writing-main"><div class="writing-title-row"><div><p class="eyebrow" id="writingSection">基础表达式</p><h2 id="writingTitle">写出 double</h2></div><span class="difficulty" id="writingDifficulty">难度 1</span></div><p class="writing-prompt" id="writingPrompt"></p><div class="writing-editor"><div class="code-head"><span>LeanPathWriting.lean</span><strong id="leanServiceLabel">Lean 4 + Mathlib</strong></div><pre class="template-code" id="writingBefore"></pre><textarea class="answer-editor" id="writingAnswer" spellcheck="false" aria-label="Lean 答案编辑器"></textarea><pre class="template-code" id="writingAfter"></pre></div><div class="writing-toolbar"><div class="lean-status" id="leanStatus"><i></i><span>尚未提交给 Lean</span></div><div><button class="secondary-action" id="aiExplainBtn" onclick="explainWriting()" disabled>AI 讲解</button><button class="action" id="leanCheckBtn" onclick="checkWriting()">交给 Lean 检查</button></div></div><section class="diagnostic-panel hidden" id="diagnosticPanel"><h3 id="diagnosticTitle"></h3><pre id="diagnosticText"></pre></section><section class="ai-panel hidden" id="aiPanel"><header><h3>助教反馈</h3><small id="aiProvider"></small></header><p id="aiText"></p></section><p class="privacy-note">提交时，完整练习源码会发送到配置的 Lean 服务；AI 优先使用已配置的安全代理或浏览器本地模型。正确与否始终只由 Lean 判断。<a href="https://live.lean-lang.org/" target="_blank" rel="noreferrer">打开官方 Lean 编辑器</a></p></main></div></div>
+    <div class="modal writing-modal"><header class="modal-head"><div><span class="logo">✎</span><h2 id="writingLabTitle">Lean 4 物理写作实验室</h2></div><button class="close" onclick="closeWriting()" aria-label="关闭">×</button></header><div class="writing-layout"><aside class="writing-side"><section class="writing-summary"><b id="writingSummary">0 / 0 已通过</b><small>由 Lean 内核判定 · 顺序解锁</small></section><nav class="writing-task-list" id="writingTaskList"></nav></aside><main class="writing-main"><div class="writing-title-row"><div><p class="eyebrow" id="writingSection">物理量与函数</p><h2 id="writingTitle">写出匀速位置</h2></div><span class="difficulty" id="writingDifficulty">难度 1</span></div><p class="writing-prompt" id="writingPrompt"></p><div class="writing-editor"><div class="code-head"><span>LeanPathPhysics.lean</span><strong id="leanServiceLabel">Lean 4 + Mathlib + Physlib</strong></div><pre class="template-code" id="writingBefore"></pre><textarea class="answer-editor" id="writingAnswer" spellcheck="false" aria-label="Lean 答案编辑器"></textarea><pre class="template-code" id="writingAfter"></pre></div><div class="writing-toolbar"><div class="lean-status" id="leanStatus"><i></i><span>尚未提交给 Lean</span></div><div><button class="secondary-action" id="aiExplainBtn" onclick="explainWriting()" disabled>AI 讲解</button><button class="action" id="leanCheckBtn" onclick="checkWriting()">交给 Lean 检查</button></div></div><section class="diagnostic-panel hidden" id="diagnosticPanel"><h3 id="diagnosticTitle"></h3><pre id="diagnosticText"></pre></section><section class="ai-panel hidden" id="aiPanel"><header><h3>助教反馈</h3><small id="aiProvider"></small></header><p id="aiText"></p></section><p class="privacy-note">提交时，完整练习源码会发送到配置的 Lean 服务；AI 只解释诊断或给提示。正确与否始终只由 Lean 判断，物理模型的现实适用性仍需学习者审查。<a href="https://live.lean-lang.org/" target="_blank" rel="noreferrer">打开官方 Lean 编辑器</a></p></main></div></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="data/runtime-config.js"></script>
+  <script src="data/course-config.js"></script>
   <script src="data/question-bank.js"></script>
   <script src="data/writing-bank.js"></script>
   <script src="js/lean-checker.js"></script>
   <script src="js/ai-feedback.js"></script>
   <script>
-    const STORAGE_KEY = "leanpath-progress-v2";
-    const DAILY_GOAL = 20;
-    const COURSE_ORDER = ["hello", "types", "define", "practice", "chest", "prop", "strategy", "rewrite", "reuse"];
-    const PREREQUISITES = {hello:null,types:"hello",define:"types",practice:"define",chest:"practice",prop:"practice",strategy:"prop",rewrite:"strategy",reuse:"rewrite"};
+    const course = window.LEANPATH_COURSE || {};
+    const theme = course.theme || {};
+    const STORAGE_KEY = course.storageKey || "leanpath-progress-v2";
+    const DAILY_GOAL = Number(course.dailyGoal) || 20;
+    const COURSE_ORDER = course.courseOrder || [];
+    const PREREQUISITES = course.prerequisites || {};
     const WRITING_TASKS = (window.LEANPATH_WRITING_BANK && window.LEANPATH_WRITING_BANK.tasks) || [];
     const WRITING_ORDER = WRITING_TASKS.map(function(task){return task.id;});
+    const units = course.units || [];
 
-    const units = [
-      {n:1,t:"与 Lean 初次见面",d:"表达式、类型、定义与 #check",lessons:[
-        {id:"hello",icon:"λ",title:"Hello, Lean!",sub:"认识项与类型"},
-        {id:"types",icon:"∷",title:"类型与表达式",sub:"Nat · Bool · String"},
-        {id:"define",icon:"ƒ",title:"定义函数",sub:"def · fun · let"},
-        {id:"practice",icon:"⌁",title:"快速练习",sub:"综合复习 · +20 XP"},
-        {id:"chest",icon:"◆",title:"单元宝箱",sub:"+50 XP"}
-      ]},
-      {n:2,t:"命题与证明",d:"theorem、example 与常用策略",lessons:[
-        {id:"prop",icon:"P",title:"命题即类型",sub:"Prop · → · ∧ · ∨"},
-        {id:"strategy",icon:"⊢",title:"证明策略",sub:"intro · exact · apply"},
-        {id:"rewrite",icon:"=",title:"等式改写",sub:"rfl · rw · simp"},
-        {id:"reuse",icon:"↗",title:"引用定理",sub:"命名空间与补全"}
-      ]},
-      {n:3,t:"集合与函数",d:"Set、像、原像与集合论证明",lessons:[
-        {icon:"∈",title:"集合的定义",sub:"Set α · ∈ · ⊆"},
-        {icon:"∩",title:"集合运算",sub:"∪ · ∩ · ∖"},
-        {icon:"↦",title:"像与原像",sub:"f '' s · f ⁻¹' t"},
-        {icon:"≃",title:"外延性",sub:"ext · constructor"}
-      ]},
-      {n:4,t:"结构与代数",d:"structure、class 与类型类推断",lessons:[
-        {icon:"◇",title:"自定义结构",sub:"structure · where"},
-        {icon:"·",title:"群与幺半群",sub:"Group · Monoid"},
-        {icon:"ℝ",title:"环与域",sub:"Ring · Field"},
-        {icon:"⚙",title:"实例与调用",sub:"instance · #synth"}
-      ]},
-      {n:5,t:"拓扑初步",d:"拓扑空间、开集与连续性",lessons:[
-        {icon:"𝒯",title:"拓扑空间",sub:"TopologicalSpace"},
-        {icon:"○",title:"开集与闭集",sub:"IsOpen · IsClosed"},
-        {icon:"∿",title:"连续映射",sub:"Continuous"},
-        {icon:"→",title:"邻域与极限",sub:"𝓝 · Tendsto"}
-      ]}
-    ];
+    function applyCourseTheme() {
+      document.title = theme.documentTitle || document.title;
+      const description = document.querySelector('meta[name="description"]');
+      if (description && theme.description) description.setAttribute("content", theme.description);
+      document.querySelectorAll("[data-course-brand]").forEach(function(el){el.textContent = theme.brand || "LeanPath Physics";});
+      const fields = {heroEyebrow:"eyebrow",heroTitle:"heroTitle",heroSubtitle:"heroSubtitle",poweredText:"powered",handbookTitle:"handbookTitle",writingLabTitle:"writingTitle",tipTitle:"tipTitle",tipText:"tipText",tipCode:"tipCode"};
+      Object.keys(fields).forEach(function(id){const el=document.querySelector("#"+id);if(el && theme[fields[id]]) el.textContent=theme[fields[id]];});
+      document.querySelectorAll("[data-daily-goal]").forEach(function(el){el.textContent = DAILY_GOAL;});
+      document.querySelector("#progressWritingTotal").textContent = WRITING_TASKS.length;
+    }
+
+    applyCourseTheme();
 
     function todayKey() {
       const now = new Date();
@@ -219,7 +202,7 @@
         return '<section class="unit-progress"><header><b>单元 ' + unit.n + ' · ' + unit.t + '</b><span>' + done + ' / ' + total + '</span></header><div class="mini-bar"><i style="width:' + percent + '%"></i></div></section>';
       }).join("");
       const writingDone = progressState.writingCompleted.length;
-      const writingProgress = '<section class="unit-progress"><header><b>Lean 写作 · 内核判题</b><span>' + writingDone + ' / ' + WRITING_TASKS.length + '</span></header><div class="mini-bar"><i style="width:' + (WRITING_TASKS.length ? Math.round(writingDone / WRITING_TASKS.length * 100) : 0) + '%"></i></div></section>';
+      const writingProgress = '<section class="unit-progress"><header><b>物理写作 · Lean 内核判题</b><span>' + writingDone + ' / ' + WRITING_TASKS.length + '</span></header><div class="mini-bar"><i style="width:' + (WRITING_TASKS.length ? Math.round(writingDone / WRITING_TASKS.length * 100) : 0) + '%"></i></div></section>';
       document.querySelector("#progressUnits").innerHTML = writingProgress + courseProgress;
     }
 
@@ -279,7 +262,7 @@
       showToast(gained ? "单元宝箱已开启：+50 XP，单元二已解锁。" : "这个宝箱已经领取过了。");
     }
 
-    const refs = [
+    const leanRefs = [
       {id:"basic",s:"λ",l:"基础命令",t:"检查、求值与定义",sum:"Lean 中每个表达式都有类型。#check 只查看类型，#eval 计算结果；def 为值或函数建立可复用的名字。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Functions-and-Definitions/",code:"#check Nat\n#check (42 : Nat)\n#eval 2 ^ 5\n\ndef double (n : Nat) : Nat := n + n\ndef inc := fun n : Nat => n + 1\n\n#eval double (inc 3)",calls:[["#check expr","查看表达式的类型，不执行它"],["#eval expr","计算可执行表达式的值"],["def name (x : α) : β := ...","建立具名定义"],["let x := value","在局部表达式或证明中绑定名字"]]},
       {id:"functions",s:"→",l:"类型与函数",t:"函数类型、匿名函数与多态",sum:"A → B 是从 A 到 B 的函数类型；fun 创建匿名函数。花括号参数通常让 Lean 从上下文自动推断。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Polymorphism/",code:"#check Nat → Nat\n#check (fun x : Nat => x + 1)\n\ndef id' {α : Type} (x : α) : α := x\n\ndef compose {α β γ : Type}\n    (g : β → γ) (f : α → β) : α → γ :=\n  fun x => g (f x)\n\n#eval compose (fun x => x * 2) (fun x => x + 1) 4",calls:[["(x : Nat)","显式参数与类型标注"],["{α : Type}","可从上下文推断的隐式参数"],["f x","函数应用不写括号"],["fun x => body","匿名函数 λx ↦ body"]]},
       {id:"data",s:"∷",l:"归纳类型",t:"构造器、模式匹配与递归",sum:"inductive 枚举数据的全部构造方式；模式匹配逐一处理构造器，也是定义递归函数的核心方式。",source:"Functional Programming in Lean",url:"https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Datatypes-and-Patterns/",code:"inductive Color where\n  | red | green | blue\n  deriving Repr\n\nopen Color\n\ndef colorCode : Color → Nat\n  | red => 0\n  | green => 1\n  | blue => 2\n\ndef length' {α : Type} : List α → Nat\n  | [] => 0\n  | _ :: xs => 1 + length' xs\n\n#eval colorCode green\n#eval length' [10, 20, 30]",calls:[["inductive T where","声明新的归纳类型"],["| constructor ...","声明构造器或匹配分支"],["[] / x :: xs","列表的空与非空模式"],["deriving Repr","自动生成可打印实例"]]},
@@ -292,7 +275,16 @@
       {id:"modules",s:"⌘",l:"组织与引用",t:"导入、命名空间与作用域",sum:"import 引入模块；namespace 防止名字冲突；open 缩短限定名。引用陌生定理前可用 #check 确认参数与命名空间。",source:"Theorem Proving in Lean 4",url:"https://lean-lang.org/theorem_proving_in_lean4/Interacting-with-Lean/",code:"import Mathlib\n\nnamespace Geometry\n\nstructure Point where\n  x : Int\n  y : Int\n\ndef swap (p : Point) : Point :=\n  { x := p.y, y := p.x }\n\nsection\n  variable (p : Point)\n  #check swap p\nend\n\nend Geometry\n\n#check Geometry.swap\n#check Set.image",calls:[["import Mathlib","导入 Mathlib 的常用模块"],["namespace N ... end N","把定义放入命名空间"],["open Set","在当前作用域省略 Set. 前缀"],["N.theoremName","使用完整限定名引用定理"]]}
     ];
 
-    let activeRef = "basic";
+    const refs = [
+      {id:"models",s:"x(t)",l:"物理模型",t:"对象、假设、结论与解释",sum:"形式化物理不只是把公式抄进 Lean。先声明对象与定义，再把正性、系统边界和适用范围写成假设，最后区分“Lean 已验证推导”和“实验支持模型”。",source:"Physlib README",url:"https://github.com/leanprover-community/Physlib",code:"import Mathlib\n\nstructure ParticleState where\n  mass : ℝ\n  position : ℝ\n  velocity : ℝ\n\ndef uniformPosition (x₀ v t : ℝ) : ℝ :=\n  x₀ + v * t\n\ntheorem at_initial_time (x₀ v : ℝ) :\n    uniformPosition x₀ v 0 = x₀ := by\n  simp [uniformPosition]",calls:[["structure State where","把模型状态组织为带字段的类型"],["(hm : 0 < m)","把物理条件作为定理输入"],["theorem name ... : P := by","陈述在给定模型下可验证的结论"],["#check theoremName","阅读结论依赖的全部参数与假设"]]},
+      {id:"dimensions",s:"[L]",l:"量纲",t:"基本量纲与指数向量",sum:"量纲可表示为从基本量纲到整数指数的函数。速度是 L¹T⁻¹，加速度是 L¹T⁻²；乘法使指数相加，除法使指数相减。",source:"Physlib Units",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\n\nabbrev Dimension := BaseDimension → Int\n\ndef speedDimension : Dimension\n  | .mass => 0\n  | .length => 1\n  | .time => -1\n\n#eval speedDimension .length\n#eval speedDimension .time",calls:[["BaseDimension → Int","为每个基本量纲记录指数"],["L¹T⁻¹","长度除以时间的速度量纲"],["d₁ * d₂","量纲乘法：对应指数相加"],["d₁ / d₂","量纲除法：对应指数相减"]]},
+      {id:"typedQuantity",s:"Q[d]",l:"类型安全物理量",t:"让错误的量纲运算无法通过类型检查",sum:"把量纲 d 放进 Quantity d 的类型后，加法只接受相同 d 的两个量；乘法则在结果类型中组合量纲。这样“米 + 秒”在 elaboration 阶段就会失败。",source:"暑校 Inductive Type 物理量练习与 Physlib",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Units/WithDim/Basic.lean",code:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\nabbrev Dimension := BaseDimension → Int\n\nstructure Quantity (d : Dimension) where\n  value : ℝ\n\ndef Quantity.add {d : Dimension}\n    (x y : Quantity d) : Quantity d :=\n  ⟨x.value + y.value⟩",calls:[["Quantity d","数值携带编译期量纲索引"],["Quantity d → Quantity d → Quantity d","只允许同量纲加法"],["x.value","读取底层数值"],["WithDim","Physlib 中更成熟的带量纲实现"]]},
+      {id:"units",s:"m/s",l:"单位与 SI",t:"相同量纲下的尺度换算",sum:"m/s 与 km/h 共享速度量纲，却使用不同尺度。单位换算应保持量纲，并把数值转换到选定单位制；Physlib 已提供 SI 与常见速度单位的定义和定理。",source:"Physlib Speed Units",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Units/WithDim/Speed.lean",code:"import Physlib.Units.WithDim.Speed\n\nopen LTMCTUnitChoices\n\n#check DimSpeed.oneKilometerPerHour_in_SI\n\nexample : DimSpeed.oneKilometerPerHour SI =\n    ⟨5 / 18⟩ := by\n  exact DimSpeed.oneKilometerPerHour_in_SI",calls:[["LTMCTUnitChoices.SI","Physlib 的 SI 单位制选择"],["DimSpeed","带速度量纲的物理量类型"],["oneKilometerPerHour SI","把 1 km/h 表示到 SI"],["5 / 18","对应的 m/s 数值"]]},
+      {id:"mechanics",s:"v²",l:"力学等式",t:"rw、ring、nlinarith 与 positivity",sum:"初等力学的大量推导包含可独立验证的代数核心。rw 代入模型方程，ring 证明多项式恒等式，nlinarith 组合等式与不等式，positivity 管理质量、半径和能量的正性。",source:"Mathematics in Lean",url:"https://leanprover-community.github.io/mathematics_in_lean/C03_Logic.html",code:"import Mathlib\n\ntheorem torricelli (v₀ a t : ℝ) :\n    let v := v₀ + a*t\n    let s := v₀*t + a*t^2/2\n    v^2 = v₀^2 + 2*a*s := by\n  dsimp\n  ring\n\ndef kineticEnergy (m v : ℝ) := (1/2)*m*v^2\n\nexample (m v : ℝ) (hm : 0 ≤ m) :\n    0 ≤ kineticEnergy m v := by\n  positivity",calls:[["rw [h]","把已知物理关系代入目标"],["ring","验证交换环中的多项式恒等式"],["nlinarith","组合多项式等式和序关系"],["positivity","从已有条件推出复合表达式非负"]]},
+      {id:"physlib",s:"↗",l:"Physlib 调用",t:"从 #check 到复用现有物理定理",sum:"Physlib 按物理领域组织 Lean 代码，覆盖单位、经典力学、电磁学、相对论和量子理论等方向。聚焦导入、检查签名、提供假设，是从学习题走向库贡献的基本工作流。",source:"Physlib",url:"https://github.com/leanprover-community/Physlib",code:"import Physlib.ClassicalMechanics.HarmonicOscillator.Basic\nimport Physlib.ClassicalMechanics.OrbitalMechanics.VisViva\n\n#check ClassicalMechanics.HarmonicOscillator.ω_sq\n#check ClassicalMechanics.VisViva.speedCircular_sq\n\n-- ω² = k/m\n-- v_circular² = GM/r",calls:[["import Physlib.Module","只导入当前练习需要的模块"],["#check full.name","确认参数顺序、隐式参数和假设"],["S.ω_sq","用点记法调用对象命名空间中的定理"],["exact theorem args","把通用库定理实例化到当前目标"]]}
+    ].concat(leanRefs);
+
+    let activeRef = "models";
 
     function escapeHtml(value) {
       return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -331,7 +323,7 @@
     const decks = window.LEANPATH_QUESTION_BANKS || {};
     const conceptGuides = window.LEANPATH_CONCEPTS || {};
 
-    let activeDeckId = "hello";
+    let activeDeckId = COURSE_ORDER[0] || "daily";
     let activeQuestions = [];
     let step = 0;
     let selected = -1;
@@ -455,7 +447,7 @@
       }
       const foot = document.querySelector("#quizFoot");
       foot.className = "quiz-foot " + (checked ? (correct ? "good" : "wrong") : "");
-      document.querySelector("#message").innerHTML = checked ? (correct ? "<b>证明通过！</b>" + question.e : '<b style="color:#bd5059">回答错误 · −1 红心</b>' + (progressState.hearts > 0 ? "对照类型，再试一次。" : "红心已用完，请先恢复。")) : "选择答案，然后让 Lean 检查。";
+      document.querySelector("#message").innerHTML = checked ? (correct ? "<b>回答正确！</b>" + question.e : '<b style="color:#bd5059">回答错误 · −1 红心</b>' + (progressState.hearts > 0 ? "对照概念与代码，再试一次。" : "红心已用完，请先恢复。")) : "选择答案，然后检查。";
       maybeShowConceptGuide(question);
     }
 
