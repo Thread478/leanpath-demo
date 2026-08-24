@@ -1,164 +1,101 @@
 /*
- * LeanPath writing bank
- *
- * The learner only edits {{ANSWER}}. The theorem statement and verification
- * examples remain immutable, so a successful result is a real Lean check rather
- * than a text comparison. Exercises are original and follow the learning order
- * used by Theorem Proving in Lean 4 and Mathematics in Lean.
+ * LeanPath Physics writing bank.
+ * Learners edit only {{ANSWER}}; complete sources are checked by Lean.
  */
 (function () {
   window.LEANPATH_WRITING_BANK = {
-    version: 1,
+    version: 2,
     tasks: [
       {
-        id: "write-double",
-        level: 1,
-        section: "基础表达式",
-        title: "写出 double",
-        prompt: "补全函数体，让 double 对任意自然数都返回它的两倍。",
-        concept: "def",
-        xp: 6,
-        starter: "",
-        placeholder: "在这里写一个 Nat 表达式",
-        hint: "函数体中可以直接使用参数 n；自然数加法写作 n + n。",
-        template: "import Mathlib\n\ndef double (n : Nat) : Nat :=\n  {{ANSWER}}\n\nexample (n : Nat) : double n = n + n := by\n  rfl\n"
+        id:"phys-write-position", level:1, section:"物理量与函数", title:"写出匀速位置",
+        prompt:"补全一维匀速模型：初始位置 x₀、速度 v、时间 t 均为实数，返回 x₀ + vt。",
+        concept:"phys-real", xp:6, starter:"", placeholder:"写出一个 ℝ 表达式",
+        hint:"函数体可以直接使用 x₀、v、t；Lean 中乘法写作 *。",
+        template:"import Mathlib\n\ndef position (x₀ v t : ℝ) : ℝ :=\n  {{ANSWER}}\n\nexample (x₀ v t : ℝ) : position x₀ v t = x₀ + v * t := by\n  rfl\n"
       },
       {
-        id: "write-compose",
-        level: 1,
-        section: "基础表达式",
-        title: "组合两个函数",
-        prompt: "补全 twiceAfterInc：先给 n 加一，再调用 double。",
-        concept: "compose",
-        xp: 6,
-        starter: "",
-        placeholder: "调用已有函数完成定义",
-        hint: "Lean 用空格应用函数；先执行的表达式放在括号里。",
-        template: "import Mathlib\n\ndef inc (n : Nat) : Nat := n + 1\ndef double (n : Nat) : Nat := n + n\n\ndef twiceAfterInc (n : Nat) : Nat :=\n  {{ANSWER}}\n\nexample (n : Nat) : twiceAfterInc n = (n + 1) + (n + 1) := by\n  rfl\n"
+        id:"phys-write-trajectory", level:1, section:"物理量与函数", title:"时间到位置的轨迹",
+        prompt:"补全 trajectory，使它返回一个以时间 t 为输入的一维匀速轨迹函数。",
+        concept:"phys-function", xp:6, starter:"", placeholder:"使用 fun t => ...",
+        hint:"目标类型是 ℝ → ℝ，因此先用 fun 引入时间参数。",
+        template:"import Mathlib\n\ndef trajectory (x₀ v : ℝ) : ℝ → ℝ :=\n  {{ANSWER}}\n\nexample (x₀ v t : ℝ) : trajectory x₀ v t = x₀ + v * t := by\n  rfl\n"
       },
       {
-        id: "write-identity",
-        level: 1,
-        section: "命题与证明",
-        title: "恒等蕴含",
-        prompt: "写一个策略证明：对任意命题 P，由 P 推出 P。",
-        concept: "intro",
-        xp: 8,
-        starter: "by\n  ",
-        placeholder: "先 intro，再交付已有证明",
-        hint: "intro 会把箭头左侧的证明放进上下文，exact 可以关闭同类型目标。",
-        template: "import Mathlib\n\ntheorem leanpath_identity (P : Prop) : P → P :=\n  {{ANSWER}}\n"
+        id:"phys-write-speed-dimension", level:1, section:"量纲建模", title:"定义速度量纲",
+        prompt:"用模式匹配补全 speedDimension：质量指数 0、长度指数 1、时间指数 −1。",
+        concept:"phys-dimension", xp:8, starter:"fun\n  ", placeholder:"为三个基本量纲分别返回指数",
+        hint:"依次匹配 .mass、.length、.time；负一可写作 -1。",
+        template:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\n\nabbrev Dimension := BaseDimension → Int\n\ndef speedDimension : Dimension :=\n  {{ANSWER}}\n\nexample : speedDimension .mass = 0 := by rfl\nexample : speedDimension .length = 1 := by rfl\nexample : speedDimension .time = -1 := by rfl\n"
       },
       {
-        id: "write-and-swap",
-        level: 2,
-        section: "命题与证明",
-        title: "交换合取",
-        prompt: "证明 P ∧ Q 可以推出 Q ∧ P。",
-        concept: "constructor",
-        xp: 8,
-        starter: "by\n  intro h\n  ",
-        placeholder: "拆分目标，并使用 h 的两个投影",
-        hint: "constructor 把合取目标拆成两项；h.1 与 h.2 分别是左右分量。",
-        template: "import Mathlib\n\ntheorem leanpath_and_swap (P Q : Prop) : P ∧ Q → Q ∧ P :=\n  {{ANSWER}}\n"
+        id:"phys-write-safe-add", level:1, section:"量纲建模", title:"类型安全的物理量加法",
+        prompt:"补全 add：两个输入共享量纲 d，结果也必须保持同一量纲，并把数值相加。",
+        concept:"phys-typed-quantity", xp:8, starter:"", placeholder:"构造一个 Quantity d",
+        hint:"使用结构字面量 { value := ... }，字段值来自 x.value 与 y.value。",
+        template:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\n\nabbrev Dimension := BaseDimension → Int\n\nstructure Quantity (d : Dimension) where\n  value : ℝ\n\ndef Quantity.add {d : Dimension} (x y : Quantity d) : Quantity d :=\n  {{ANSWER}}\n\nexample {d : Dimension} (x y : Quantity d) :\n    (Quantity.add x y).value = x.value + y.value := by\n  rfl\n"
       },
       {
-        id: "write-add-zero",
-        level: 2,
-        section: "等式证明",
-        title: "加零不变",
-        prompt: "证明任意自然数 n 加零仍等于 n。",
-        concept: "simp",
-        xp: 8,
-        starter: "by\n  ",
-        placeholder: "使用化简策略或引用定理",
-        hint: "simp 知道自然数加法的单位元定律；也可以精确引用 Nat.add_zero。",
-        template: "import Mathlib\n\ntheorem leanpath_add_zero (n : Nat) : n + 0 = n :=\n  {{ANSWER}}\n"
+        id:"phys-write-unit-conversion", level:1, section:"单位与换算", title:"36 km/h 换算为 m/s",
+        prompt:"证明 36 × 1000 ÷ 3600 = 10。这里把 km→m 与 h→s 的比例全部写在实数等式中。",
+        concept:"phys-unit", xp:8, starter:"by\n  ", placeholder:"使用数值归一化策略",
+        hint:"norm_num 可以证明闭合的有理数等式。",
+        template:"import Mathlib\n\ntheorem thirtySix_kmh_in_mps :\n    (36 : ℝ) * 1000 / 3600 = 10 :=\n  {{ANSWER}}\n"
       },
       {
-        id: "write-add-comm",
-        level: 2,
-        section: "等式证明",
-        title: "引用交换律",
-        prompt: "引用 Lean 已有定理，证明自然数加法交换律。",
-        concept: "theoremCall",
-        xp: 10,
-        starter: "by\n  ",
-        placeholder: "引用 Nat 命名空间中的定理",
-        hint: "先想一想 #check Nat.add_comm 会显示什么类型。",
-        template: "import Mathlib\n\ntheorem leanpath_add_comm (a b : Nat) : a + b = b + a :=\n  {{ANSWER}}\n"
+        id:"phys-write-initial-position", level:2, section:"运动学", title:"检查初始位置",
+        prompt:"证明在 t = 0 时，匀速位置模型返回初始位置 x₀。",
+        concept:"phys-ring", xp:8, starter:"by\n  ", placeholder:"展开 position 并化简",
+        hint:"simp [position] 会同时展开定义并处理乘零、加零。",
+        template:"import Mathlib\n\ndef position (x₀ v t : ℝ) : ℝ := x₀ + v * t\n\ntheorem position_at_zero (x₀ v : ℝ) : position x₀ v 0 = x₀ :=\n  {{ANSWER}}\n"
       },
       {
-        id: "write-inter-subset",
-        level: 2,
-        section: "集合",
-        title: "交集包含于左集",
-        prompt: "证明 s ∩ t ⊆ s。成员交集的证明同时包含左右两个成员事实。",
-        concept: "set-subset",
-        xp: 10,
-        starter: "by\n  intro x hx\n  ",
-        placeholder: "从 hx 取得 x ∈ s",
-        hint: "子集证明先引入 x 和成员证明 hx；交集证明的第一项是左侧成员事实。",
-        guide: {
-          title: "集合成员与子集",
-          body: "在 Mathlib 中，Set α 可以看作 α → Prop。s ⊆ t 展开后表示：任意 x 若属于 s，就属于 t。",
-          code: "x ∈ s     -- s x\ns ⊆ t     -- ∀ ⦃x⦄, x ∈ s → x ∈ t\nhx.1      -- 交集成员的左侧证明"
-        },
-        template: "import Mathlib\n\nopen Set\nvariable {α : Type*}\n\ntheorem leanpath_inter_subset_left (s t : Set α) : s ∩ t ⊆ s :=\n  {{ANSWER}}\n"
+        id:"phys-write-zero-acceleration", level:2, section:"运动学", title:"零加速度退化为匀速",
+        prompt:"定义 velocity v₀ a t = v₀ + at，并证明 a = 0 时速度保持为 v₀。",
+        concept:"phys-ring", xp:8, starter:"by\n  ", placeholder:"展开定义并化简",
+        hint:"目标不需要复杂代数；simp [velocity] 足以化简零乘法。",
+        template:"import Mathlib\n\ndef velocity (v₀ a t : ℝ) : ℝ := v₀ + a * t\n\ntheorem velocity_zero_acceleration (v₀ t : ℝ) :\n    velocity v₀ 0 t = v₀ :=\n  {{ANSWER}}\n"
       },
       {
-        id: "write-set-ext",
-        level: 3,
-        section: "集合",
-        title: "集合外延性",
-        prompt: "已知每个元素属于 s 当且仅当属于 t，证明 s = t。",
-        concept: "set-ext",
-        xp: 10,
-        starter: "by\n  ",
-        placeholder: "使用 ext 把集合相等化为成员等价",
-        hint: "ext x 会把目标 s = t 转换为 x ∈ s ↔ x ∈ t。",
-        guide: {
-          title: "集合外延性 ext",
-          body: "两个集合相等，当且仅当它们拥有完全相同的元素。ext 策略把集合相等目标转换为逐点成员等价。",
-          code: "ext x\n-- 新目标：x ∈ s ↔ x ∈ t"
-        },
-        template: "import Mathlib\n\nopen Set\nvariable {α : Type*}\n\ntheorem leanpath_set_ext (s t : Set α)\n    (h : ∀ x, x ∈ s ↔ x ∈ t) : s = t :=\n  {{ANSWER}}\n"
+        id:"phys-write-torricelli", level:2, section:"运动学", title:"验证无时间速度公式",
+        prompt:"在匀加速定义下验证 v² = v₀² + 2as。此题验证公式的代数核心，不额外声称模型适用于所有运动。",
+        concept:"phys-ring", xp:10, starter:"by\n  dsimp\n  ", placeholder:"规范化多项式等式",
+        hint:"展开 let 后，目标是 ℝ 上的多项式恒等式，可使用 ring。",
+        template:"import Mathlib\n\ntheorem torricelli_identity (v₀ a t : ℝ) :\n    let v := v₀ + a * t\n    let s := v₀ * t + a * t^2 / 2\n    v^2 = v₀^2 + 2 * a * s :=\n  {{ANSWER}}\n"
       },
       {
-        id: "write-group-inverse",
-        level: 3,
-        section: "代数结构",
-        title: "调用群的逆元定律",
-        prompt: "在任意群 G 中证明 g⁻¹ * g = 1。",
-        concept: "group-class",
-        xp: 12,
-        starter: "by\n  ",
-        placeholder: "使用 simp 或逆元定理",
-        hint: "[Group G] 让 Lean 自动获得群运算和群公理；simp 能使用逆元化简规则。",
-        guide: {
-          title: "类型类参数 [Group G]",
-          body: "方括号参数不是一个额外数学变量，而是要求 Lean 为 G 找到群结构实例。找到后，乘法、单位元、逆元及其定理都会可用。",
-          code: "variable {G : Type*} [Group G]\n#synth Group G\n#check mul_assoc"
-        },
-        template: "import Mathlib\n\nvariable {G : Type*} [Group G]\n\ntheorem leanpath_inv_mul (g : G) : g⁻¹ * g = 1 :=\n  {{ANSWER}}\n"
+        id:"phys-write-kinetic-nonnegative", level:2, section:"能量与正性", title:"动能非负",
+        prompt:"若质量 m 非负，证明 K = 1/2 mv² 非负。",
+        concept:"phys-positivity", xp:10, starter:"by\n  ", placeholder:"组合质量和平方的非负性",
+        hint:"上下文已有 hm，速度平方自动非负；positivity 可以组合这些事实。",
+        template:"import Mathlib\n\nnoncomputable def kineticEnergy (m v : ℝ) : ℝ := (1 / 2) * m * v^2\n\ntheorem kineticEnergy_nonnegative (m v : ℝ) (hm : 0 ≤ m) :\n    0 ≤ kineticEnergy m v :=\n  {{ANSWER}}\n"
       },
       {
-        id: "write-continuous-comp",
-        level: 3,
-        section: "拓扑",
-        title: "连续映射的复合",
-        prompt: "已知 f 与 g 连续，证明复合函数 g ∘ f 连续。",
-        concept: "continuous-comp",
-        xp: 12,
-        starter: "by\n  ",
-        placeholder: "调用连续性证明上的 comp",
-        hint: "外层函数 g 的连续性证明 hg 调用 .comp，并接收内层函数的证明 hf。",
-        guide: {
-          title: "Continuous 与定理调用",
-          body: "Continuous f 是“f 连续”的命题。hg.comp hf 把 g 的连续性和 f 的连续性组合成 g ∘ f 的连续性证明。",
-          code: "hf : Continuous f\nhg : Continuous g\nhg.comp hf : Continuous (g ∘ f)"
-        },
-        template: "import Mathlib\n\nvariable {X Y Z : Type*}\nvariable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]\n\ntheorem leanpath_continuous_comp (f : X → Y) (g : Y → Z)\n    (hf : Continuous f) (hg : Continuous g) : Continuous (g ∘ f) :=\n  {{ANSWER}}\n"
+        id:"phys-write-momentum-impulse", level:2, section:"动量守恒", title:"内部冲量抵消",
+        prompt:"两个非零质量物体分别获得 +J 与 −J 的速度改变量，证明总动量不变。",
+        concept:"phys-conservation", xp:12, starter:"by\n  ", placeholder:"消去非零分母，再整理环等式",
+        hint:"先用 field_simp [hm₁, hm₂] 处理除法，再用 ring 整理。",
+        template:"import Mathlib\n\ntheorem totalMomentum_after_internal_impulse\n    (m₁ m₂ v₁ v₂ J : ℝ) (hm₁ : m₁ ≠ 0) (hm₂ : m₂ ≠ 0) :\n    m₁ * (v₁ + J / m₁) + m₂ * (v₂ - J / m₂) =\n      m₁ * v₁ + m₂ * v₂ :=\n  {{ANSWER}}\n"
+      },
+      {
+        id:"phys-write-physlib-speed", level:3, section:"Physlib 单位", title:"引用 km/h 的 SI 定理",
+        prompt:"引用 Physlib 已有结果，证明 1 km/h 在 SI 中表示为 5/18 m/s。",
+        concept:"phys-physlib", xp:12, starter:"by\n  ", placeholder:"引用完整限定名",
+        hint:"目标与 DimSpeed.oneKilometerPerHour_in_SI 完全对应，可先尝试 exact。",
+        template:"import Physlib.Units.WithDim.Speed\n\nopen LTMCTUnitChoices\n\nexample : DimSpeed.oneKilometerPerHour SI = ⟨5 / 18⟩ :=\n  {{ANSWER}}\n"
+      },
+      {
+        id:"phys-write-oscillator", level:3, section:"Physlib 经典力学", title:"调用简谐振子频率定理",
+        prompt:"对 Physlib 中任意简谐振子 S，引用现有定理证明 ω² = k/m。",
+        concept:"phys-namespace", xp:12, starter:"by\n  ", placeholder:"从 S 调用 ω_sq",
+        hint:"打开 ClassicalMechanics 后，可把命名空间定理按点记法写成 S.ω_sq。",
+        template:"import Physlib.ClassicalMechanics.HarmonicOscillator.Basic\n\nopen ClassicalMechanics\n\nexample (S : HarmonicOscillator) : S.ω^2 = S.k / S.m :=\n  {{ANSWER}}\n"
+      },
+      {
+        id:"phys-write-circular-orbit", level:3, section:"Physlib 经典力学", title:"调用圆轨道速度定理",
+        prompt:"在 G、中心质量 M 与半径 r 均为正时，引用 Physlib 定理证明圆轨道速度平方关系。",
+        concept:"phys-assumption", xp:14, starter:"by\n  ", placeholder:"向 speedCircular_sq 依次提供系统、配置和正性证明",
+        hint:"完整定理位于 ClassicalMechanics.VisViva 命名空间，参数顺序是 sys、cfg、hr、hG、hM。",
+        template:"import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva\n\nopen ClassicalMechanics\n\nexample (sys : VisViva) (cfg : VisViva.ConfigurationSpace)\n    (hr : 0 < cfg.r) (hG : 0 < sys.G) (hM : 0 < sys.M) :\n    (VisViva.speedCircular sys cfg)^2 = sys.G * sys.M / cfg.r :=\n  {{ANSWER}}\n"
       }
     ]
   };

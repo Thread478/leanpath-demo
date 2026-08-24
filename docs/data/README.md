@@ -1,6 +1,8 @@
 # LeanPath 题库维护说明
 
-题库已经从 `index.html` 分离到 [question-bank.js](./question-bank.js)，无需修改页面结构即可增删题目。
+课程主题与路线位于 [course-config.js](./course-config.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)。三者均与页面运行逻辑分离。
+
+当前主题为 **LeanPath Physics**，共同主线是：量纲与单位 → 运动学 → 模型假设 → 方程与守恒 → Physlib；能量、振动/轨道与团队专题作为后续路线展示。
 
 ## 题库结构
 
@@ -29,9 +31,9 @@
 
 新增题目时，应保证：
 
-1. `id` 不与任何现有题目重复；
+1. `id` 不与任何现有题目重复，并尽量使用物理主题前缀；
 2. 三个难度层都有足够题目满足 `mix`；
-3. 代码使用 Lean 4 / Mathlib 当前语法；
+3. 代码使用 Lean 4 / Mathlib / Physlib 当前语法；
 4. 干扰项应对应真实的初学者误区；
 5. 不直接复制外部教程的长题面，应重新表述并补充来源。
 
@@ -54,13 +56,13 @@
 
 ## 参考来源与许可证
 
-题库并非逐题复制，而是参考下列开源教程的知识顺序、常见证明状态和练习类型后重新编写：
+题库并非逐题复制，而是参考暑校 Type Theory / Inductive Type 讲义中的物理量练习，以及下列开源项目的 API、知识顺序和练习类型后重新编写：
 
-- [Natural Number Game 4](https://github.com/leanprover-community/NNG4) — Apache-2.0；
+- [Physlib](https://github.com/leanprover-community/Physlib) — Apache-2.0；
 - [Theorem Proving in Lean 4](https://github.com/leanprover/theorem_proving_in_lean4) — Apache-2.0；
 - [Mathematics in Lean](https://github.com/leanprover-community/mathematics_in_lean) — Apache-2.0。
 
-其中标有 `source: "nng4-adapted"` 的题目参考了 NNG4 对 `rfl`、`rw` 和反向改写的教学顺序，但题面、选项与中文解释均为重新编写。
+标有 `source: "physlib-adapted"` 的题目依据 Physlib 中真实存在的定义或定理签名重新设计，但题面、选项与中文解释均为本站原创表述。
 
 ## Lean 写作题库
 
@@ -81,6 +83,7 @@
 2. 题目陈述与测试位于不可编辑模板中；
 3. 为题目准备至少一个通过答案与一个明确失败的答案，并进行真实 Lean 测试；
 4. 不把完整答案写进 `starter` 或默认提示；
-5. 保持由表达式、命题、集合到结构与拓扑的渐进顺序。
+5. 保持由实数表达式、量纲类型、运动学恒等式到 Physlib 定理复用的渐进顺序；
+6. 同时说明模型假设与现实适用范围，避免把 Lean 的演绎验证表述成经验验证。
 
 判题与 AI 运行时配置见 [../INTEGRATION.md](../INTEGRATION.md)。
