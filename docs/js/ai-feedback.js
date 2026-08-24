@@ -3,7 +3,7 @@
   function localExplanation(task, result) {
     const first = result && result.diagnostics && result.diagnostics[0];
     const raw = first ? first.message : "";
-    let reason = "Lean 没有接受当前代码。请从第一条诊断开始，检查目标类型与所提供表达式的类型是否一致。";
+    let reason = "Lean 没有接受当前代码。请从第一条诊断开始，分别检查物理假设、量纲/类型和证明步骤。";
     if (/unknown identifier/i.test(raw)) reason = "Lean 找不到某个名字。检查拼写、命名空间，以及是否已经 import 相应模块。";
     else if (/type mismatch|application type mismatch/i.test(raw)) reason = "这里出现了类型不匹配：你提供的项与 Lean 当前期待的类型不同。";
     else if (/unsolved goals/i.test(raw)) reason = "证明脚本已经执行，但仍有目标没有关闭。查看诊断末尾的 ⊢，那就是下一步要证明的命题。";
@@ -37,8 +37,8 @@
     try {
       const diagnostics = (result.diagnostics || []).map(function(item){return item.message;}).join("\n---\n") || "Lean 已通过，没有错误诊断。";
       const prompt = [
-        "你是 Lean 4 初学者助教。Lean 内核的结果是唯一正确性依据，你不能推翻它。",
-        "请用简体中文解释第一处关键问题，并只给一个渐进提示；不要直接给完整答案。若已通过，简短评价证明思路。",
+        "你是 Lean 4 物理形式化初学者助教。Lean 内核的结果是唯一代码正确性依据，你不能推翻它；物理模型的经验有效性需要另行审查。",
+        "请用简体中文判断第一处关键问题属于物理假设、量纲/类型还是 Lean 证明步骤，并只给一个渐进提示；不要直接给完整答案。若已通过，简短评价证明思路和模型边界。",
         "练习：" + task.title + "——" + task.prompt,
         "学生代码：\n" + source,
         "Lean 结果：" + (result.ok ? "通过" : "未通过"),
