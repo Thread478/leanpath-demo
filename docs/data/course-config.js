@@ -1,29 +1,38 @@
 /* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 2,
+    version: 3,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
       brand: "LeanPath Physics",
-      documentTitle: "LeanPath Physics — 从单位与量纲开始形式化物理",
+      documentTitle: "LeanPath Physics — 单位、量纲与欧式静力学",
       description: "以 Lean 4 学习物理学形式化：单位与量纲、欧式空间静力学与动力学、黎曼流形和拉格朗日力学。",
       eyebrow: "LEAN 4 · 五部分物理学形式化路径",
-      heroTitle: "从量纲开始，逐层构造可检查的物理学。",
+      heroTitle: "从量纲到平衡，逐层构造可检查的物理学。",
       heroSubtitle: "单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
       powered: "物理定义公开，数学推导可检查",
       handbookTitle: "Lean 4 物理形式化手册",
-      writingTitle: "单位与量纲 · Lean 写作实验室",
+      writingTitle: "物理学形式化 · Lean 写作实验室",
       showcaseTitle: "形式化成果图鉴",
       tipTitle: "今日形式化物理小知识",
-      tipText: "量纲乘法就是指数向量相加；同量纲加法则由 Quantity d 的类型保证。",
-      tipCode: "[F] = [M] · [L] · [T]⁻²"
+      tipText: "刚体平衡不仅要求合力为零，还要求关于任一点的合力矩为零。",
+      tipCode: "ΣF = 0  ∧  Σ(r × F) = 0"
+    },
+    completionRewards: {
+      chest: {xp:80, message:"第一部分完成：+80 XP，完整《单位与量纲》Lean 作品已收入成果图鉴。", repeat:"第一部分成果已经领取，可在成果图鉴中查看。"},
+      "statics-chest": {xp:100, message:"第二部分完成：+100 XP，完整《欧式空间静力学》Lean 作品已收入成果图鉴。", repeat:"第二部分成果已经领取，可在成果图鉴中查看。"}
     },
     courseOrder: [
       "quantity", "si-base", "dimension-model", "dimension-ops",
       "derived-dimensions", "dimensionless", "unit-systems", "unit-conversion",
       "typed-quantity", "typed-ops", "homogeneity", "physlib-units",
-      "practice", "chest"
+      "practice", "chest",
+      "euclidean-vectors", "inner-metric", "affine-points", "applied-force",
+      "force-system", "moment", "moment-shift", "equilibrium",
+      "equilibrium-iff", "support-reactions", "determinacy", "work",
+      "potential", "virtual-work", "stability", "statics-physlib",
+      "statics-practice", "statics-chest"
     ],
     prerequisites: {
       quantity: null,
@@ -39,7 +48,25 @@
       homogeneity: "typed-ops",
       "physlib-units": "homogeneity",
       practice: "physlib-units",
-      chest: "practice"
+      chest: "practice",
+      "euclidean-vectors": "chest",
+      "inner-metric": "euclidean-vectors",
+      "affine-points": "inner-metric",
+      "applied-force": "affine-points",
+      "force-system": "applied-force",
+      moment: "force-system",
+      "moment-shift": "moment",
+      equilibrium: "moment-shift",
+      "equilibrium-iff": "equilibrium",
+      "support-reactions": "equilibrium-iff",
+      determinacy: "support-reactions",
+      work: "determinacy",
+      potential: "work",
+      "virtual-work": "potential",
+      stability: "virtual-work",
+      "statics-physlib": "stability",
+      "statics-practice": "statics-physlib",
+      "statics-chest": "statics-practice"
     },
     units: [
       {
@@ -66,14 +93,26 @@
       {
         n: 2,
         t: "欧式空间中的静力学",
-        d: "后续部分：向量、力系、力矩、平衡与刚体",
+        d: "有限维欧式空间中的向量、力系、刚体平衡、虚功与能量稳定性",
         lessons: [
-          {icon:"ℝⁿ", title:"欧式空间与内积", sub:"向量 · 范数 · 正交分解"},
-          {icon:"F⃗", title:"力与力系", sub:"自由向量 · 作用点"},
-          {icon:"τ", title:"力矩与叉积", sub:"参考点 · 反对称性"},
-          {icon:"Σ", title:"质点系平衡", sub:"合力为零 · 必要充分条件"},
-          {icon:"▱", title:"刚体静力学", sub:"合力与合力矩"},
-          {icon:"⊥", title:"约束与支反力", sub:"接触 · 摩擦 · 分类讨论"}
+          {id:"euclidean-vectors", icon:"ℝ³", title:"欧式空间与坐标向量", sub:"Fin 3 → ℝ · 加法 · 数乘"},
+          {id:"inner-metric", icon:"⟪·,·⟫", title:"内积、范数与距离", sub:"点积 · 正交 · EuclideanSpace"},
+          {id:"affine-points", icon:"P→Q", title:"点、位移与参考原点", sub:"仿射点 · 位置向量 · ReferenceFrame"},
+          {id:"applied-force", icon:"F@P", title:"力与作用点", sub:"滑移向量 · 作用线 · AppliedForce"},
+          {id:"force-system", icon:"ΣF", title:"力系与合力", sub:"List · 叠加 · 合力"},
+          {id:"moment", icon:"r×F", title:"力矩与叉积", sub:"Mathlib crossProduct · 正交性"},
+          {id:"moment-shift", icon:"M↦", title:"移矩定理与力偶", sub:"换参考点 · 力偶矩不变"},
+          {id:"equilibrium", icon:"0⃗", title:"静力平衡", sub:"平动平衡 ∧ 转动平衡"},
+          {id:"equilibrium-iff", icon:"⇔", title:"平衡充要条件", sub:"任意刚体虚速度功率为零"},
+          {id:"support-reactions", icon:"△", title:"约束与支反力", sub:"简支梁 · 平衡方程 · 反力"},
+          {id:"determinacy", icon:"ker", title:"静定与超静定", sub:"平衡算子 · 核 · 自应力"},
+          {id:"work", icon:"W", title:"功的形式化", sub:"F · Δr · 可加性"},
+          {id:"potential", icon:"V", title:"势能与保守力", sub:"F = −∇V · 二次势能"},
+          {id:"virtual-work", icon:"δW", title:"虚功原理", sub:"有限维刚体 · 线性约束"},
+          {id:"stability", icon:"min", title:"势能极值与稳定性", sub:"正刚度 · 中性 · 不稳定"},
+          {id:"statics-physlib", icon:"↗", title:"调用 Mathlib 与 Physlib", sub:"叉积 · 参考系 · 梯度"},
+          {id:"statics-practice", icon:"⌁", title:"欧式静力学综合实验", sub:"分层随机组卷 · +35 XP"},
+          {id:"statics-chest", icon:"◆", title:"第二部分通关成果", sub:"解锁完整 Lean 展品 · +100 XP"}
         ]
       },
       {
