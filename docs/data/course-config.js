@@ -1,13 +1,13 @@
 /* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 4,
+    version: 5,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
       brand: "LeanPath Physics",
       documentTitle: "LeanPath Physics — 用 Lean 学习形式化物理",
-      description: "面向较熟悉 Lean 4 的学习者，以可检查的模型学习单位与量纲、欧式静力学与动力学、黎曼流形和拉格朗日力学。",
+      description: "提供可选的 Lean 4 零基础前置训练，并以可检查的模型学习单位与量纲、欧式静力学与动力学、黎曼流形和拉格朗日力学。",
       eyebrow: "面向 LEAN 用户 · 五单元物理学习路径",
       heroTitle: "让 Lean 成为学习物理的语言。",
       heroSubtitle: "从真实物理情境出发：单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
