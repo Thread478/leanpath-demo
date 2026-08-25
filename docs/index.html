@@ -32,7 +32,7 @@
 <body>
   <aside class="side">
     <a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a>
-    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>学习路线</a><button onclick="openQuiz('daily')"><i>◎</i>物理练习场</button><button onclick="openWriting()"><i>✎</i>物理写作</button><button onclick="openShowcase()"><i>✦</i>成果图鉴</button><button onclick="openRef()"><i>⌘</i>形式化手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
+    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>学习路线</a><button onclick="openQuiz('daily')"><i>λ</i>Lean 入门</button><button onclick="openWriting()"><i>✎</i>物理写作</button><button onclick="openShowcase()"><i>✦</i>成果图鉴</button><button onclick="openRef()"><i>⌘</i>形式化手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
     <div class="powered"><b>∃　Powered by Lean 4</b><span id="poweredText">从 SI 基本量到可检查的量纲代数</span></div>
   </aside>
   <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
@@ -41,7 +41,7 @@
     <div class="path" id="map"></div>
   </main>
   <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，让定义、量纲与证明逐渐连成一条线。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / <span data-daily-goal>20</span> XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3 id="tipTitle">💡　今日量纲小知识</h3><p id="tipText">量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。</p><code id="tipCode">Quantity speedDim → Quantity timeDim → Quantity lengthDim</code></section></aside>
-  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>路线</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openWriting()"><b>✎</b>写作</button><button onclick="openShowcase()"><b>✦</b>图鉴</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
+  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>路线</a><button onclick="openQuiz('daily')"><b>λ</b>入门</button><button onclick="openWriting()"><b>✎</b>写作</button><button onclick="openShowcase()"><b>✦</b>图鉴</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
 
   <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理形式化手册">
     <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2 id="handbookTitle">Lean 4 物理形式化手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
@@ -54,8 +54,8 @@
   <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理互动练习">
     <div class="modal quiz"><header class="quiz-top"><button class="close" onclick="closeQuiz()" aria-label="关闭">×</button><div class="progress"><i id="quizProgress"></i></div><b style="color:#dc6670">♥ <span data-hearts>5</span></b></header><div class="quiz-body"><section><p class="eyebrow"><span id="quizLabel">物理量与类型</span> · 第 <span id="stepNumber">1</span> 题</p><h2 id="quizPrompt"></h2><p class="desc" id="quizDesc"></p><span class="reward" id="quizReward"></span></section><section class="quiz-card"><div class="code-head"><span>main.lean</span><span>Lean 4</span></div><pre><code id="quizCode"></code></pre><div class="answers" id="answers"></div></section></div><footer class="quiz-foot" id="quizFoot"><div class="message" id="message">选择答案，然后检查。</div><button class="action" id="checkBtn" onclick="checkAnswer()" disabled>检查答案</button></footer></div>
   </div>
-  <div class="overlay concept-overlay hidden" id="conceptOverlay" role="dialog" aria-modal="true" aria-label="新物理概念说明">
-    <article class="modal concept-modal"><span class="concept-badge">✦ 首次物理导学</span><h2 id="conceptTitle"></h2><p id="conceptBody"></p><pre class="concept-code"><code id="conceptCode"></code></pre><div class="concept-actions"><small>确认后不再自动展示，可在物理形式化手册中随时复习。</small><button class="action" onclick="dismissConceptGuide()">明白，进入模型</button></div></article>
+  <div class="overlay concept-overlay hidden" id="conceptOverlay" role="dialog" aria-modal="true" aria-label="新概念说明">
+    <article class="modal concept-modal"><span class="concept-badge" id="conceptBadge">✦ 首次物理导学</span><h2 id="conceptTitle"></h2><p id="conceptBody"></p><pre class="concept-code"><code id="conceptCode"></code></pre><div class="concept-actions"><small id="conceptNote">确认后不再自动展示，可在物理形式化手册中随时复习。</small><button class="action" id="conceptStart" onclick="dismissConceptGuide()">明白，进入模型</button></div></article>
   </div>
   <div class="overlay hidden" id="writingOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 写作训练">
     <div class="modal writing-modal"><header class="modal-head"><div><span class="logo">✎</span><h2 id="writingLabTitle">Lean 4 物理写作实验室</h2></div><button class="close" onclick="closeWriting()" aria-label="关闭">×</button></header><div class="writing-layout"><aside class="writing-side"><section class="writing-summary"><b id="writingSummary">0 / 0 已通过</b><small>由 Lean 内核判定 · 顺序解锁</small></section><nav class="writing-task-list" id="writingTaskList"></nav></aside><main class="writing-main"><div class="writing-title-row"><div><p class="eyebrow" id="writingSection">物理量与函数</p><h2 id="writingTitle">写出匀速位置</h2></div><span class="difficulty" id="writingDifficulty">难度 1</span></div><p class="writing-prompt" id="writingPrompt"></p><div class="writing-editor"><div class="code-head"><span>LeanPathPhysics.lean</span><strong id="leanServiceLabel">Lean 4 + Mathlib + Physlib</strong></div><pre class="template-code" id="writingBefore"></pre><textarea class="answer-editor" id="writingAnswer" spellcheck="false" aria-label="Lean 答案编辑器"></textarea><pre class="template-code" id="writingAfter"></pre></div><div class="writing-toolbar"><div class="lean-status" id="leanStatus"><i></i><span>尚未提交给 Lean</span></div><div><button class="secondary-action" id="aiExplainBtn" onclick="explainWriting()" disabled>AI 讲解</button><button class="action" id="leanCheckBtn" onclick="checkWriting()">交给 Lean 检查</button></div></div><section class="diagnostic-panel hidden" id="diagnosticPanel"><h3 id="diagnosticTitle"></h3><pre id="diagnosticText"></pre></section><section class="ai-panel hidden" id="aiPanel"><header><h3>助教反馈</h3><small id="aiProvider"></small></header><p id="aiText"></p></section><p class="privacy-note">提交时，完整练习源码会发送到配置的 Lean 服务；AI 只解释诊断或给提示。正确与否始终只由 Lean 判断，物理模型的现实适用性仍需学习者审查。<a href="https://live.lean-lang.org/" target="_blank" rel="noreferrer">打开官方 Lean 编辑器</a></p></main></div></div>
@@ -522,6 +522,10 @@
       const guide = question && question.guide ? question.guide : conceptGuides[conceptId];
       if (!conceptId || !guide || progressState.seenConcepts.includes(conceptId)) return;
       pendingConceptId = conceptId;
+      const isLeanPrelude = activeDeckId === "daily";
+      document.querySelector("#conceptBadge").textContent = isLeanPrelude ? "λ 首次 Lean 导学" : "✦ 首次物理导学";
+      document.querySelector("#conceptNote").textContent = isLeanPrelude ? "确认后不再自动展示；可在形式化手册的基础章节复习。" : "确认后不再自动展示，可在物理形式化手册中随时复习。";
+      document.querySelector("#conceptStart").textContent = isLeanPrelude ? "明白，继续读代码" : "明白，进入模型";
       document.querySelector("#conceptTitle").textContent = guide.title;
       document.querySelector("#conceptBody").textContent = guide.body;
       document.querySelector("#conceptCode").textContent = guide.code;
@@ -640,7 +644,7 @@
       closeQuiz();
       if (gained) {
         const isPartPractice = activeDeckId === "practice" || activeDeckId.endsWith("-practice");
-        const nextText = isPartPractice ? "，本部分通关成果已解锁。" : "";
+        const nextText = activeDeckId === "daily" ? "。你已经可以开始第一单元，也可以继续随机复习。" : (isPartPractice ? "，本部分通关成果已解锁。" : "");
         showToast("完成 " + deck.label + "：+" + gained + " XP" + nextText);
       } else {
         showToast("复习完成，本关奖励已领取。");
