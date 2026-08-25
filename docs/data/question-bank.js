@@ -1,6 +1,14 @@
 /* LeanPath Physics · physics-first question bank for Parts I–II */
 (function () {
   const concepts = {
+    "lean-expressions-types": {title:"表达式、类型与检查命令",body:"Lean 中每个表达式都有类型。`#check e` 只询问 e 的类型，`#eval e` 则计算可执行表达式的值；`(e : T)` 明确告诉 Lean 把 e 按类型 T 解释。",code:"#check (3 : Nat)   -- 3 : Nat\n#eval 2 ^ 5         -- 32\n#check (3 : ℝ)      -- 3 : ℝ"},
+    "lean-definitions-applications": {title:"定义与函数应用",body:"`def` 为一个值或函数命名，`:=` 后面是定义内容。函数应用直接写成 `f x y`，通常不写数学课本式的括号和逗号。参数后的 `: T` 是类型标注。",code:"def speed (x t : ℝ) : ℝ := x / t\n#check speed 10 2\n-- speed 10 2 表示 speed(10, 2)"},
+    "lean-functions-locals": {title:"函数类型、匿名函数与局部名字",body:"`A → B` 表示从 A 到 B 的函数类型，`fun x => ...` 直接构造匿名函数，`let x := value` 在当前表达式中建立局部名字。",code:"#check ℝ → ℝ\n#check (fun x : ℝ => x ^ 2)\n#eval (let t : Nat := 5; t + 1)"},
+    "lean-propositions-theorems": {title:"命题、定理与证明块",body:"等式、不等式以及逻辑组合的类型是 `Prop`。`example` 或 `theorem` 在冒号后陈述目标，`:= by` 开始证明；证明成功意味着 Lean 内核接受了一个具有该命题类型的项。",code:"example : (2 : Nat) + 3 = 5 := by\n  norm_num\n\ntheorem self_eq (x : ℝ) : x = x := by\n  rfl"},
+    "lean-equality-tactics": {title:"四个常用的入门证明工具",body:"`rfl` 处理定义上相同的等式；`norm_num` 计算具体数值；`simp` 使用化简规则；`ring` 验证交换半环或环中的多项式恒等式。先看目标的数学形状，再选择工具。",code:"example (x : ℝ) : x = x := by rfl\nexample : (6 : ℝ) / 2 = 3 := by norm_num\nexample (x : ℝ) : x + 0 = x := by simp\nexample (a b : ℝ) : (a+b)^2 = a^2+2*a*b+b^2 := by ring"},
+    "lean-hypotheses-logic": {title:"变量、假设与逻辑连接词",body:"`(h : P)` 给证明加入名为 h 的假设。`∀ x, P x` 表示对每个 x，`P ∧ Q` 同时包含两个结论，`P ↔ Q` 要证明正反两个方向。假设不是注释，而是后续推理可调用的证明项。",code:"variable (P Q : Prop)\n#check P ∧ Q\n#check P ↔ Q\n#check ∀ x : ℝ, x = x\n\nexample (h : P ∧ Q) : P := by exact h.1"},
+    "lean-structures-lists": {title:"结构体、字段与有限列表",body:"`structure` 把多个字段打包为一种数据；用 `{ field := value }` 构造，用 `p.field` 读取。列表由空表 `[]` 和头尾形式 `x :: xs` 组成，有限力系等主线对象常用列表递归处理。",code:"structure Point where\n  x : ℝ\n  y : ℝ\n\ndef p : Point := { x := 1, y := 2 }\n#check p.x\n\ndef length' {α : Type} : List α → Nat\n  | [] => 0\n  | _ :: xs => 1 + length' xs"},
+    "lean-library-dependent": {title:"库接口与依赖类型的阅读方法",body:"先 `import` 模块，再用 `#check` 确认定义或定理的真实类型。主线中的 `Quantity d`、`WithDim d M` 会让量纲 d 进入类型；读函数签名时要同时追踪普通参数与类型索引。",code:"import Mathlib\n#check Real.sqrt\n\n-- 同一个 d 保证只能相加同量纲量\nadd : Quantity d → Quantity d → Quantity d"},
     "quantity-triad": {title:"物理量的三个层次",body:"物理量不是一个裸数值。数值依赖所选单位，单位规定尺度，量纲描述它属于哪一类物理量。改变单位会改变数值，却不会改变量纲。",code:"36 km/h = 10 m/s\n-- 数值不同，速度量纲同为 L·T⁻¹"},
     "exact-real": {title:"定理中的数值通常使用 ℝ",body:"Float 适合有限精度计算；ℝ 适合陈述精确等式和不等式。单位换算可以先在 ℝ 中严格证明，再单独讨论数值近似。",code:"example : (36 : ℝ) * 1000 / 3600 = 10 := by\n  norm_num"},
     "si-seven": {title:"SI 的七个基本量",body:"时间、长度、质量、电流、热力学温度、物质的量和发光强度构成 SI 的七个基本量。对应基本单位是 s、m、kg、A、K、mol、cd。",code:"inductive BaseDimension where\n  | time | length | mass | electricCurrent\n  | temperature | amountOfSubstance\n  | luminousIntensity"},
@@ -40,8 +48,8 @@
     "statics-scope": {title:"本章的适用边界是有限维刚体",body:"课程形式化有限个集中力、线性支反力、刚体虚运动和二次势能。连续介质弱形式、摩擦接触互补、随动力、屈曲和一般非线性稳定性留给后续专题，避免用一个过强的势能口号覆盖不同物理机制。",code:"finite rigid system ≠ continuum mechanics"}
   };
 
-  function deck(label, desc, xp, questions, draw) {
-    return {label:label, desc:desc, xp:xp, draw:draw || 6, mix:[2,2,2], questions:questions};
+  function deck(label, desc, xp, questions, draw, mix) {
+    return {label:label, desc:desc, xp:xp, draw:draw || 6, mix:mix || [2,2,2], questions:questions};
   }
 
   const decks = {
@@ -411,32 +419,34 @@
       {id:"stp-scope",level:3,concept:"statics-scope",p:"本章结论不能直接覆盖哪一项？",c:"scope",o:["连续体屈曲与摩擦接触","有限集中力合力","三维叉积"],a:0,e:"那些需要更丰富的函数空间与非线性/不等式结构。"}
     ],6),
 
-    daily: deck("物理学形式化练习场","每日从已学习路线抽取物理计算、建模判据与边界检查。",5,[
-      {id:"daily-seven",level:1,concept:"si-seven",p:"4 A 恒定电流持续 5 s，输运电荷是多少？",c:"Q=It",o:["20 C","0.8 C","20 V"],a:0,e:"A·s=C，数值为 4×5。"},
-      {id:"daily-energy",level:1,concept:"derived-dimension",p:"12 N 恒力沿其方向推动 2.5 m，做功为？",c:"W=Fs",o:["30 J","4.8 J","30 W"],a:0,e:"12×2.5=30，N·m=J。"},
-      {id:"daily-charge",level:1,concept:"derived-dimension",p:"0.5 A 电流持续 2 min，电荷量是多少？",c:"Q=IΔt",o:["60 C","1 C","240 C"],a:0,e:"2 min=120 s，0.5×120=60 C。"},
-      {id:"daily-dimless",level:1,concept:"dimensionless",p:"1.0 m 杆伸长 0.5 mm，应变是多少？",c:"ε=ΔL/L",o:["5×10⁻⁴","0.5 m","2×10³"],a:0,e:"0.5 mm=5×10⁻⁴ m，同类长度相除。"},
-      {id:"daily-op",level:2,concept:"dimension-algebra",p:"振动周期为 0.25 s，对应频率是多少？",c:"f=1/T",o:["4 Hz","0.25 Hz","2 Hz"],a:0,e:"频率是时间量纲的倒数。"},
-      {id:"daily-celsius",level:2,concept:"affine-unit",p:"25 ℃ 的绝对温度是多少？",c:"25+273.15",o:["298.15 K","25 K","248.15 K"],a:0,e:"绝对温度换算包含零点平移。"},
-      {id:"daily-safe",level:2,concept:"typed-quantity",p:"跑者 20 s 内完成 100 m 直线位移，平均速度大小为？",c:"v_avg=Δx/Δt",o:["5 m/s","2000 m/s","0.2 m/s"],a:0,e:"长度除以时间得到速度，100/20=5。"},
-      {id:"daily-area",level:2,concept:"scale-conversion",p:"500 N 作用在 100 cm² 平板上，平均压强为？",c:"100 cm²=0.01 m²",o:["50 kPa","5 Pa","500 kPa"],a:0,e:"500/0.01=50000 Pa=50 kPa。"},
-      {id:"daily-exp",level:3,concept:"homogeneity",p:"衰减模型 e^(−t/τ) 中 t=10 s、τ=5 s，指数是多少？",c:"−t/τ",o:["−2（无量纲）","−2 s","−0.5 s⁻¹"],a:0,e:"两个时间相除后量纲抵消。"},
-      {id:"daily-torque",level:3,concept:"model-boundary",p:"20 N 垂直作用在 0.30 m 力臂上得到 6 N·m。仅凭单位能否称其为 6 J 的功？",c:"torque vs work",o:["不能；还需判断叉积力矩还是点积功","能；N·m 总是功","只有静止时能"],a:0,e:"力矩与功同量纲，但几何配对和物理语义不同。"},
-      {id:"daily-root",level:3,concept:"rational-exponent",p:"弦张力 100 N、线密度 0.25 kg/m，波速 √(T/μ) 为？",c:"√(100/0.25)",o:["20 m/s","400 m/s","10 m/s"],a:0,e:"T/μ=400 m²/s²，开方得 20 m/s。"},
-      {id:"daily-kmh",level:3,concept:"physlib-withdim",p:"54 km/h 换成 SI 速度是多少？",c:"54·5/18",o:["15 m/s","30 m/s","54 m/s"],a:0,e:"使用精确换算因子 5/18。"},
-      {id:"daily-vec3",level:1,concept:"euclidean-space",p:"速度 v=(3,4,0) m/s 的速率是？",c:"‖v‖",o:["5 m/s","7 m/s","25 m/s"],a:0,e:"欧式范数为 √(3²+4²)=5。"},
-      {id:"daily-dot",level:1,concept:"dot-metric",p:"50 N 竖直支持力作用于水平位移 3 m，做功为？",c:"N·d",o:["0 J","150 J","−150 J"],a:0,e:"两向量正交，点积为零。"},
-      {id:"daily-force",level:1,concept:"force-vector",p:"15 N 的力垂直作用在距门轴 0.8 m 处，力矩大小为？",c:"M=rF",o:["12 N·m","18.75 N·m","15 N"],a:0,e:"垂直时 sinθ=1，0.8×15=12。"},
-      {id:"daily-moment",level:1,concept:"moment-cross",p:"r=(2,0,0) m、F=(0,4,0) N，关于原点的力矩是？",c:"r×F",o:["(0,0,8) N·m","(0,8,0) N·m","8 J 的标量"],a:0,e:"eₓ×eᵧ=e_z。"},
-      {id:"daily-shift",level:2,concept:"moment-origin",p:"M_O=10 e_z N·m、R=5 e_y N，且 Q−O=1 e_x m。M_Q 是？",c:"M_Q=M_O−(Q−O)×R",o:["5 e_z N·m","15 e_z N·m","10 e_y N·m"],a:0,e:"修正项为 5e_z，所以新力矩为 5e_z。"},
-      {id:"daily-balance",level:2,concept:"equilibrium-balance",p:"两力大小相等、方向相反且作用在同一直线上。它们对刚体产生？",c:"F and −F, same line",o:["合力和合矩都为零","合力为零但必有力偶矩","合矩为零但合力非零"],a:0,e:"共线反向力既相消合力，也不形成非零力偶。"},
-      {id:"daily-beam",level:2,concept:"reactions",p:"跨长 4 m 的简支梁承受 1000 N 载荷，载荷距 A 为 1 m。R_B 是？",c:"R_B·4=1000·1",o:["250 N","750 N","1000 N"],a:0,e:"关于 A 取矩，R_B=1000/4=250 N。"},
-      {id:"daily-unique",level:2,concept:"static-determinacy",p:"刚性杆由三个竖直支座承托，只有合力与平面力矩两式。仅靠静力平衡通常属于？",c:"3 unknown reactions / 2 equations",o:["超静定","静定","必定无解"],a:0,e:"反力通常有一个自应力自由度。"},
-      {id:"daily-virtual",level:3,concept:"rigid-virtual-motion",p:"R=(0,3,0) N。取 v=R、ω=0 时虚功率为？",c:"R·v+M·ω",o:["9 W","0 W","3 N·m"],a:0,e:"R·R=9>0，因此该力系不是自由刚体平衡。"},
-      {id:"daily-potential",level:3,concept:"conservative-potential",p:"弹簧 k=50 N/m，在 x=0.20 m 处的恢复力是？",c:"F=−kx",o:["−10 N","+10 N","−2.5 N"],a:0,e:"负号表示指向平衡位置。"},
-      {id:"daily-selfstress",level:3,concept:"self-stress",p:"三个等距支座的反力增量 (1,−2,1) 同时满足合力与合矩为零，说明它是？",c:"Ak=0",o:["自应力方向","外载荷方向","刚体平移"],a:0,e:"沿该方向改变反力不改变整体平衡。"},
-      {id:"daily-stability",level:3,concept:"stability-energy",p:"二维势能 V=1/2(kₓx²+kᵧy²)，kₓ>0、kᵧ=0。二阶判据给出？",c:"semidefinite stiffness",o:["存在零模，不能仅凭二阶项断言严格稳定","严格稳定","严格不稳定"],a:0,e:"y 方向是平坦零模，需要高阶项或约束继续分析。"}
-    ])
+    daily: deck("Lean 入门训练营","面向零基础学习者：先读懂表达式、函数与命题，再补全短证明并识别主线常见结构。",5,[
+      {id:"daily-seven",level:1,concept:"lean-expressions-types",p:"下面命令不会计算 3，而是询问它的类型。Lean 会报告什么？",c:"#check (3 : Nat)",o:["3 : Nat","3 = 3","True"],a:0,e:"`#check` 查看类型；这里的类型标注已经指定 3 是自然数。"},
+      {id:"daily-energy",level:1,concept:"lean-expressions-types",p:"这条可执行命令的输出是多少？",c:"#eval 2 ^ 5",o:["32","10","2 ^ 5 : Prop"],a:0,e:"`#eval` 计算表达式；自然数幂 2⁵=32。"},
+      {id:"daily-charge",level:1,concept:"lean-expressions-types",p:"第二行中的文字会怎样影响程序？",c:"#eval 2 + 3\n-- 这一行是说明文字",o:["不会影响；`--` 后是单行注释","会把结果改为字符串","会使上一行成为定理"],a:0,e:"Lean 忽略从 `--` 到行末的内容。"},
+      {id:"daily-dimless",level:1,concept:"lean-definitions-applications",p:"这个定义中的 `:=` 表示什么？",c:"def gravity : ℝ := 9.81",o:["把右侧 9.81 作为 gravity 的定义内容","证明 gravity 等于所有实数","把 gravity 声明为命题"],a:0,e:"冒号给类型，`:=` 给定义的值或函数体。"},
+      {id:"daily-vec3",level:1,concept:"lean-definitions-applications",p:"调用这个函数后得到什么？",c:"def double (n : Nat) : Nat := n + n\n#eval double 4",o:["8","44","`double` 的类型"],a:0,e:"参数 n 被替换为 4，函数体 4+4 计算为 8。"},
+      {id:"daily-dot",level:1,concept:"lean-definitions-applications",p:"哪一项是把位移 10 和时间 2 依次传给函数 speed？",c:"def speed (x t : ℝ) : ℝ := x / t",o:["speed 10 2","speed(10, 2) = Prop","10 speed 2"],a:0,e:"Lean 的普通函数应用写成空格分隔的 `speed 10 2`。"},
+      {id:"daily-force",level:1,concept:"lean-functions-locals",p:"类型 `ℝ → ℝ` 描述什么？",c:"#check ℝ → ℝ",o:["输入一个实数并返回一个实数的函数","两个实数的有序对","关于实数的命题"],a:0,e:"箭头左侧是输入类型，右侧是输出类型。"},
+      {id:"daily-moment",level:1,concept:"lean-functions-locals",p:"这段匿名函数应用的计算结果是？",c:"#eval (fun x : Nat => x + 1) 4",o:["5","4","fun"],a:0,e:"`fun x => x+1` 是没有名字的函数，随后把 4 代入。"},
+
+      {id:"daily-op",level:2,concept:"lean-functions-locals",p:"局部名字 t 只在括号内使用。整个表达式的值是？",c:"#eval (let t : Nat := 5; t + 1)",o:["6","5","t 未定义，因此报错"],a:0,e:"`let` 先把 t 绑定为 5，再计算 t+1。"},
+      {id:"daily-celsius",level:2,concept:"lean-functions-locals",p:"哪段代码补在空白处能定义平方函数？",c:"def square (x : ℝ) : ℝ := ___",o:["x ^ 2","fun => x","ℝ → x"],a:0,e:"定义体必须是一个实数表达式；`x ^ 2` 正是 x 的平方。"},
+      {id:"daily-safe",level:2,concept:"lean-propositions-theorems",p:"冒号与 `:= by` 之间的部分在这里是什么？",c:"example : (2 : Nat) + 3 = 5 := by\n  norm_num",o:["待证明的命题","函数的运行结果","注释"],a:0,e:"`example : P := by ...` 的 P 是目标命题，后面的证明块构造 P 的证明。"},
+      {id:"daily-area",level:2,concept:"lean-equality-tactics",p:"要完成这个最直接的自反等式，应填什么？",c:"example (x : ℝ) : x = x := by\n  ___",o:["rfl","norm_num","intro y"],a:0,e:"等号两侧定义上完全相同，`rfl` 直接完成目标。"},
+      {id:"daily-shift",level:2,concept:"lean-equality-tactics",p:"要让 Lean 完成这个具体数值计算，应填什么？",c:"example : (36 : ℝ) / 4 = 9 := by\n  ___",o:["norm_num","rfl","constructor"],a:0,e:"`norm_num` 擅长规范化具体的数值等式与不等式。"},
+      {id:"daily-balance",level:2,concept:"lean-hypotheses-logic",p:"已知 h 同时证明 P 与 Q，`h.1` 的类型是什么？",c:"variable (P Q : Prop)\nexample (h : P ∧ Q) : P := by\n  exact h.1",o:["P","Q","P ↔ Q"],a:0,e:"合取证明是一对证明；`.1` 取第一项 P，`.2` 取第二项 Q。"},
+      {id:"daily-beam",level:2,concept:"lean-hypotheses-logic",p:"这个命题在数学上表示什么？",c:"∀ x : ℝ, f x = 0",o:["对每个实数 x，都有 f x=0","存在一个实数 x 使 f x=0","f 是实数而不是函数"],a:0,e:"`∀` 是全称量词；冒号后的 ℝ 指定 x 的取值类型。"},
+      {id:"daily-unique",level:2,concept:"lean-hypotheses-logic",p:"证明 `P ↔ Q` 通常需要完成什么？",c:"theorem equivalence : P ↔ Q := by\n  constructor",o:["分别证明 P→Q 与 Q→P","只证明 P","计算 P 和 Q 的数值"],a:0,e:"双向蕴含包含两个方向，`constructor` 会生成两个子目标。"},
+
+      {id:"daily-exp",level:3,concept:"lean-structures-lists",p:"哪一项能构造这个 Point 的一个值？",c:"structure Point where\n  x : ℝ\n  y : ℝ",o:["{ x := 1, y := 2 }","Point 1 + 2","[x, y]"],a:0,e:"结构体使用字段名赋值，能够清楚对应每个坐标。"},
+      {id:"daily-torque",level:3,concept:"lean-structures-lists",p:"若 `p : Point`，怎样读取它的 x 坐标？",c:"#check p",o:["p.x","Point.x = p","p[x]"],a:0,e:"结构投影使用点记法；`p.x` 的类型是 ℝ。"},
+      {id:"daily-root",level:3,concept:"lean-structures-lists",p:"按照递归定义，`length' [10,20,30]` 的结果是？",c:"def length' {α : Type} : List α → Nat\n  | [] => 0\n  | _ :: xs => 1 + length' xs",o:["3","30","0"],a:0,e:"每个 `x :: xs` 分支贡献 1，最终在空列表分支停止。"},
+      {id:"daily-kmh",level:3,concept:"lean-library-dependent",p:"这个函数签名为什么会阻止“长度加时间”？",c:"add : Quantity d → Quantity d → Quantity d",o:["两个输入必须具有同一个量纲索引 d","函数只接受自然数","返回类型总是 Bool"],a:0,e:"同一个 d 同时出现在两个输入中，类型检查要求它们量纲一致。"},
+      {id:"daily-virtual",level:3,concept:"lean-equality-tactics",p:"哪个工具最适合验证任意实数 a、b 的多项式恒等式？",c:"example (a b : ℝ) :\n    (a + b)^2 = a^2 + 2*a*b + b^2 := by\n  ___",o:["ring","norm_num","rfl"],a:0,e:"目标含任意变量且是环上的多项式恒等式，`ring` 会规范化两侧。"},
+      {id:"daily-potential",level:3,concept:"lean-equality-tactics",p:"哪段短证明最适合完成加零化简？",c:"example (x : ℝ) : x + 0 = x := by\n  ___",o:["simp","constructor","#eval x"],a:0,e:"`simp` 会使用标准化简规则 `x+0=x`。"},
+      {id:"daily-selfstress",level:3,concept:"lean-library-dependent",p:"准备调用一个不熟悉的库定义时，哪一步最能先确认其参数和返回类型？",c:"import Mathlib\n___ Real.sqrt",o:["#check","#eval","theorem"],a:0,e:"`#check Real.sqrt` 不运行它，而是显示当前环境中的真实类型签名。"},
+      {id:"daily-stability",level:3,concept:"lean-hypotheses-logic",p:"阅读这个定理时，假设 `hL` 的物理与证明作用是什么？",c:"theorem averageSpeed (x t : ℝ)\n    (hL : t ≠ 0) : x / t * t = x := by\n  field_simp [hL]",o:["排除零时间，使除法消去合法","说明 t 是长度","把结论改成一个定义"],a:0,e:"类型正确不等于分母非零；显式假设为代数消去提供条件。"}
+    ],12,[4,4,4])
   };
 
   window.LEANPATH_CONCEPTS = concepts;
