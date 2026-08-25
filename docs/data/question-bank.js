@@ -1,4 +1,4 @@
-/* LeanPath Physics · Part I: Units and Dimensions */
+/* LeanPath Physics · physics-first question bank for Parts I–II */
 (function () {
   const concepts = {
     "quantity-triad": {title:"物理量的三个层次",body:"物理量不是一个裸数值。数值依赖所选单位，单位规定尺度，量纲描述它属于哪一类物理量。改变单位会改变数值，却不会改变量纲。",code:"36 km/h = 10 m/s\n-- 数值不同，速度量纲同为 L·T⁻¹"},
@@ -45,52 +45,52 @@
   }
 
   const decks = {
-    quantity: deck("物理量的三层结构","区分物理量、数值、单位与量纲，并明确精确实数模型的边界。",10,[
-      {id:"q-triad",level:1,concept:"quantity-triad",p:"完整记录一个物理测量，至少要区分哪三个层次？",c:"36 km/h",o:["数值、单位、量纲","变量名、颜色、文件名","整数、字符串、布尔值"],a:0,e:"36 是数值，km/h 是单位，LT⁻¹ 是量纲。"},
-      {id:"q-unit-change",level:1,concept:"quantity-triad",p:"同一速度从 36 km/h 改写为 10 m/s，什么保持不变？",c:"36 km/h = 10 m/s",o:["物理量及其速度量纲","数值","单位符号"],a:0,e:"表示改变了，物理量和量纲没有改变。"},
-      {id:"q-real",level:1,concept:"exact-real",p:"精确证明单位换算时，数值优先声明为什么类型？",c:"variable (x : ___)",o:["ℝ","Float","String"],a:0,e:"ℝ 支持精确实数等式；Float 适合近似计算。"},
-      {id:"q-dimension-vs-unit",level:2,concept:"quantity-triad",p:"m/s 与 km/h 的关系是？",c:"[m/s] ? [km/h]",o:["同量纲、不同单位尺度","不同量纲、同数值","同单位、不同量纲"],a:0,e:"二者都表示速度，但到 SI 的尺度因子不同。"},
-      {id:"q-name-no-type",level:2,concept:"typed-quantity",p:"若 distance 和 time 都只是 ℝ，Lean 会阻止 distance + time 吗？",c:"variable (distance time : ℝ)\n#check distance + time",o:["不会；变量名不参与类型检查","会；英语名字自带量纲","会；ℝ 自带 SI 单位"],a:0,e:"必须显式编码量纲或在运算时检查。"},
-      {id:"q-prop",level:2,concept:"exact-real",p:"单位换算等式在 Lean 中属于什么类型？",c:"#check ((36 : ℝ) * 1000 / 3600 = 10)",o:["Prop","ℝ","Bool"],a:0,e:"等式是一条命题，证明是该命题类型的项。"},
-      {id:"q-measurement",level:3,concept:"model-boundary",p:"Lean 证明换算等式后，是否已经验证测速仪的实验读数？",c:"example : (36 : ℝ)*1000/3600 = 10 := by norm_num",o:["没有；这里只验证数学换算","有；Lean 自动连接仪器","有；任何 ℝ 等式都是实验事实"],a:0,e:"演绎验证与经验测量是不同层次。"},
-      {id:"q-zero-value",level:3,concept:"quantity-triad",p:"数值为 0 的量是否仍可能有量纲？",c:"0 m/s",o:["是；零速度仍有速度量纲","否；0 会删除单位","仅在 Float 中有"],a:0,e:"数值为零不抹去量的类别。"},
+    quantity: deck("物理量的三层结构","从测速、受力与实验误差出发，区分物理量、单位、量纲和模型值。",10,[
+      {id:"q-triad",level:1,concept:"quantity-triad",p:"汽车速度表读数为 72 km/h。要把这条观测写完整，至少要保留什么？",c:"72 km/h",o:["数值 72、单位 km/h、速度量纲 LT⁻¹","只有数值 72","只有变量名 speed"],a:0,e:"数值会随单位改变，量纲标记它属于速度这一物理类别。"},
+      {id:"q-unit-change",level:1,concept:"quantity-triad",p:"同一辆车的速度从 72 km/h 改写为 20 m/s，什么保持不变？",c:"72 km/h = 20 m/s",o:["所描述的物理速度及其量纲","数值","单位符号"],a:0,e:"表示改变了，物理量和速度量纲没有改变。"},
+      {id:"q-real",level:1,concept:"exact-real",p:"模型把重力加速度设为 g=9.8 m/s² 并推出落体时间。这个 9.8 在证明中首先是什么？",c:"h = 1/2 · g · t²",o:["模型采用的精确参数，不自动等于当地实测值","由 Lean 测得的实验数据","没有单位的浮点误差"],a:0,e:"形式化可精确推导给定参数的后果，但参数与真实装置的对应需另行验证。"},
+      {id:"q-dimension-vs-unit",level:2,concept:"quantity-triad",p:"风速 10 m/s 与 36 km/h 在风洞模型中应如何比较？",c:"10 m/s = 36 km/h",o:["同一速度量纲，换算后数值也相等","量纲不同，不能比较","单位不同，所以代表不同物理量"],a:0,e:"二者都表示速度，换到共同单位后可以直接比较。"},
+      {id:"q-name-no-type",level:2,concept:"typed-quantity",p:"跑者沿 400 m 跑道一圈回到起点，用时 80 s。平均速率与平均速度分别是？",c:"distance = 400 m\ndisplacement = 0 m",o:["5 m/s 与 0 m/s","都是 5 m/s","都是 0 m/s"],a:0,e:"速率用路程，速度用位移；同量纲不代表同一物理定义。"},
+      {id:"q-prop",level:2,concept:"exact-real",p:"质量 2 kg 的质点具有 3 m/s² 的加速度。按 F=ma，合力是多少？",c:"F = (2 kg) · (3 m/s²)",o:["6 N","5 N","6 J"],a:0,e:"数值相乘得 6，量纲 ML T⁻² 对应牛顿。"},
+      {id:"q-measurement",level:3,concept:"model-boundary",p:"长度记录为 (2.00 ± 0.01) m。只证明 200 cm = 2 m，尚未处理哪件事？",c:"measurement = value ± uncertainty",o:["测量不确定度及其传播","单位换算本身","长度的量纲"],a:0,e:"精确换算只解决表示等价；实验误差需要单独的数据与传播模型。"},
+      {id:"q-zero-value",level:3,concept:"quantity-triad",p:"竖直上抛小球在最高点瞬时速度为 0。此时速度量纲怎样？",c:"v(t_top) = 0 m/s",o:["仍是 LT⁻¹，且加速度可非零","变成无量纲","变成加速度量纲"],a:0,e:"数值为零不会抹去物理量的类别；最高点仍受重力加速度。"},
       {id:"q-same-dim-semantics",level:3,concept:"model-boundary",p:"力矩与能量都具有 ML²T⁻²，是否因此是同一物理概念？",c:"[torque] = [energy]",o:["不是；同量纲不等于同语义","是；量纲相同就可互换","是；二者数值恒等"],a:0,e:"量纲分类较粗，不能取代对象的物理定义。"}
     ]),
 
-    "si-base": deck("七个 SI 基本量","系统掌握 SI 基本量、基本单位以及基本量与导出量的区别。",12,[
-      {id:"si-time",level:1,concept:"si-seven",p:"SI 中时间的基本单位是？",c:"time",o:["second (s)","hour (h)","hertz (Hz)"],a:0,e:"秒是 SI 基本单位，小时是可与 SI 并用的非 SI 单位。"},
-      {id:"si-mass",level:1,concept:"si-seven",p:"SI 质量基本单位是？",c:"mass",o:["kilogram (kg)","gram (g)","newton (N)"],a:0,e:"千克是七个基本单位中名称自带前缀的特殊者。"},
-      {id:"si-current",level:1,concept:"si-seven",p:"电流和物质的量的基本单位分别是？",c:"electricCurrent / amountOfSubstance",o:["ampere / mole","coulomb / gram","volt / candela"],a:0,e:"A 对应电流，mol 对应物质的量。"},
+    "si-base": deck("七个 SI 基本量","在力学、热学与电学情境中识别基本量，并把导出量还原到 SI 基础。",12,[
+      {id:"si-time",level:1,concept:"si-seven",p:"高速摄影测得碰撞持续 250 ms。写成 SI 基本单位是多少？",c:"250 ms",o:["0.250 s","250 s","0.025 s"],a:0,e:"毫秒是 10⁻³ s，所以 250 ms=0.250 s。"},
+      {id:"si-mass",level:1,concept:"si-seven",p:"实验砝码标为 750 g。作为 SI 质量值应写成？",c:"750 g",o:["0.750 kg","750 kg","7.50 kg"],a:0,e:"质量基本单位是 kg，750 g=0.750 kg。"},
+      {id:"si-current",level:1,concept:"si-seven",p:"恒定电流 2 A 流过导线 3 s，输运的电荷量为？",c:"Q = I t",o:["6 C","1.5 C","6 V"],a:0,e:"C=A·s，所以 Q=2×3=6 C。"},
       {id:"si-seven-list",level:2,concept:"si-seven",p:"哪一组恰好都是 SI 基本单位？",c:"___",o:["s, m, kg, A, K, mol, cd","s, m, N, J, Pa, V, W","h, km, g, C, ℃, L, lm"],a:0,e:"第二组多为导出单位，第三组含非 SI 或可并用单位。"},
-      {id:"si-kelvin",level:2,concept:"si-seven",p:"热力学温度的 SI 基本单位是？",c:"temperature",o:["kelvin (K)","degree Celsius (℃)","joule (J)"],a:0,e:"摄氏度与开尔文有仿射关系，但基本单位是 K。"},
-      {id:"si-candela",level:2,concept:"si-seven",p:"坎德拉 cd 对应哪个基本量？",c:"cd",o:["发光强度","光通量","照度"],a:0,e:"光通量 lm 和照度 lx 都是导出量。"},
+      {id:"si-kelvin",level:2,concept:"si-seven",p:"在理想气体状态方程 pV=nRT 中，20 ℃ 应先换成哪个温度？",c:"T = 20 ℃",o:["293.15 K","20 K","253.15 K"],a:0,e:"热力学公式使用绝对温度；20+273.15=293.15 K。"},
+      {id:"si-candela",level:2,concept:"si-seven",p:"点光源在某方向标为 10 cd，这个值直接描述的是？",c:"10 cd",o:["该方向的发光强度","接收面的照度","光源总光通量"],a:0,e:"cd 是发光强度基本单位；照度 lx 和光通量 lm 是导出单位。"},
       {id:"si-charge-derived",level:3,concept:"derived-dimension",p:"电荷为何不是第八个基本量？",c:"Q = I·t",o:["它可由电流乘时间导出","因为电荷没有单位","因为库不支持电学"],a:0,e:"库仑 C = A·s。"},
-      {id:"si-angle",level:3,concept:"dimensionless",p:"平面角的 SI 地位是什么？",c:"radian",o:["具有专名单位 rad 的无量纲导出量","第八个基本量","长度量"],a:0,e:"角的量纲指数为零，但 rad 保留语义。"},
+      {id:"si-angle",level:3,concept:"dimensionless",p:"半径 2 m 的圆上，弧长 π m 对应的圆心角是多少？",c:"θ = s/r",o:["π/2 rad","2π rad","π m"],a:0,e:"θ=(π m)/(2 m)=π/2；长度约去但 rad 保留角度语义。"},
       {id:"si-basis-choice",level:3,concept:"unit-system",p:"“基本量”是否完全由自然唯一决定？",c:"choice of basis",o:["体系选择有约定性，但必须能一致生成所需量纲","完全任意且无需独立","由变量名自动决定"],a:0,e:"SI 选七个基本量；其他理论可采用等价基底或自然单位约定。"}
     ]),
 
-    "dimension-model": deck("构造量纲向量","用七个基本指数定义 Dimension，并学习基向量与外延性。",14,[
-      {id:"dm-inductive",level:1,concept:"si-seven",p:"在 Lean 中枚举七个基本量，适合使用什么声明？",c:"___ BaseDimension where\n  | time | length | mass | ...",o:["inductive","theorem","namespace"],a:0,e:"归纳类型列出所有基本构造器。"},
-      {id:"dm-function",level:1,concept:"dimension-vector",p:"哪种类型最直接表达“为每个基本量记录整数指数”？",c:"exponent : ___",o:["BaseDimension → ℤ","List String","ℝ → Bool"],a:0,e:"函数表示不依赖固定坐标排列。"},
-      {id:"dm-basis",level:1,concept:"dimension-vector",p:"长度基量纲的指数应满足什么？",c:"basis .length",o:["length 分量为 1，其余为 0","所有分量为 1","length 分量为 −1"],a:0,e:"它是指数空间中的标准基向量。"},
+    "dimension-model": deck("构造量纲向量","把物理公式翻译为七维指数向量，并用它反推未知参数的量纲。",14,[
+      {id:"dm-inductive",level:1,concept:"si-seven",p:"位移满足 x = 1/2·a·t²。由量纲齐次性，加速度的 (T,L,M) 指数是？",c:"[a] = [x]/[t]²",o:["(−2,1,0)","(−1,1,0)","(2,1,0)"],a:0,e:"长度指数为 1，时间平方移到分母给出 −2。"},
+      {id:"dm-function",level:1,concept:"dimension-vector",p:"万有引力 F=Gm₁m₂/r²。G 的量纲是？",c:"[G] = [F][r]²/[m]²",o:["M⁻¹L³T⁻²","MLT⁻²","M⁻²L²T⁻¹"],a:0,e:"(MLT⁻²)L²/M²=M⁻¹L³T⁻²。"},
+      {id:"dm-basis",level:1,concept:"dimension-vector",p:"胡克定律 F=kx 中，弹簧刚度 k 的量纲是？",c:"[k] = [F]/[x]",o:["MT⁻²","MLT⁻²","ML²T⁻²"],a:0,e:"力除以长度得到 MT⁻²。"},
       {id:"dm-force-vector",level:2,concept:"dimension-vector",p:"按顺序 (T,L,M,I,Θ,N,J)，力的指数向量是？",c:"[F] = MLT⁻²",o:["(−2,1,1,0,0,0,0)","(2,1,1,0,0,0,0)","(−2,2,1,0,0,0,0)"],a:0,e:"时间 −2、长度 1、质量 1。"},
-      {id:"dm-ext",level:2,concept:"dimension-equality",p:"证明两个 Dimension 相等时，ext b 的作用是？",c:"⊢ d₁ = d₂",o:["化为任意基本量 b 上指数相等","删除所有指数","只比较长度分量"],a:0,e:"结构外延性把整体相等化成逐分量相等。"},
-      {id:"dm-dimensionless-zero",level:2,concept:"dimension-vector",p:"无量纲量对应哪个指数向量？",c:"dimensionless",o:["七个分量全为 0","七个分量全为 1","只有时间为 0"],a:0,e:"它是量纲乘法的单位元。"},
-      {id:"dm-order-free",level:3,concept:"dimension-vector",p:"使用 BaseDimension → ℤ 相比长度为 7 的列表有何优势？",c:"Dimension.exponent",o:["索引带语义且不会因列表位置混淆","自动证明所有公式","可省略七个基本量"],a:0,e:"函数索引明确每个指数属于哪个基本量。"},
-      {id:"dm-integer-limit",level:3,concept:"rational-exponent",p:"整数指数模型不能直接表达哪种形式？",c:"___",o:["√length 的量纲 L^(1/2)","速度 LT⁻¹","能量 ML²T⁻²"],a:0,e:"平方根量纲需要有理指数或额外可整除条件。"},
-      {id:"dm-equality-all",level:3,concept:"dimension-equality",p:"两个量纲有六个指数相同、一个不同，它们是否相等？",c:"∀ b ≠ b₀, e₁ b = e₂ b",o:["不相等","相等，因为多数相同","只在 SI 中相等"],a:0,e:"量纲相等要求所有基本分量一致。"}
+      {id:"dm-ext",level:2,concept:"dimension-equality",p:"剪切应力 τ=μ(v/L)。由 [τ]=ML⁻¹T⁻²，动力黏度 μ 的量纲是？",c:"[μ] = [τ][L]/[v]",o:["ML⁻¹T⁻¹","MLT⁻²","M⁻¹LT⁻¹"],a:0,e:"(ML⁻¹T⁻²)L/(LT⁻¹)=ML⁻¹T⁻¹。"},
+      {id:"dm-dimensionless-zero",level:2,concept:"dimension-vector",p:"Re=ρvL/μ 的七个指数全部抵消。这一结果说明？",c:"[Re] = 1",o:["雷诺数可作为跨尺度比较的无量纲参数","雷诺数数值恒为 1","流体没有质量量纲"],a:0,e:"零指数向量表示无量纲，但 Re 的数值仍随流动状态改变。"},
+      {id:"dm-order-free",level:3,concept:"dimension-vector",p:"阻尼力 F=−bv。阻尼系数 b 的量纲是？",c:"[b] = [F]/[v]",o:["MT⁻¹","MT⁻²","MLT⁻¹"],a:0,e:"MLT⁻² 除以 LT⁻¹，得到 MT⁻¹。"},
+      {id:"dm-integer-limit",level:3,concept:"rational-exponent",p:"单摆周期 T=C√(ℓ/g) 中，根式为何仍得到普通时间量纲？",c:"[ℓ/g] = L/(LT⁻²)",o:["根号内为 T²，开方后为 T","根号会删除所有量纲","因为 C 必有时间量纲"],a:0,e:"ℓ/g 的时间指数为 2，可在整数指数模型中整除。"},
+      {id:"dm-equality-all",level:3,concept:"dimension-equality",p:"动量 p 与能量 E 只有时间指数不同。能否把 p+E 写进同一物理方程？",c:"[p]=MLT⁻¹, [E]=ML²T⁻²",o:["不能；至少一个基本指数不同就不可直接相加","可以；二者都含 M、L、T","只在 SI 中可以"],a:0,e:"量纲相等要求每个基本指数都一致。"}
     ]),
 
-    "dimension-ops": deck("量纲代数","掌握乘法、除法、逆和整数幂，并辨析根式与加法的特殊情况。",16,[
-      {id:"do-mul",level:1,concept:"dimension-algebra",p:"量纲相乘时指数如何变化？",c:"LᵃTᵇ · LᶜTᵈ",o:["逐分量相加","逐分量相乘","只保留左侧"],a:0,e:"结果是 Lᵃ⁺ᶜTᵇ⁺ᵈ。"},
-      {id:"do-div",level:1,concept:"dimension-algebra",p:"量纲相除对应什么运算？",c:"d₁ / d₂",o:["指数向量相减","指数向量相加","交换两个向量"],a:0,e:"除法等于乘以逆量纲。"},
+    "dimension-ops": deck("量纲代数","通过冲量、压强、转动惯量和阻力公式练习量纲乘除与幂。",16,[
+      {id:"do-mul",level:1,concept:"dimension-algebra",p:"恒力 F 作用时间 Δt 所产生的冲量 J=FΔt，其量纲是？",c:"[J] = [F][t]",o:["MLT⁻¹","MLT⁻²","ML²T⁻²"],a:0,e:"MLT⁻² 乘 T，得到与动量相同的 MLT⁻¹。"},
+      {id:"do-div",level:1,concept:"dimension-algebra",p:"100 N 均匀作用在 0.5 m² 面积上，平均压强是多少？",c:"p = F/A",o:["200 Pa","50 Pa","200 N"],a:0,e:"100/0.5=200，N/m²=Pa。"},
       {id:"do-inv",level:1,concept:"dimension-algebra",p:"频率是时间的倒数，其量纲为？",c:"frequency = 1 / time",o:["T⁻¹","T","L⁻¹"],a:0,e:"取逆把时间指数 1 变为 −1。"},
-      {id:"do-power",level:2,concept:"dimension-algebra",p:"面积量纲如何由长度构造？",c:"areaDim",o:["lengthDim ^ (2 : ℤ)","lengthDim * timeDim","lengthDim / 2"],a:0,e:"整数幂将长度指数乘以 2。"},
-      {id:"do-cancel",level:2,concept:"dimension-algebra",p:"d⁻¹ * d 的结果是什么？",c:"d⁻¹ * d",o:["无量纲 1","d²","零物理量"],a:0,e:"指数 −e + e = 0。注意无量纲不是数值零。"},
-      {id:"do-add",level:2,concept:"typed-operations",p:"两个同量纲物理量相加后，结果量纲怎样？",c:"x : Quantity d\ny : Quantity d",o:["仍为 d","变成 d²","变成无量纲"],a:0,e:"加法不是量纲乘法；它保持共同量纲。"},
-      {id:"do-assoc",level:3,concept:"dimension-algebra",p:"为什么 (d₁d₂)d₃ = d₁(d₂d₃)？",c:"Dimension.mul_assoc",o:["整数指数加法满足结合律","物理量数值总为 1","单位名称相同"],a:0,e:"量纲乘法逐分量使用整数加法。"},
-      {id:"do-sqrt",level:3,concept:"rational-exponent",p:"若 d 的每个整数指数都是偶数，√d 的指数怎样得到？",c:"sqrt dimension",o:["各指数除以 2","各指数乘以 2","全部置零"],a:0,e:"偶数条件保证结果仍落在整数指数模型中。"},
-      {id:"do-comm",level:3,concept:"dimension-algebra",p:"量纲乘法为何交换？",c:"d₁ * d₂ = d₂ * d₁",o:["指数整数加法交换","所有物理乘法都交换","Lean 忽略顺序"],a:0,e:"这里说的是量纲代数；具体对象乘法未必交换。"}
+      {id:"do-power",level:2,concept:"dimension-algebra",p:"质点绕轴的转动惯量 I=mr²，其量纲是？",c:"[I] = [m][r]²",o:["ML²","ML","ML²T⁻²"],a:0,e:"半径平方给出 L²，转动惯量本身不含时间指数。"},
+      {id:"do-cancel",level:2,concept:"dimension-algebra",p:"长度为 2.00 m 的杆伸长 1.0 mm，应变 ε=ΔL/L 是多少？",c:"ε = 0.001/2.00",o:["5×10⁻⁴，无量纲","5×10⁻⁴ m","2×10³，无量纲"],a:0,e:"同类长度相除，数值为 0.0005。"},
+      {id:"do-add",level:2,concept:"typed-operations",p:"两力 F₁=(3,0) N、F₂=(0,4) N 的合力大小是？",c:"R = F₁ + F₂",o:["5 N","7 N","12 N"],a:0,e:"先做同量纲向量加法得 (3,4) N，再取欧式范数。"},
+      {id:"do-assoc",level:3,concept:"dimension-algebra",p:"二次阻力 F=CρAv² 中，若 C 无量纲，右侧是否具有力的量纲？",c:"[ρ]=ML⁻³, [A]=L², [v²]=L²T⁻²",o:["是，乘积为 MLT⁻²","否，乘积为 ML²T⁻²","只有 C 带时间量纲时才是"],a:0,e:"ML⁻³·L²·L²T⁻²=MLT⁻²。"},
+      {id:"do-sqrt",level:3,concept:"rational-exponent",p:"T=2π√(ℓ/g) 的量纲运算给出什么？",c:"[ℓ/g] = T²",o:["T 的量纲为时间，2π 不改变量纲","T 无量纲","T 的量纲为时间平方"],a:0,e:"开方把 T² 变为 T；2π 是无量纲系数。"},
+      {id:"do-comm",level:3,concept:"dimension-algebra",p:"rF 与 Fr 在量纲上都给 L·F。这能否推出力矩 r×F 与功 F·r 是同一种量？",c:"[torque] = [work] = ML²T⁻²",o:["不能；叉积与点积产生不同几何对象","能；量纲交换性保证概念相同","只有数值为零时不能"],a:0,e:"量纲代数交换只说明指数相同，不决定几何配对与物理语义。"}
     ]),
 
     "derived-dimensions": deck("导出量纲","从七个基本量推导力学、电学与热学常用量纲。",18,[
@@ -141,28 +141,28 @@
       {id:"uc-negative-k",level:3,concept:"affine-unit",p:"−5 ℃ 与 −5 K 的物理可行性有何区别？",c:"absolute temperature",o:["−5 ℃ 可对应正 K；负绝对温度需另有特殊理论语境","二者都等于 −5 K","摄氏不能为负"],a:0,e:"普通热力学绝对温度下 0 K 是下界；摄氏零点不同。"}
     ]),
 
-    "typed-quantity": deck("依赖类型物理量","把量纲索引放入类型，并理解其能力与表达边界。",20,[
-      {id:"tq-structure",level:1,concept:"typed-quantity",p:"哪一定义把量纲 d 放进物理量类型？",c:"___ Quantity (d : Dimension) where\n  value : ℝ",o:["structure","theorem","open"],a:0,e:"Quantity 是由量纲参数索引的结构。"},
-      {id:"tq-different",level:1,concept:"typed-quantity",p:"Quantity lengthDim 与 Quantity timeDim 的类型关系是？",c:"distance / duration",o:["不同类型","完全相同","都是 String"],a:0,e:"索引 d 参与类型构造。"},
-      {id:"tq-value",level:1,concept:"typed-quantity",p:"x.value 表示什么？",c:"x : Quantity d",o:["选定表示下的底层实数值","量纲指数向量","单位名称"],a:0,e:"当前简化模型将数值存为 ℝ。"},
-      {id:"tq-safe-add",level:2,concept:"typed-quantity",p:"哪个 add 类型能在编译期禁止长度加时间？",c:"___",o:["Quantity d → Quantity d → Quantity d","Quantity d₁ → Quantity d₂ → ℝ","ℝ → ℝ → ℝ"],a:0,e:"两个输入必须共享同一个 d。"},
-      {id:"tq-zero",level:2,concept:"typed-quantity",p:"长度零与时间零能否使用同一个未标注常量？",c:"0",o:["需要由上下文确定 Quantity 的量纲索引","可以无条件互换","零没有任何类型"],a:0,e:"数值零可嵌入多种量纲，但具体项仍有确定类型。"},
-      {id:"tq-unit-missing",level:2,concept:"unit-system",p:"Quantity d 只存 value : ℝ 时还缺少哪一层？",c:"structure Quantity (d) where value : ℝ",o:["单位制/尺度选择","量纲索引","实数加法"],a:0,e:"该教学模型假设值已用统一单位表示；生产模型还需单位层。"},
-      {id:"tq-semantic-limit",level:3,concept:"model-boundary",p:"能量与力矩同量纲时，Quantity energyDim 是否自动区分二者？",c:"[energy] = [torque]",o:["不能；还需额外语义类型或标签","能；量纲已包含全部物理意义","能；数值总不同"],a:0,e:"依赖量纲索引解决兼容性，不解决所有概念区分。"},
-      {id:"tq-elaboration",level:3,concept:"typed-quantity",p:"distance + time 被拒绝发生在哪一阶段？",c:"Quantity.add distance time",o:["elaboration/类型检查阶段","实验测量阶段","网页随机组卷阶段"],a:0,e:"Lean 无法统一两个不同量纲索引。"},
-      {id:"tq-proof-index",level:3,concept:"dimension-equality",p:"若两个量纲经证明相等，怎样在类型层连接 Quantity d₁ 与 Quantity d₂？",c:"h : d₁ = d₂",o:["沿 h 进行类型运输或改写","直接忽略 h","把值转成 String"],a:0,e:"依赖类型中的等式可用于 transport；良好 API 会封装这一步。"}
+    "typed-quantity": deck("量纲约束下的物理量","把量纲检查用于真实公式，同时识别量纲类型尚未覆盖的物理语义。",20,[
+      {id:"tq-structure",level:1,concept:"typed-quantity",p:"抛体模型同时记录高度 h、飞行时间 t 与初速度 v₀。哪一个表达式应被量纲索引直接拒绝？",c:"h : Quantity L\nt : Quantity T\nv₀ : Quantity (L/T)",o:["h + t","v₀ * t","h / t"],a:0,e:"长度与时间不能相加；其余两式分别给长度和速度。"},
+      {id:"tq-different",level:1,concept:"typed-quantity",p:"周期 T=0.02 s 的波，其频率 f=50 Hz。乘积 fT 应是什么？",c:"[f]=T⁻¹, [T]=T",o:["无量纲且数值为 1","时间量纲且数值 1","无量纲且数值 2.5"],a:0,e:"50×0.02=1，时间指数相消。"},
+      {id:"tq-value",level:1,concept:"typed-quantity",p:"同一长度在两个记录中分别存为 value=2 与 value=200。要判断它们是否相等，还必须知道什么？",c:"2 m = 200 cm",o:["各 value 所采用的单位尺度","长度量纲","二者变量名"],a:0,e:"量纲相同仍不够；底层数值只有相对于单位制才有意义。"},
+      {id:"tq-safe-add",level:2,concept:"typed-quantity",p:"位移 2 m 与 30 cm 相加时，物理上正确的处理是？",c:"2 m + 30 cm",o:["先换到同一尺度，结果为 2.30 m","因单位符号不同而禁止相加","直接把数值拼成 230 m"],a:0,e:"同量纲允许加法，但数值相加前必须统一单位。"},
+      {id:"tq-zero",level:2,concept:"typed-quantity",p:"碰撞模型出现“零位移”和“零持续时间”。为何不能因数值都为 0 就互换？",c:"0 m  ≠  0 s as typed quantities",o:["它们承担不同量纲和不同方程角色","零会自动变成任意物理量","只有非零量才有量纲"],a:0,e:"多态零可由上下文实例化，但每个具体物理量仍有确定量纲。"},
+      {id:"tq-unit-missing",level:2,concept:"unit-system",p:"模型只记录 g.value=9.81，却没记录单位制。最直接的风险是？",c:"g : Quantity accelerationDim",o:["无法判断它表示 m/s²、ft/s² 还是别的尺度","无法知道它是加速度量纲","实数不能相乘"],a:0,e:"量纲索引说明类别，单位层说明底层数值的尺度。"},
+      {id:"tq-semantic-limit",level:3,concept:"model-boundary",p:"一项记录为 10 N·m。仅凭量纲索引，能否判断它是做功还是绕轴力矩？",c:"[work] = [torque] = ML²T⁻²",o:["不能；还要看它是标量配对还是轴向力矩","能；N·m 唯一表示功","能；N·m 唯一表示力矩"],a:0,e:"量纲类型防止不相容量相混，却不编码全部几何语义。"},
+      {id:"tq-elaboration",level:3,concept:"affine-unit",p:"两个房间温度分别为 20 ℃ 和 10 ℃。哪种物理运算最自然？",c:"absolute temperatures",o:["相减得到 10 K 的温差","相加得到 30 ℃ 的绝对温度","相乘得到 200 K²"],a:0,e:"绝对温度更像仿射点；温度差才是可自由加减的向量量。"},
+      {id:"tq-proof-index",level:3,concept:"dimension-equality",p:"由 v=x/t 得到的量纲 L/T，与预先定义的 speedDim 在类型层连接前，物理上需确认什么？",c:"lengthDim / timeDim = speedDim",o:["七个基本指数逐项一致","两个数值偶然相等","都使用字母 v"],a:0,e:"量纲恒等式是公式结果可作为速度使用的依据。"}
     ]),
 
-    "typed-ops": deck("类型安全运算","为加减乘除、缩放和幂设计正确的量纲类型。",20,[
-      {id:"to-add",level:1,concept:"typed-operations",p:"同量纲加法的返回类型是？",c:"add (x y : Quantity d)",o:["Quantity d","Quantity (d*d)","ℝ"],a:0,e:"相加保持量纲。"},
-      {id:"to-mul",level:1,concept:"typed-operations",p:"乘法 x·y 的返回量纲应是？",c:"x : Quantity d₁\ny : Quantity d₂",o:["d₁ * d₂","d₁","1"],a:0,e:"乘法在类型中合成量纲。"},
-      {id:"to-div",level:1,concept:"typed-operations",p:"长度除以时间应返回什么类型？",c:"Quantity.div distance duration",o:["Quantity speedDim","Quantity lengthDim","Quantity dimensionless"],a:0,e:"返回索引是 lengthDim/timeDim。"},
-      {id:"to-scale",level:2,concept:"typed-operations",p:"纯实数 c 缩放 Quantity d 后量纲怎样？",c:"scale c x",o:["仍为 d","变成 d^c","变成无量纲"],a:0,e:"纯数被视为无量纲。"},
+    "typed-ops": deck("物理公式的类型安全运算","用同量纲加法、乘除合成和数值域假设检查常见力学公式。",20,[
+      {id:"to-add",level:1,concept:"typed-operations",p:"水平两力分别为 +8 N 与 −3 N，合力是多少？",c:"R = F₁ + F₂",o:["+5 N","+11 N","−24 N"],a:0,e:"同量纲且同一直线上的有向力可直接相加。"},
+      {id:"to-mul",level:1,concept:"typed-operations",p:"恒力 12 N 沿力方向推动物体 0.5 m，做功是多少？",c:"W = F·s",o:["6 J","24 J","6 N"],a:0,e:"12×0.5=6，力乘位移得到能量量纲。"},
+      {id:"to-div",level:1,concept:"typed-operations",p:"质量 4 kg 均匀装在体积 0.002 m³ 内，平均密度是多少？",c:"ρ = m/V",o:["2000 kg/m³","0.0005 kg/m³","8 kg·m³"],a:0,e:"4/0.002=2000，返回质量/体积量纲。"},
+      {id:"to-scale",level:2,concept:"typed-operations",p:"把同一物体的动量 p 整体乘无量纲系数 2，结果的量纲怎样？",c:"p' = 2p",o:["仍为动量量纲 MLT⁻¹","变为能量量纲","变为无量纲"],a:0,e:"纯数缩放改变大小，不改变量纲。"},
       {id:"to-sub",level:2,concept:"typed-operations",p:"温度绝对值的“相减”为何需要额外注意？",c:"T₁ - T₂",o:["结果是温差，语义上与绝对温标是仿射点/向量之别","结果必为绝对温度","量纲不同所以不能减"],a:0,e:"量纲相同只是必要条件；仿射量需要更细类型。"},
-      {id:"to-power",level:2,concept:"typed-operations",p:"Quantity d 的平方应返回？",c:"x²",o:["Quantity (d^2)","Quantity d","Quantity 1"],a:0,e:"数值平方同时把量纲指数乘 2。"},
-      {id:"to-speed-time",level:3,concept:"typed-operations",p:"为什么 speed × time 可作为 length 使用？",c:"speed_mul_time : speedDim * timeDim = lengthDim",o:["需要量纲恒等式把返回索引化简为 lengthDim","因为变量名相似","任何乘积都是长度"],a:0,e:"定义化简或显式等式证明连接两个索引。"},
-      {id:"to-div-zero",level:3,concept:"model-boundary",p:"类型正确的 x/y 是否保证 y 数值非零？",c:"Quantity.div x y",o:["不保证；非零是额外值级假设","保证；量纲会证明非零","只有 y 无量纲时保证"],a:0,e:"量纲类型与数值域条件是两类约束。"},
-      {id:"to-noncomm",level:3,concept:"dimension-algebra",p:"量纲乘法交换是否意味着所有物理对象乘法都交换？",c:"d₁*d₂ = d₂*d₁",o:["不意味着；矩阵、算符等对象乘法可不交换","意味着所有运算交换","只在时间量纲中不交换"],a:0,e:"返回量纲相同，不等于具体乘法项相等。"}
+      {id:"to-power",level:2,concept:"typed-operations",p:"质量 2 kg、速率 3 m/s 的质点，动能 1/2 mv² 是多少？",c:"K = 1/2 · 2 · 3²",o:["9 J","6 J","18 N"],a:0,e:"速度平方带来 L²T⁻²，数值为 9。"},
+      {id:"to-speed-time",level:3,concept:"typed-operations",p:"探测器以 1500 m/s 匀速飞行 0.2 s，位移是多少？",c:"Δx = vΔt",o:["300 m","7500 m","300 m/s"],a:0,e:"1500×0.2=300，速度乘时间化简为长度。"},
+      {id:"to-div-zero",level:3,concept:"model-boundary",p:"用 Δx/Δt 定义区间平均速度时，量纲正确是否足以允许 Δt=0？",c:"v_avg = Δx / Δt",o:["不允许；还需 Δt≠0 的值级假设","允许；量纲检查会处理除零","仅当 Δx=0 时允许"],a:0,e:"量纲兼容不保证分母非零。"},
+      {id:"to-noncomm",level:3,concept:"dimension-algebra",p:"两个空间旋转 R₁、R₂ 都无量纲。能否因此认定 R₁R₂=R₂R₁？",c:"R₁ R₂",o:["不能；三维旋转的复合通常不交换","能；无量纲对象的乘法必交换","只有角度有单位时不能"],a:0,e:"量纲乘法交换不意味着矩阵或算符乘法交换。"}
     ]),
 
     homogeneity: deck("量纲齐次性","用量纲检查公式，并明确必要性、不充分性及函数自变量条件。",22,[
@@ -177,40 +177,40 @@
       {id:"h-zero",level:3,concept:"homogeneity",p:"等式 lhs = 0 是否可以忽略 lhs 的量纲？",c:"F = 0",o:["不应忽略；0 应在目标量纲中解释","可以；0 永远无量纲","只有力可以等于 0"],a:0,e:"类型化零值由上下文获得与 lhs 相同的量纲。"}
     ]),
 
-    "physlib-units": deck("调用 Physlib","认识 Physlib 的量纲、带量纲值与单位制 API，并复用真实定理。",24,[
-      {id:"pl-import-dim",level:1,concept:"physlib-dimension",p:"只使用 Physlib 量纲定义时，聚焦导入是？",c:"___",o:["import Physlib.Units.Dimension","import String","open SI"],a:0,e:"聚焦导入明确依赖来源。"},
-      {id:"pl-withdim",level:1,concept:"physlib-withdim",p:"Physlib 中把数值类型 M 与量纲 d 绑定的结构是？",c:"___ d M",o:["WithDim","Float","BaseDimension"],a:0,e:"WithDim d M 是量纲索引值。"},
-      {id:"pl-check",level:1,concept:"physlib-withdim",p:"调用库定理前应先使用什么？",c:"___ DimSpeed.oneKilometerPerHour_in_SI",o:["#check","#eval","inductive"],a:0,e:"#check 显示参数与结论。"},
-      {id:"pl-rational",level:2,concept:"physlib-dimension",p:"Physlib 的量纲指数允许 ℚ 有什么价值？",c:"Dimension B",o:["可表达平方根等有理幂量纲","使所有物理量无量纲","删除基本量"],a:0,e:"比纯整数指数模型更适合根式和一般标度。"},
-      {id:"pl-kmh",level:2,concept:"physlib-withdim",p:"Physlib 已证明 1 km/h 的 SI 数值是？",c:"DimSpeed.oneKilometerPerHour_in_SI",o:["5/18 m/s","18/5 m/s","1000 m/s"],a:0,e:"1000/3600 约分为 5/18。"},
-      {id:"pl-dimensionful",level:2,concept:"unit-system",p:"Dimensionful 层主要补充什么？",c:"toDimensionful SI ...",o:["不同单位制下的表示与换算","新的基本量纲","实验传感器连接"],a:0,e:"WithDim 处理量纲，Dimensionful 进一步组织单位选择。"},
+    "physlib-units": deck("用 Physlib 表达物理单位","把库中的有理量纲、带量纲值和单位制用于换算与公式检查。",24,[
+      {id:"pl-import-dim",level:1,concept:"physlib-withdim",p:"列车速度 90 km/h 换成 SI 是多少？",c:"90 × (5/18) m/s",o:["25 m/s","50 m/s","5 m/s"],a:0,e:"Physlib 的精确换算因子为 5/18，90×5/18=25。"},
+      {id:"pl-withdim",level:1,concept:"physlib-withdim",p:"使用 WithDim 表示 3 m 与 2 s 后，哪种模型错误会被量纲索引阻止？",c:"length + time",o:["把 3 m 与 2 s 直接相加","用 3 m 除以 2 s","把 3 m 乘无量纲系数"],a:0,e:"相加要求同量纲；除法会得到速度量纲。"},
+      {id:"pl-check",level:1,concept:"physlib-withdim",p:"查看 `DimSpeed.oneKilometerPerHour_in_SI` 的结论后，可直接得到 1 km/h 等于？",c:"#check DimSpeed.oneKilometerPerHour_in_SI",o:["5/18 m/s","18/5 m/s","1000 m/s"],a:0,e:"这里保留一次真实 API 阅读训练，目标是复用精确物理换算结论。"},
+      {id:"pl-rational",level:2,concept:"physlib-dimension",p:"弦上线性密度 μ、张力 T 给出波速 c=√(T/μ)。根号内的量纲是？",c:"[Tension]=MLT⁻², [μ]=ML⁻¹",o:["L²T⁻²","LT⁻¹","ML²T⁻²"],a:0,e:"两者相除得 L²T⁻²，Physlib 的有理指数可把它开方为速度。"},
+      {id:"pl-kmh",level:2,concept:"physlib-withdim",p:"自行车以 18 km/h 骑行 10 s，在匀速模型中行程是多少？",c:"18 km/h = 5 m/s",o:["50 m","180 m","5 m"],a:0,e:"先用库定理换为 5 m/s，再乘 10 s。"},
+      {id:"pl-dimensionful",level:2,concept:"unit-system",p:"两个实验组分别报告 1.2 m 与 120 cm。单位制层应把它们判定为？",c:"same length, different unit coordinates",o:["同一物理长度","不同量纲的量","数值相等但物理量不同"],a:0,e:"Dimensionful 组织尺度换算，使同量纲的不同单位表示可比较。"},
       {id:"pl-custom-vs-lib",level:3,concept:"physlib-dimension",p:"课程自建 Dimension 与 Physlib 的关系应如何理解？",c:"transparent model / production library",o:["自建模型用于理解，项目代码优先复用库","两者必须互相删除","自建模型已覆盖 Physlib 全部功能"],a:0,e:"透明教学模型帮助掌握原理，成熟库提供更广 API 与审查。"},
-      {id:"pl-exact",level:3,concept:"exact-real",p:"exact DimSpeed.oneKilometerPerHour_in_SI 做了什么？",c:"example : ... := by exact ...",o:["把已验证库定理直接用于同型目标","运行浮点近似","让 AI 猜测换算"],a:0,e:"正确性来自 Lean 内核检查的定理复用。"},
+      {id:"pl-exact",level:3,concept:"exact-real",p:"已复用 1 km/h=5/18 m/s 的库定理。要证明 72 km/h=20 m/s，还需完成哪一步？",c:"72 · (5/18) = 20",o:["精确的实数算术化简","浮点采样若干次","重新定义速度量纲"],a:0,e:"单位关系由库提供，剩余目标是 72×5/18=20。"},
       {id:"pl-boundary",level:3,concept:"model-boundary",p:"Physlib 接受单位定理后还需审查什么？",c:"Lean: accepted",o:["模型定义、单位约定与应用语境","定理是否有类型","加法字符颜色"],a:0,e:"库验证演绎关系，不代替实验与领域解释。"}
     ]),
 
-    "euclidean-vectors": deck("欧式空间与坐标向量","从 Fin 3 → ℝ 进入有限维欧式空间，掌握向量运算与坐标外延性。",12,[
-      {id:"ev-type",level:1,concept:"euclidean-space",p:"三维实坐标向量的透明类型可以写成？",c:"abbrev Vec3 := ___",o:["Fin 3 → ℝ","ℝ → Fin 3","List ℝ"],a:0,e:"Fin 3 提供恰好三个坐标。"},
-      {id:"ev-zero",level:1,concept:"euclidean-space",p:"(0 : Vec3) 的每个坐标是什么？",c:"fun i => ?",o:["0","i","1"],a:0,e:"函数空间的零向量逐坐标为零。"},
-      {id:"ev-add",level:1,concept:"euclidean-space",p:"向量加法 v+w 如何作用在坐标 i？",c:"(v + w) i",o:["v i + w i","v i * w i","v (w i)"],a:0,e:"函数空间继承逐点加法。"},
-      {id:"ev-ext",level:2,concept:"euclidean-space",p:"证明 v=w 时，ext i 把目标变成什么？",c:"⊢ v = w",o:["⊢ v i = w i","⊢ ‖v‖ = ‖w‖","⊢ i = 0"],a:0,e:"函数外延性要求逐坐标相等。"},
-      {id:"ev-smul",level:2,concept:"euclidean-space",p:"标量 a 对向量 v 的作用满足？",c:"(a • v) i",o:["a * v i","a + v i","v (a*i)"],a:0,e:"实向量空间的数乘逐坐标进行。"},
-      {id:"ev-euclidean",level:2,concept:"euclidean-space",p:"Mathlib 的标准有限维欧式空间类型是？",c:"___ ℝ (Fin 3)",o:["EuclideanSpace","TopologicalSpace","ForceSystem"],a:0,e:"EuclideanSpace ℝ ι 是带标准内积结构的坐标空间。"},
-      {id:"ev-finite",level:3,concept:"statics-scope",p:"本章先固定三维有限坐标的主要理由是？",c:"finite rigid statics",o:["叉积和刚体力矩可直接计算且学习曲线平缓","物理空间必然只有三个点","Mathlib 不支持一般维数"],a:0,e:"一般内积结果仍可在 EuclideanSpace 中复用。"},
-      {id:"ev-basis",level:3,concept:"euclidean-space",p:"标准基向量 eᵢ 的第 j 坐标由什么决定？",c:"eᵢ j",o:["i=j 时为 1，否则为 0","总为 i+j","总为 1"],a:0,e:"它是有限函数空间的单坐标基。"},
-      {id:"ev-point",level:3,concept:"affine-space",p:"为什么不把空间点的加法当作基本物理操作？",c:"P + Q",o:["点是仿射对象，没有天然原点时不能相加","实数不能相加","Lean 禁止任何结构相加"],a:0,e:"点之差才天然给出位移向量。"}
+    "euclidean-vectors": deck("欧式空间与坐标向量","用三维坐标计算位移、相对运动与合力，并识别坐标选择背后的几何不变量。",12,[
+      {id:"ev-type",level:1,concept:"euclidean-space",p:"质点相对原点的位置为 r=(1,2,2) m。它到原点的距离是多少？",c:"‖r‖ = √(1²+2²+2²)",o:["3 m","5 m","9 m"],a:0,e:"欧式范数为 √9=3 m。"},
+      {id:"ev-zero",level:1,concept:"euclidean-space",p:"机器人从 A 出发依次位移 (2,0,0)、(0,3,0)、(−2,−3,0) m。总位移是？",c:"Σ Δr",o:["(0,0,0) m","(4,6,0) m","(0,0,1) m"],a:0,e:"三个坐标逐项相加后全部抵消。"},
+      {id:"ev-add",level:1,concept:"euclidean-space",p:"飞机相对空气速度 (100,0,0) m/s，风速 (0,20,0) m/s。对地速度是？",c:"v_ground = v_air + v_wind",o:["(100,20,0) m/s","(100,0,20) m/s","(80,0,0) m/s"],a:0,e:"同一参考系中的速度按向量叠加。"},
+      {id:"ev-ext",level:2,concept:"euclidean-space",p:"两次实验给出的力向量三个坐标分别相同。可得什么物理结论？",c:"∀ i∈{x,y,z}, F₁ᵢ = F₂ᵢ",o:["在该基底下 F₁=F₂","只有大小相同，方向可不同","只能推出合力为零"],a:0,e:"三维向量由全部坐标唯一确定。"},
+      {id:"ev-smul",level:2,concept:"euclidean-space",p:"把力 F=(2,−1,0) N 放大 3 倍，得到？",c:"3F",o:["(6,−3,0) N","(5,2,3) N","(6,1,0) N"],a:0,e:"标量乘法逐坐标缩放，方向在正系数下保持。"},
+      {id:"ev-euclidean",level:2,concept:"euclidean-space",p:"把实验坐标系绕原点旋转后，同一速度向量的坐标改变。哪一个量保持不变？",c:"orthonormal frame change",o:["速率 ‖v‖","每个坐标分量","位置向量与原点的表示"],a:0,e:"正交变换保持内积与范数。"},
+      {id:"ev-finite",level:3,concept:"statics-scope",p:"本章在三维中用 r×F 表示力矩。若推广到四维，首先不能原样保留什么？",c:"cross product",o:["同型的三维叉积公式","向量加法","内积与范数"],a:0,e:"三维叉积依赖特殊维数结构；一般维数通常改用外代数或反对称张量。"},
+      {id:"ev-basis",level:3,concept:"euclidean-space",p:"力 F=(3,4,0) N 在 x、y 方向的分量已知。其大小与单位方向分别是？",c:"‖F‖, F/‖F‖",o:["5 N 与 (3/5,4/5,0)","7 N 与 (3,4,0)","25 N 与 (4/5,3/5,0)"],a:0,e:"范数为 5，除以范数得到无量纲单位方向。"},
+      {id:"ev-point",level:3,concept:"affine-space",p:"把参考原点整体平移 a 后，两个质点间位移 q−p 怎样变化？",c:"(q+a) − (p+a)",o:["保持 q−p 不变","增加 a","变成 p−q"],a:0,e:"共同平移相消，位移是与原点选择无关的自由向量。"}
     ]),
 
-    "inner-metric": deck("内积、范数与距离","用点积组织长度、距离、夹角与正交，并调用正定性。",14,[
-      {id:"im-dot",level:1,concept:"dot-metric",p:"三维点积的坐标公式是？",c:"v ⬝ᵥ w",o:["Σ i, v i * w i","v ⨯₃ w","Σ i, v i + w i"],a:0,e:"点积是对应坐标乘积之和。"},
-      {id:"im-orth",level:1,concept:"dot-metric",p:"v 与 w 正交的代数条件是？",c:"orthogonal",o:["v·w = 0","v×w = 0","v=w"],a:0,e:"实内积空间中正交由内积为零定义。"},
-      {id:"im-distance",level:1,concept:"dot-metric",p:"两点 p、q 的欧式距离应由什么给出？",c:"dist p q",o:["‖q-p‖","‖q+p‖","q·p"],a:0,e:"距离是位移向量的范数。"},
-      {id:"im-sym",level:2,concept:"dot-metric",p:"实点积交换 v·w=w·v 的依据是？",c:"dot symmetry",o:["实内积的对称性","叉积反交换","列表排序"],a:0,e:"复内积是共轭对称，本章标量为 ℝ。"},
-      {id:"im-positive",level:2,concept:"dot-metric",p:"v·v=0 可以推出什么？",c:"dotProduct_self_eq_zero",o:["v=0","‖v‖=1","v 的坐标和为 0"],a:0,e:"点积正定，不允许非零零长度向量。"},
-      {id:"im-cauchy",level:2,concept:"dot-metric",p:"Cauchy–Schwarz 控制哪个量？",c:"|v·w|",o:["≤ ‖v‖‖w‖","= ‖v+w‖","≥ ‖v‖+‖w‖"],a:0,e:"它保证夹角余弦的绝对值不超过 1。"},
-      {id:"im-normsq",level:3,concept:"dot-metric",p:"计算与证明中先用 normSq v := v·v 有什么优势？",c:"squared norm",o:["避免平方根并保留多项式结构","改变向量量纲","让负长度合法"],a:0,e:"许多平衡与稳定性证明可交给 ring/nlinarith。"},
-      {id:"im-degenerate",level:3,concept:"dot-metric",p:"若只用任意双线性型而没有正定性，v·v=0⇒v=0 是否仍成立？",c:"bilinear form",o:["不一定","一定","只对零维不成立"],a:0,e:"正定性是欧式度量的关键假设。"},
-      {id:"im-library",level:3,concept:"library-statics",p:"研究代码为何优先使用 EuclideanSpace 的范数而非重写平方根？",c:"Mathlib",o:["可复用完备的内积与拓扑定理","范数不需要证明","自定义代码不能运行"],a:0,e:"透明坐标定义仍用于教学和叉积计算。"}
+    "inner-metric": deck("内积、范数与距离","从功、投影、距离和能量中掌握欧式内积及其正定性。",14,[
+      {id:"im-dot",level:1,concept:"dot-metric",p:"恒力 F=(3,4,0) N 使物体位移 d=(2,0,0) m，做功是多少？",c:"W = F·d",o:["6 J","14 J","10 J"],a:0,e:"点积为 3×2+4×0=6。"},
+      {id:"im-orth",level:1,concept:"dot-metric",p:"物块水平滑动，理想水平地面对它的支持力竖直。支持力做功是多少？",c:"N ⟂ Δr",o:["0","N·‖Δr‖","−N·‖Δr‖"],a:0,e:"力与位移正交，点积为零。"},
+      {id:"im-distance",level:1,concept:"dot-metric",p:"两质点坐标为 p=(1,1,0) m、q=(4,5,0) m，它们相距？",c:"‖q-p‖ = ‖(3,4,0)‖",o:["5 m","7 m","25 m"],a:0,e:"位移范数为 √(3²+4²)=5 m。"},
+      {id:"im-sym",level:2,concept:"dot-metric",p:"计算功时 F·d 与 d·F 数值相同，但物理角色是否因此相同？",c:"F·d = d·F",o:["数值相同；力和位移的物理角色仍不同","角色也完全相同","交换后变成力矩"],a:0,e:"实内积对称，不会抹去两个输入的物理语义。"},
+      {id:"im-positive",level:2,concept:"dot-metric",p:"质量 m>0 的质点动能 K=1/2 m(v·v) 为零，可推出？",c:"K = 0",o:["v=0","v 与任意力正交","m=0"],a:0,e:"m>0 且内积正定，所以 v·v=0 仅在 v=0 时发生。"},
+      {id:"im-cauchy",level:2,concept:"dot-metric",p:"给定力大小 10 N、位移大小 2 m，常力功的绝对值最大为？",c:"|F·d| ≤ ‖F‖‖d‖",o:["20 J","12 J","5 J"],a:0,e:"Cauchy–Schwarz 给出上界；平行或反平行时取到。"},
+      {id:"im-normsq",level:3,concept:"dot-metric",p:"速度 v=(vₓ,vᵧ,v_z) 的动能为何常先写成 1/2 m(vₓ²+vᵧ²+v_z²)？",c:"v·v",o:["避免平方根并直接得到二次能量形式","因为速度没有方向","因为范数可以为负"],a:0,e:"平方范数是多项式且正定，正好进入动能。"},
+      {id:"im-degenerate",level:3,concept:"dot-metric",p:"若所谓“动能度量”允许非零 v 满足 v·v=0，会破坏哪条物理推论？",c:"non-positive metric",o:["零动能推出静止","正交力不做功","位移可首尾相接"],a:0,e:"正定性排除了非零零长度方向。"},
+      {id:"im-library",level:3,concept:"library-statics",p:"把速度坐标从一个正交标架旋转到另一个标架，动能 1/2 m‖v‖² 如何？",c:"v' = Qv, QᵀQ=I",o:["保持不变","乘以 det Q","变成向量"],a:0,e:"正交变换保持内积，因此物理动能与坐标选择无关。"}
     ]),
 
     "affine-points": deck("点、位移与参考原点","区分空间点和自由向量，并理解参考系坐标。",14,[
@@ -225,28 +225,28 @@
       {id:"ap-model",level:3,concept:"statics-scope",p:"用 Point3.coord 的教学模型牺牲了什么？",c:"coordinate model",o:["仿射不变性在类型中的显式表达","三维坐标","实数运算"],a:0,e:"最终展品用注释与 Physlib bridge 说明这层边界。"}
     ]),
 
-    "applied-force": deck("力与作用点","把集中力建模为作用点和向量，区分合力与转动效应。",16,[
-      {id:"af-fields",level:1,concept:"force-vector",p:"AppliedForce 至少需要哪两个字段？",c:"force",o:["point 与 vector","mass 与 time","unit 与 string"],a:0,e:"同一力向量作用在不同点可产生不同力矩。"},
+    "applied-force": deck("力与作用点","用作用线和等效载荷计算集中力的平动与转动效应。",16,[
+      {id:"af-fields",level:1,concept:"force-vector",p:"力 F=(0,10,0) N 作用在 P=(2,0,0) m。关于原点的力矩是？",c:"M_O = P×F",o:["(0,0,20) N·m","(0,20,0) N·m","(0,0,10) N·m"],a:0,e:"eₓ×eᵧ=e_z，大小为 2×10。"},
       {id:"af-free",level:1,concept:"force-vector",p:"若只关心质点平动，力通常可视为什么？",c:"F",o:["自由向量","空间点","无量纲数"],a:0,e:"刚体转动问题还必须保留作用点。"},
       {id:"af-line",level:1,concept:"force-vector",p:"沿自身作用线平移力的作用点，关于任一点的力矩如何？",c:"(r+tF)×F",o:["不变","增加 tF","变为零且仅当 t=0"],a:0,e:"F×F=0，所以沿作用线的附加项消失。"},
       {id:"af-newton",level:2,concept:"force-vector",p:"力向量的量纲来自？",c:"F = ma",o:["MLT⁻²","ML²T⁻²","LT⁻¹"],a:0,e:"质量乘加速度。"},
       {id:"af-neg",level:2,concept:"force-vector",p:"-F 表示什么？",c:"vector negation",o:["大小相同方向相反的力向量","负质量","删除作用点"],a:0,e:"作用点需要另行指定。"},
-      {id:"af-structure",level:2,concept:"force-vector",p:"Lean 中读取 f 的力向量字段写作？",c:"f : AppliedForce",o:["f.vector","vector(f.point)","f[force]"],a:0,e:"结构投影使用点记法。"},
+      {id:"af-structure",level:2,concept:"force-vector",p:"长度 L 的梁承受均匀向下载荷 w。若只研究整体平衡，其等效集中力是？",c:"distributed load w on [0,L]",o:["大小 wL，作用在中点 L/2","大小 w，作用在端点","大小 wL²，作用在中点"],a:0,e:"积分得到总载荷 wL；均匀分布的形心在中点。"},
       {id:"af-equivalent",level:3,concept:"moment-origin",p:"两个集中力对刚体静力等效通常需什么相同？",c:"wrench",o:["合力与关于同一点的力矩","仅大小","仅作用点"],a:0,e:"这对有限刚体的平动和转动效应都相同。"},
       {id:"af-distributed",level:3,concept:"statics-scope",p:"分布载荷能否直接当作一个 AppliedForce 而不作假设？",c:"distributed load",o:["不能；需积分或先证明等效合力与作用点","能；任何函数都是集中力","只能在一维能"],a:0,e:"本章仅用已等效化的有限集中力。"},
       {id:"af-contact",level:3,concept:"statics-scope",p:"带库仑摩擦的接触反力为什么不在基础模型中自动解决？",c:"friction cone",o:["它含不等式、接触状态与互补条件","叉积不能计算","摩擦没有量纲"],a:0,e:"这里只处理已知线性约束方向的反力。"}
     ]),
 
-    "force-system": deck("力系与合力","用 List 组织有限力系，理解叠加、顺序无关与等效。",16,[
+    "force-system": deck("力系与合力","通过多力叠加、力偶与子系统合并理解有限力系。",16,[
       {id:"fs-empty",level:1,concept:"force-system",p:"空力系的合力应定义为？",c:"resultant []",o:["0","1","undefined"],a:0,e:"零向量是力叠加的单位元。"},
-      {id:"fs-cons",level:1,concept:"force-system",p:"resultant (f::S) 的递归式是？",c:"list recursion",o:["f.vector + resultant S","f.vector × resultant S","resultant S"],a:0,e:"有限力叠加就是向量求和。"},
+      {id:"fs-cons",level:1,concept:"force-system",p:"三力分别为 (4,0,0)、(−1,3,0)、(0,−2,0) N，合力是？",c:"R = ΣFᵢ",o:["(3,1,0) N","(5,5,0) N","(3,−5,0) N"],a:0,e:"逐坐标求和得到 (4−1,3−2,0)。"},
       {id:"fs-pair",level:1,concept:"force-system",p:"F 与 -F 两力的合力是？",c:"F + (-F)",o:["0","2F","F"],a:0,e:"向量相消。"},
-      {id:"fs-append",level:2,concept:"force-system",p:"两个力系列表拼接后的合力满足？",c:"resultant (S ++ T)",o:["resultant S + resultant T","resultant S × resultant T","resultant S"],a:0,e:"可由列表归纳证明。"},
+      {id:"fs-append",level:2,concept:"force-system",p:"机翼左半部分载荷合力为 R_L=(0,5,−20) kN，右半部分为 R_R=(0,−5,−20) kN。整机翼合力是？",c:"R = R_L + R_R",o:["(0,0,−40) kN","(0,10,0) kN","(0,0,0) kN"],a:0,e:"对子系统先求合力再相加，与逐个叠加等价。"},
       {id:"fs-order",level:2,concept:"force-system",p:"交换列表中两项会改变合力吗？",c:"F₁+F₂",o:["不会，因为向量加法交换","会，因为 List 有顺序","只改变单位"],a:0,e:"存储有顺序，合力的数学值与顺序无关。"},
       {id:"fs-zeroR",level:2,concept:"force-system",p:"合力为零是否足以保证刚体平衡？",c:"resultant S = 0",o:["不够，还需总力矩为零","足够","只需再检查质量"],a:0,e:"力偶正是合力零但仍有转动效应的例子。"},
       {id:"fs-reduce",level:3,concept:"moment-origin",p:"一般三维力系关于点 O 的静力信息可归约为何？",c:"force-couple system",o:["合力 R 与总力矩 M_O","单个力大小","三个单位符号"],a:0,e:"也称力—力偶或 wrench 表示。"},
       {id:"fs-semantic",level:3,concept:"force-system",p:"List AppliedForce 是否编码刚体形状和接触几何？",c:"data model",o:["没有；它只记录外力数据","完整编码","只要列表足够长就编码"],a:0,e:"系统边界与几何可作为更高层结构添加。"},
-      {id:"fs-induction",level:3,concept:"force-system",p:"证明所有有限力系的求和恒等式最自然用什么？",c:"S : List AppliedForce",o:["对 S 做归纳","只检查三个样例","浮点采样"],a:0,e:"nil 和 cons 分支覆盖全部有限列表。"}
+      {id:"fs-induction",level:3,concept:"force-system",p:"一个力系分成三个子系统，合力依次为 R₁、R₂、R₃。先合并哪两个会影响最终合力吗？",c:"(R₁+R₂)+R₃ = R₁+(R₂+R₃)",o:["不影响；向量加法结合","影响；力必须按时间排序","只在三个合力共线时不影响"],a:0,e:"有限叠加的分组不改变结果，这使复杂装配可模块化求合力。"}
     ]),
 
     moment: deck("力矩与叉积","调用 Mathlib 三维叉积，掌握方向、正交性和量纲。",18,[
@@ -266,7 +266,7 @@
       {id:"ms-balanced",level:1,concept:"moment-origin",p:"若 R=0，M_Q 与 M_O 的关系是？",c:"zero resultant",o:["相等","互为相反数","都必须非零"],a:0,e:"参考点修正项消失。"},
       {id:"ms-couple",level:1,concept:"couple",p:"力偶为何能作为自由力矩移动？",c:"couple",o:["它的合力为零，所以力矩与参考点无关","两个力作用点相同","叉积恒为零"],a:0,e:"力偶矩仍可能非零。"},
       {id:"ms-sign",level:2,concept:"moment-origin",p:"若误写 M_Q=M_O+(Q−O)×R，主要错误是什么？",c:"origin shift",o:["位移分解的符号反了","量纲不齐次","叉积应换成点积"],a:0,e:"P−Q=(P−O)−(Q−O)。"},
-      {id:"ms-proof",level:2,concept:"moment-origin",p:"单个力移矩定理的代数核心是？",c:"(a-b)×F",o:["叉积对加减法的线性","点积正定","范数三角不等式"],a:0,e:"再对力系列表归纳即可得总公式。"},
+      {id:"ms-proof",level:2,concept:"moment-origin",p:"已知 R=(0,10,0) N、M_O=(0,0,30) N·m，且 Q−O=(2,0,0) m。M_Q 是？",c:"M_Q = M_O − (Q−O)×R",o:["(0,0,10) N·m","(0,0,50) N·m","(0,20,30) N·m"],a:0,e:"(Q−O)×R=(0,0,20)，故 M_Q=(0,0,10)。"},
       {id:"ms-axis",level:2,concept:"couple",p:"一对 ±F 相距 d 的力偶矩可写成？",c:"couple moment",o:["d×F","d·F","2F"],a:0,e:"d 是两条作用线之间的位移向量。"},
       {id:"ms-equivalence",level:3,concept:"moment-origin",p:"两力系在 O 有相同 R 和 M_O，换到 Q 后是否仍静力等效？",c:"same wrench",o:["是，移矩公式给出相同 M_Q","不一定","仅当 Q=O"],a:0,e:"两者使用相同的参考点修正项。"},
       {id:"ms-zero-moment",level:3,concept:"moment-origin",p:"能否总能选择 Q 使一般空间力系的 M_Q=0？",c:"central axis",o:["不能；存在不可消去的沿 R 力偶分量","总能","只要 R=0 就能"],a:0,e:"本章不展开螺旋理论，但保留这一模型边界。"},
@@ -290,11 +290,11 @@
       {id:"ei-forward",level:1,concept:"rigid-virtual-motion",p:"若 R=0 且 M=0，任意虚功率是多少？",c:"P(v,ω)",o:["0","1","取决于原点"],a:0,e:"两个点积项都为零。"},
       {id:"ei-testR",level:1,concept:"rigid-virtual-motion",p:"要从“所有虚功率为零”推出 R=0，可选哪组测试？",c:"v=?, ω=?",o:["v=R, ω=0","v=0, ω=R","v=M, ω=R"],a:0,e:"得到 R·R=0，再用内积正定性。"},
       {id:"ei-testM",level:2,concept:"rigid-virtual-motion",p:"推出 M=0 时选什么？",c:"v=?, ω=?",o:["v=0, ω=M","v=M, ω=0","v=R, ω=R"],a:0,e:"得到 M·M=0。"},
-      {id:"ei-positive",level:2,concept:"dot-metric",p:"上述反向证明关键调用哪个事实？",c:"x·x=0",o:["正定性给出 x=0","叉积反交换","列表长度非负"],a:0,e:"若配对退化，结论不再成立。"},
+      {id:"ei-positive",level:2,concept:"dot-metric",p:"若合力 R≠0，选择虚平移速度 v=R、虚角速度 ω=0，会测得怎样的虚功率？",c:"P(R,0)=R·R",o:["严格为正，因此不可能满足所有虚功率为零","恒为零","等于总力矩大小"],a:0,e:"欧式内积正定，所以 R≠0 时 R·R>0。"},
       {id:"ei-six",level:2,concept:"rigid-virtual-motion",p:"“对所有 v,ω”与六个基方向测试的关系是？",c:"linearity",o:["在线性模型中等价","六个测试永远不够","只需一个随机方向"],a:0,e:"线性泛函在基上为零即处处为零。"},
       {id:"ei-constraints",level:3,concept:"virtual-work",p:"有约束时只对许可虚运动功率为零，能否仍推出全部 R=M=0？",c:"admissible subspace",o:["一般不能，只能推出载荷泛函在许可子空间上为零","总能","只推出 R=M"],a:0,e:"约束反力可位于许可子空间的正交补。"},
       {id:"ei-origin",level:3,concept:"moment-origin",p:"虚功率表达式换参考点时，平动速度应如何配套变换？",c:"rigid twist",o:["按刚体运动学调整，物理功率保持不变","不需任何处理","把点积换成叉积"],a:0,e:"本课程在固定参考点陈述定理，避免隐藏坐标变换。"},
-      {id:"ei-theorem",level:3,concept:"rigid-virtual-motion",p:"该充要条件在 Lean 中最适合写成？",c:"equilibrium",o:["theorem ... : (∀ v ω, P v ω = 0) ↔ R=0 ∧ M=0","def P := True","#eval equilibrium"],a:0,e:"↔ 同时包含两个方向的证明。"}
+      {id:"ei-theorem",level:3,concept:"rigid-virtual-motion",p:"某力系 R=(1,0,0) N、M=(0,0,2) N·m。哪组虚运动最直接证明它不平衡？",c:"P(v,ω)=R·v+M·ω",o:["v=(1,0,0), ω=(0,0,0)","v=(0,1,0), ω=(1,0,0)","v=(0,0,0), ω=(1,0,0)"],a:0,e:"第一组给 P=1 W（按虚速度量纲解释），已足以否定对所有虚运动功率为零。"}
     ]),
 
     "support-reactions": deck("约束与支反力","用简支梁把未知反力、平衡方程与解的可行性连接起来。",20,[
@@ -309,16 +309,16 @@
       {id:"sr-model",level:3,concept:"statics-scope",p:"求得反力后是否已经得到梁内应力分布？",c:"beam mechanics",o:["没有，还需截面、材料与连续体/梁理论","已经得到","只需换单位"],a:0,e:"本章在刚体外部平衡层停止。"}
     ]),
 
-    determinacy: deck("静定与超静定","以线性平衡算子的解与核精确定义唯一性和自应力。",22,[
-      {id:"dt-unique",level:1,concept:"static-determinacy",p:"对给定载荷静定意味着？",c:"A r + load = 0",o:["反力解存在且唯一","没有反力","任意反力都可"],a:0,e:"Lean 中可用 ∃! 表达。"},
-      {id:"dt-hyper",level:1,concept:"static-determinacy",p:"超静定的直接代数表现是？",c:"equilibrium equations",o:["平衡方程有多个反力解","平衡方程无解","合力单位错误"],a:0,e:"还需变形协调和本构关系选解。"},
-      {id:"dt-kernel",level:1,concept:"self-stress",p:"A 的非零核向量 k 表示？",c:"A k=0",o:["自应力模式","外载荷","刚体位移"],a:0,e:"它不改变平衡残差。"},
-      {id:"dt-addk",level:2,concept:"self-stress",p:"若 r₀ 是解且 Ak=0，则哪一个仍是解？",c:"reaction family",o:["r₀+k","A+r₀","load+k"],a:0,e:"A(r₀+k)+load=(Ar₀+load)+Ak=0。"},
-      {id:"dt-inj",level:2,concept:"static-determinacy",p:"已有解时，A 的什么性质保证唯一？",c:"LinearMap",o:["Injective A","Surjective A","Continuous A"],a:0,e:"两解相减落入核；单射使核只有零。"},
-      {id:"dt-count",level:2,concept:"static-determinacy",p:"只数“未知数=方程数”为何不总能证明静定？",c:"rank",o:["方程可能线性相关，需检查秩/单射性","实数不能计数","力矩不是方程"],a:0,e:"几何退化会降低平衡算子的秩。"},
+    determinacy: deck("静定与超静定","用梁与多支座实例分析反力唯一性、秩退化和自应力。",22,[
+      {id:"dt-unique",level:1,concept:"static-determinacy",p:"简支梁在单个竖直载荷下有 R_A、R_B 两个未知量，并由竖直合力与取矩两式唯一解出。它属于？",c:"R_A+R_B=P, R_B L=Pa, L>0",o:["静定","超静定","机构"],a:0,e:"给定载荷后反力存在且唯一。"},
+      {id:"dt-hyper",level:1,concept:"static-determinacy",p:"刚性水平杆由三个竖直支座承托，只用竖直合力与一个平面力矩方程。通常会怎样？",c:"3 reactions / 2 equilibrium equations",o:["反力不能仅靠平衡唯一确定，属于一次超静定","必然无解","三反力必相等"],a:0,e:"还需支座变形与杆的刚度兼容关系。"},
+      {id:"dt-kernel",level:1,concept:"self-stress",p:"三个支座位于 x=0,1,2。反力增量 k=(1,−2,1) 满足什么？",c:"Σkᵢ=0, Σxᵢkᵢ=0",o:["不改变合力与合矩，是自应力方向","增加 4 个单位合力","只改变外载荷"],a:0,e:"1−2+1=0，且 0−2+2=0。"},
+      {id:"dt-addk",level:2,concept:"self-stress",p:"若三支座反力 r₀ 已平衡外载荷，则 r₀+t(1,−2,1) 对任意 t 的平衡残差怎样？",c:"A(r₀+tk)+load",o:["仍为零，但接触可行性可能限制 t","随 t 线性增大且必非零","只在 t=1 时为零"],a:0,e:"Ak=0 保持外部平衡；各反力非负等条件仍需检查。"},
+      {id:"dt-inj",level:2,concept:"static-determinacy",p:"平面悬臂梁固定端提供水平力、竖直力和约束力矩三个未知量；一般载荷下三个平衡分量可唯一确定它们。关键是？",c:"reaction → (ΣFₓ,ΣFᵧ,ΣM)",o:["反力到平衡残差的映射没有非零核","载荷总为零","固定端不传递力矩"],a:0,e:"无非零自平衡反力增量意味着已有解是唯一的。"},
+      {id:"dt-count",level:2,concept:"static-determinacy",p:"三个未知拉力、三个平衡方程，却有两根拉索方向完全相同。为何仍不能仅凭 3=3 判定静定？",c:"dependent force directions",o:["几何可能使平衡方程矩阵降秩","拉索没有力的量纲","三个方程一定互相矛盾"],a:0,e:"静定性取决于独立约束的秩，不只是数量。"},
       {id:"dt-inconsistent",level:3,concept:"static-determinacy",p:"若载荷不在 A 的像加可平衡范围内，会怎样？",c:"no solution",o:["没有平衡反力解","自动成为超静定","核自动非零"],a:0,e:"无解不是超静定，而是约束/载荷模型不相容。"},
       {id:"dt-compat",level:3,concept:"self-stress",p:"超静定结构为何要引入材料与变形？",c:"compatibility",o:["平衡只确定到核方向，兼容与本构补足条件","材料改变量纲","为了计算合力"],a:0,e:"这正是从刚体静力向弹性力学扩展的入口。"},
-      {id:"dt-library",level:3,concept:"library-statics",p:"Mathlib 哪个对象直接表达平衡算子？",c:"A : R →ₗ[ℝ] E",o:["LinearMap","SetLike","Float"],a:0,e:"LinearMap.ker 表达自应力空间。"}
+      {id:"dt-library",level:3,concept:"library-statics",p:"固定—铰支梁仅靠整体平衡不能唯一给出全部支反力。下一步最需要加入哪类物理关系？",c:"compatibility + constitutive law",o:["挠度协调条件与材料/截面刚度","更多单位换算","把所有反力设为相等"],a:0,e:"超静定问题由变形协调和本构关系选择核方向上的物理解。"}
     ]),
 
     work: deck("功的形式化","从常力点积功出发，证明路径分段可加并划定变力边界。",22,[
@@ -339,7 +339,7 @@
       {id:"pt-hooke",level:1,concept:"conservative-potential",p:"上述势能对应的力？",c:"-gradient",o:["−k x","k x","−k‖x‖"],a:0,e:"这就是向原点恢复的 Hooke 力。"},
       {id:"pt-constant",level:2,concept:"conservative-potential",p:"给势能加常数 C 会改变力吗？",c:"V+C",o:["不会，常数梯度为零","会增加 C","会反向"],a:0,e:"势能零点可以任意选择。"},
       {id:"pt-work",level:2,concept:"conservative-potential",p:"保守力从 p 到 q 的功等于？",c:"potential difference",o:["V(p)-V(q)","V(q)-V(p)","V(p)+V(q)"],a:0,e:"力是负梯度。"},
-      {id:"pt-gradient",level:2,concept:"library-statics",p:"Physlib 哪个模块提供本章使用的梯度规则？",c:"import",o:["Physlib.Mathematics.Calculus.Gradient","Physlib.Units.Dimension","Mathlib.Data.String"],a:0,e:"可复用 gradient_inner_self 等结果。"},
+      {id:"pt-gradient",level:2,concept:"conservative-potential",p:"一维弹簧 k=200 N/m，在 x=0.10 m 处的保守力是多少？",c:"V=1/2 kx², F=−dV/dx",o:["−20 N","+20 N","−2 N"],a:0,e:"F=−kx=−200×0.10 N，方向指向平衡点。"},
       {id:"pt-diff",level:3,concept:"conservative-potential",p:"陈述 F=−∇V 默认需要 V 具有什么性质？",c:"gradient",o:["在所讨论点可微","只需可排序","必须是多项式"],a:0,e:"二次势能满足该条件。"},
       {id:"pt-nonconservative",level:3,concept:"statics-scope",p:"摩擦力通常能否由全局单值势能表示？",c:"dry friction",o:["通常不能","总能","仅单位换成 J 即可"],a:0,e:"因此势能极小判据不能覆盖所有静力系统。"},
       {id:"pt-phys",level:3,concept:"model-boundary",p:"Lean 证明 −∇V=−kx 后还未验证什么？",c:"model",o:["真实装置确实服从该势能模型","代数等式","梯度类型"],a:0,e:"形式化验证的是给定模型内部推导。"}
@@ -369,35 +369,35 @@
       {id:"st-friction",level:3,concept:"statics-scope",p:"势能严格极小是否适用于任意摩擦耗散系统？",c:"nonconservative",o:["不直接适用","总适用","只需 k>0"],a:0,e:"非保守力需要 Lyapunov、耗散或微分包含等框架。"}
     ]),
 
-    "statics-physlib": deck("调用 Mathlib 与 Physlib","把透明教学定义连接到叉积、欧式空间、参考系、线性映射核与梯度 API。",24,[
-      {id:"sp-cross",level:1,concept:"library-statics",p:"三维叉积来自哪个 Mathlib 模块？",c:"import",o:["Mathlib.LinearAlgebra.CrossProduct","Mathlib.Data.Nat.Basic","Physlib.Units.Dimension"],a:0,e:"其中定义 crossProduct 与 Matrix 作用域中的 ⨯₃ 记号。"},
-      {id:"sp-frame",level:1,concept:"library-statics",p:"物理参考系的点/向量桥接来自？",c:"Physlib",o:["Physlib.SpaceAndTime.ReferenceFrame","Physlib.Units.WithDim.Speed","Mathlib.Tactic"],a:0,e:"它区分空间点、原点、基底和坐标向量。"},
-      {id:"sp-grad",level:1,concept:"library-statics",p:"验证二次势能负梯度需要导入？",c:"gradient",o:["Physlib.Mathematics.Calculus.Gradient","Physlib.SpaceAndTime.Time","String"],a:0,e:"Physlib 提供 gradient_inner_self 等规则。"},
-      {id:"sp-check",level:2,concept:"library-statics",p:"调用陌生库定理前最安全的第一步是？",c:"___ theoremName",o:["#check","#eval","inductive"],a:0,e:"先确认命名空间、参数和假设。"},
+    "statics-physlib": deck("用 Mathlib 与 Physlib 承载静力学","把叉积、参考系、线性映射和梯度库结构用于具体静力模型。",24,[
+      {id:"sp-cross",level:1,concept:"library-statics",p:"位置 r=(1,0,0) m，力 F=(0,0,−5) N。按右手系叉积，r×F 是？",c:"r ⨯₃ F",o:["(0,5,0) N·m","(0,−5,0) N·m","(−5,0,0) N·m"],a:0,e:"eₓ×e_z=−eᵧ，因此 eₓ×(−5e_z)=5eᵧ。"},
+      {id:"sp-frame",level:1,concept:"library-statics",p:"参考系原点从 O 平移到 O'=O+a，同一空间点坐标怎样变化？",c:"r=P−O, r'=P−O'",o:["r'=r−a","r'=r+a","r'=r"],a:0,e:"点没动，原点平移会反向改变位置坐标；两点位移仍不变。"},
+      {id:"sp-grad",level:1,concept:"library-statics",p:"二维势能 V(x,y)=1/2(kₓx²+kᵧy²) 对应的保守力是？",c:"F=−∇V",o:["(−kₓx,−kᵧy)","(kₓx,kᵧy)","(−kₓ,−kᵧ)"],a:0,e:"梯度逐方向给出势能变化率，负号使力指向降能方向。"},
+      {id:"sp-check",level:2,concept:"moment-cross",p:"把库中的叉积定理用于力矩前，必须核对哪项物理约定？",c:"crossProduct / ⨯₃",o:["坐标顺序与右手取向","力是否为整数","列表是否按大小排序"],a:0,e:"错误取向会整体翻转力矩符号，即使类型完全正确。"},
       {id:"sp-kernel",level:2,concept:"self-stress",p:"自应力空间可直接写成？",c:"A : R →ₗ[ℝ] E",o:["LinearMap.ker A","Set.range A","Matrix.det R"],a:0,e:"核中元素映到零平衡残差。"},
-      {id:"sp-dotzero",level:2,concept:"dot-metric",p:"由 v·v=0 推出 v=0 可复用？",c:"Mathlib",o:["dotProduct_self_eq_zero","cross_anticomm","gradient_add_const"],a:0,e:"这是平衡充要条件的关键数学引理。"},
-      {id:"sp-gap",level:3,concept:"library-statics",p:"Physlib 当前没有整章统一静力学 API 时，合理策略是？",c:"library gap",o:["定义轻量领域结构，底层数学继续复用库","伪造不存在的定理名","完全不用库"],a:0,e:"展品的 AppliedForce/ForceSystem 正是这一桥层。"},
-      {id:"sp-coordinate",level:3,concept:"affine-space",p:"最终作品为何仍保留 Vec3 坐标版本？",c:"teaching artifact",o:["便于完整证明移矩、力偶和梁反力，再标注参考系升级路径","Physlib 只能用 Vec3","坐标比几何更真实"],a:0,e:"教学透明性与库复用并不冲突。"},
+      {id:"sp-dotzero",level:2,concept:"dot-metric",p:"合力 R=(2,0,0) N。选虚平移 v=(2,0,0) m/s 时，平动虚功率是多少？",c:"R·v",o:["4 W","0 W","2 N·m"],a:0,e:"点积为 4；这一个测试方向就能否定自由刚体平衡。"},
+      {id:"sp-gap",level:3,concept:"library-statics",p:"库已提供向量、叉积与梯度，但还没有完整 AppliedForce。应由课程的领域层补充什么？",c:"physics bridge",o:["作用点、力系、合力与合矩等物理定义","重新证明实数加法","用字符串代替向量"],a:0,e:"底层数学复用库，领域层负责明确系统边界与物理语义。"},
+      {id:"sp-coordinate",level:3,concept:"affine-space",p:"正交变换 Q 同时作用于 r 和 F 后，力矩如何变换？",c:"(Qr)×(QF), det Q=1",o:["等于 Q(r×F)，物理力矩随标架协变","保持每个坐标分量不变","必变为零"],a:0,e:"正向正交变换保持叉积结构；坐标变了，几何关系不变。"},
       {id:"sp-boundary",level:3,concept:"statics-scope",p:"库中有 gradient 是否就自动获得一般稳定性定理？",c:"API reuse",o:["不会，还需势能正则性、约束、局部极小等假设","会","只需 import Mathlib"],a:0,e:"复用计算规则不等于省略物理假设。"}
     ]),
 
-    practice: deck("单位与量纲综合实验","跨越概念、代数、换算、依赖类型与 Physlib 的分层随机组卷。",30,[
-      {id:"p-si",level:1,concept:"si-seven",p:"哪一个不是 SI 基本单位？",c:"___",o:["newton","kelvin","mole"],a:0,e:"N 是 kg·m·s⁻² 的导出单位。"},
-      {id:"p-speed",level:1,concept:"derived-dimension",p:"速度的时间指数是？",c:"LT^?",o:["−1","1","−2"],a:0,e:"速度为长度除时间。"},
-      {id:"p-zero-vector",level:1,concept:"dimensionless",p:"无量纲量对应？",c:"Dimension",o:["零指数向量","零数值","单位长度向量"],a:0,e:"数值与量纲需区分。"},
-      {id:"p-force",level:1,concept:"derived-dimension",p:"力的 SI 基本单位展开是？",c:"N",o:["kg·m·s⁻²","kg·m²·s⁻²","A·s"],a:0,e:"由 F=ma。"},
-      {id:"p-mul",level:2,concept:"dimension-algebra",p:"d/d 的结果量纲是？",c:"d / d",o:["1","d²","0 数值"],a:0,e:"指数相减为零。"},
+    practice: deck("单位与量纲综合实验","从实际数据出发完成换算、公式反推与量纲审查的分层随机组卷。",30,[
+      {id:"p-si",level:1,concept:"derived-dimension",p:"300 N 的力作用在 0.020 m² 面积上，平均压强为？",c:"p=F/A",o:["15 kPa","6 Pa","150 kPa"],a:0,e:"300/0.020=15000 Pa=15 kPa。"},
+      {id:"p-speed",level:1,concept:"derived-dimension",p:"质点在 4 s 内位移 12 m，区间平均速度大小是？",c:"v_avg=Δx/Δt",o:["3 m/s","48 m/s","0.33 m/s"],a:0,e:"12/4=3，量纲为 LT⁻¹。"},
+      {id:"p-zero-vector",level:1,concept:"dimensionless",p:"飞行器速度 340 m/s，当地声速也是 340 m/s。马赫数是？",c:"Ma=v/c",o:["1，无量纲","1 m/s","115600，有速度平方量纲"],a:0,e:"同类速度相除得到无量纲相似参数。"},
+      {id:"p-force",level:1,concept:"derived-dimension",p:"1200 kg 的汽车获得 2 m/s² 加速度，需要的合力是？",c:"F=ma",o:["2400 N","600 N","2400 J"],a:0,e:"1200×2=2400，kg·m·s⁻²=N。"},
+      {id:"p-mul",level:2,concept:"dimension-algebra",p:"物体比动能 E/m 的量纲是什么？",c:"[E]/[m]",o:["L²T⁻²，与速度平方相同","ML²T⁻²","LT⁻¹"],a:0,e:"能量除以质量消去 M。"},
       {id:"p-km2",level:2,concept:"scale-conversion",p:"2 km² 等于多少 m²？",c:"2*(1000)^2",o:["2×10⁶","2×10³","2×10⁹"],a:0,e:"面积因子平方。"},
-      {id:"p-add",level:2,concept:"typed-operations",p:"哪个表达式应被量纲类型拒绝？",c:"length : Quantity L\ntime : Quantity T",o:["add length time","div length time","add length length"],a:0,e:"加法要求相同量纲索引。"},
+      {id:"p-add",level:2,concept:"typed-operations",p:"能量 E=10 J、功率 P=5 W。哪一式量纲不合法？",c:"E : energy, P : energy/time",o:["E+P","E/P","P·2 s"],a:0,e:"能量与功率不能直接相加；E/P 是时间，P·t 是能量。"},
       {id:"p-temp",level:2,concept:"affine-unit",p:"20 ℃ 与 10 ℃ 之差是多少 K？",c:"ΔT",o:["10 K","283.15 K","−263.15 K"],a:0,e:"温差不使用 273.15 平移。"},
       {id:"p-kinetic",level:3,concept:"homogeneity",p:"1/2 mv² 中 1/2 对量纲有什么影响？",c:"K = 1/2 m v²",o:["无影响；它是无量纲常数","把能量变成一半量纲","增加时间指数"],a:0,e:"无量纲数值系数不改变量纲。"},
       {id:"p-sqrt",level:3,concept:"rational-exponent",p:"√(m/k) 可得到时间量纲的关键是？",c:"[m/k]",o:["m/k 的量纲为 T²","m/k 无量纲","平方根删除所有指数"],a:0,e:"指数 2 除以 2 得 1。"},
       {id:"p-limit",level:3,concept:"model-boundary",p:"量纲正确能否证明公式的数值系数正确？",c:"x = C v t",o:["不能；C 是无量纲系数","能；C 必为 1","只有 SI 能"],a:0,e:"还需要动力学推导、边界条件或实验。"},
-      {id:"p-physlib",level:3,concept:"physlib-withdim",p:"研究代码中已有成熟单位 API 时应优先？",c:"___",o:["检查并复用 Physlib 定义与定理","复制变量名模拟单位","只用 Float"],a:0,e:"复用经审查的库能减少重复定义。"}
+      {id:"p-physlib",level:3,concept:"physlib-withdim",p:"用 Physlib 已知 1 km/h=5/18 m/s。108 km/h 的风速应化为？",c:"108·5/18",o:["30 m/s","60 m/s","108 m/s"],a:0,e:"精确单位定理与实数算术结合得到 30 m/s。"}
     ],6),
 
     "statics-practice": deck("欧式静力学综合实验","跨越向量、力矩、平衡、静定性、虚功与势能稳定性的分层随机组卷。",35,[
-      {id:"stp-vec",level:1,concept:"euclidean-space",p:"Vec3 := Fin 3 → ℝ 中向量相等怎样证明？",c:"v=w",o:["逐坐标 ext","比较列表长度","比较单位"],a:0,e:"函数外延性覆盖三个坐标。"},
+      {id:"stp-vec",level:1,concept:"euclidean-space",p:"物体依次位移 (1,2,0) m 与 (2,−2,0) m，总位移是？",c:"Δr₁+Δr₂",o:["(3,0,0) m","(3,4,0) m","(1,−4,0) m"],a:0,e:"位移向量逐坐标相加。"},
       {id:"stp-dot",level:1,concept:"dot-metric",p:"v·v=0 在欧式空间中推出？",c:"positive definite",o:["v=0","v=1","Σvᵢ=0"],a:0,e:"内积正定。"},
       {id:"stp-force",level:1,concept:"force-system",p:"有限力系的合力是？",c:"S",o:["各力向量之和","各作用点之和","各力矩叉积"],a:0,e:"作用点只影响力矩。"},
       {id:"stp-moment",level:1,concept:"moment-cross",p:"M_O 的公式是？",c:"force at P",o:["(P-O)×F","(P-O)·F","P+F"],a:0,e:"叉积给出轴向力矩。"},
@@ -411,31 +411,31 @@
       {id:"stp-scope",level:3,concept:"statics-scope",p:"本章结论不能直接覆盖哪一项？",c:"scope",o:["连续体屈曲与摩擦接触","有限集中力合力","三维叉积"],a:0,e:"那些需要更丰富的函数空间与非线性/不等式结构。"}
     ],6),
 
-    daily: deck("物理学形式化练习场","每日从已学习路线跨关卡复习，按难度随机抽题。",5,[
-      {id:"daily-seven",level:1,concept:"si-seven",p:"SI 有几个基本量？",c:"International System of Quantities",o:["7","3","9"],a:0,e:"七个基本量对应七个基本单位。"},
-      {id:"daily-energy",level:1,concept:"derived-dimension",p:"能量量纲是？",c:"F·L",o:["ML²T⁻²","MLT⁻²","ML²T⁻³"],a:0,e:"力乘长度。"},
-      {id:"daily-charge",level:1,concept:"derived-dimension",p:"库仑 C 展开为？",c:"charge",o:["A·s","A/s","kg·m/s"],a:0,e:"电流乘时间。"},
-      {id:"daily-dimless",level:1,concept:"dimensionless",p:"应变 ΔL/L 的量纲？",c:"ΔL/L",o:["1","L","L²"],a:0,e:"同类长度相除。"},
-      {id:"daily-op",level:2,concept:"dimension-algebra",p:"量纲取逆如何作用于指数？",c:"d⁻¹",o:["全部取负","全部加一","顺序反转"],a:0,e:"e ↦ −e。"},
-      {id:"daily-celsius",level:2,concept:"affine-unit",p:"25 ℃ 的 K 数值是？",c:"25 + 273.15",o:["298.15","25","248.15"],a:0,e:"绝对温度换算包含零点平移。"},
-      {id:"daily-safe",level:2,concept:"typed-quantity",p:"Quantity d 的 d 是？",c:"structure Quantity (d : Dimension)",o:["类型索引","运行时单位字符串","随机数"],a:0,e:"它使量纲参与类型检查。"},
-      {id:"daily-area",level:2,concept:"scale-conversion",p:"cm² 到 m² 的因子是？",c:"(10⁻²)^2",o:["10⁻⁴","10⁻²","10⁻⁶"],a:0,e:"面积因子平方。"},
-      {id:"daily-exp",level:3,concept:"homogeneity",p:"exp(−t/τ) 的量纲条件？",c:"t/τ",o:["无量纲","长度","能量"],a:0,e:"指数函数自变量需无量纲。"},
-      {id:"daily-torque",level:3,concept:"model-boundary",p:"同量纲是否必为同一物理概念？",c:"torque / energy",o:["不是","是","只在 CGS 中是"],a:0,e:"量纲不能编码全部语义。"},
-      {id:"daily-root",level:3,concept:"rational-exponent",p:"Physlib 允许有理量纲指数的主要意义？",c:"ℚ exponents",o:["表达根式量纲","让单位换算变近似","删除类型检查"],a:0,e:"平方根对应指数乘 1/2。"},
-      {id:"daily-kmh",level:3,concept:"physlib-withdim",p:"1 km/h 的 SI 数值是？",c:"DimSpeed.oneKilometerPerHour_in_SI",o:["5/18","18/5","1000"],a:0,e:"精确换算为 5/18 m/s。"},
-      {id:"daily-vec3",level:1,concept:"euclidean-space",p:"Fin 3 → ℝ 表示？",c:"Vec3",o:["三维实坐标向量","三个实数的集合命题","三维整数"],a:0,e:"Fin 3 是三个坐标索引。"},
-      {id:"daily-dot",level:1,concept:"dot-metric",p:"正交向量的点积是？",c:"v ⟂ w",o:["0","1","‖v‖+‖w‖"],a:0,e:"正交由内积为零定义。"},
-      {id:"daily-force",level:1,concept:"force-vector",p:"刚体集中力为何记录作用点？",c:"AppliedForce",o:["作用点影响力矩","作用点改变量纲","作用点决定质量"],a:0,e:"同力异点可有不同转动效应。"},
-      {id:"daily-moment",level:1,concept:"moment-cross",p:"力矩使用哪个运算？",c:"r ? F",o:["叉积","点积","除法"],a:0,e:"M=r×F。"},
-      {id:"daily-shift",level:2,concept:"moment-origin",p:"移矩公式的修正项含什么？",c:"M_Q-M_O",o:["−(Q−O)×R","Q·R","V(Q)-V(O)"],a:0,e:"修正项由原点位移和合力决定。"},
-      {id:"daily-balance",level:2,concept:"equilibrium-balance",p:"刚体平动与转动平衡合写为？",c:"static equilibrium",o:["R=0∧M=0","R=M","R×M=0"],a:0,e:"两个向量条件都需要。"},
-      {id:"daily-beam",level:2,concept:"reactions",p:"简支梁以 A 取矩的优势是？",c:"ΣM_A",o:["A 点反力力臂为零","合力自动为零","不需 L≠0"],a:0,e:"可先独立求另一端反力。"},
-      {id:"daily-unique",level:2,concept:"static-determinacy",p:"静定在 Lean 中适合用哪个量词结构？",c:"reaction solution",o:["∃!","∀!","¬∃"],a:0,e:"存在唯一解。"},
-      {id:"daily-virtual",level:3,concept:"rigid-virtual-motion",p:"对所有 v,ω 有 R·v+M·ω=0 推出？",c:"free rigid body",o:["R=0∧M=0","R=M","R×M=0"],a:0,e:"分别测试 v=R 与 ω=M。"},
-      {id:"daily-potential",level:3,concept:"conservative-potential",p:"V=½k‖x‖² 对应力？",c:"F=-∇V",o:["−kx","kx","−k‖x‖"],a:0,e:"二次势能梯度为 kx。"},
-      {id:"daily-selfstress",level:3,concept:"self-stress",p:"非零 ker A 主要提示？",c:"equilibrium map",o:["超静定/自应力自由度","势能必为负","合力单位错误"],a:0,e:"平衡方程不能唯一确定核方向。"},
-      {id:"daily-stability",level:3,concept:"stability-energy",p:"正刚度二次势能的原点是？",c:"k>0",o:["严格极小","严格极大","中性"],a:0,e:"非零扰动增加势能。"}
+    daily: deck("物理学形式化练习场","每日从已学习路线抽取物理计算、建模判据与边界检查。",5,[
+      {id:"daily-seven",level:1,concept:"si-seven",p:"4 A 恒定电流持续 5 s，输运电荷是多少？",c:"Q=It",o:["20 C","0.8 C","20 V"],a:0,e:"A·s=C，数值为 4×5。"},
+      {id:"daily-energy",level:1,concept:"derived-dimension",p:"12 N 恒力沿其方向推动 2.5 m，做功为？",c:"W=Fs",o:["30 J","4.8 J","30 W"],a:0,e:"12×2.5=30，N·m=J。"},
+      {id:"daily-charge",level:1,concept:"derived-dimension",p:"0.5 A 电流持续 2 min，电荷量是多少？",c:"Q=IΔt",o:["60 C","1 C","240 C"],a:0,e:"2 min=120 s，0.5×120=60 C。"},
+      {id:"daily-dimless",level:1,concept:"dimensionless",p:"1.0 m 杆伸长 0.5 mm，应变是多少？",c:"ε=ΔL/L",o:["5×10⁻⁴","0.5 m","2×10³"],a:0,e:"0.5 mm=5×10⁻⁴ m，同类长度相除。"},
+      {id:"daily-op",level:2,concept:"dimension-algebra",p:"振动周期为 0.25 s，对应频率是多少？",c:"f=1/T",o:["4 Hz","0.25 Hz","2 Hz"],a:0,e:"频率是时间量纲的倒数。"},
+      {id:"daily-celsius",level:2,concept:"affine-unit",p:"25 ℃ 的绝对温度是多少？",c:"25+273.15",o:["298.15 K","25 K","248.15 K"],a:0,e:"绝对温度换算包含零点平移。"},
+      {id:"daily-safe",level:2,concept:"typed-quantity",p:"跑者 20 s 内完成 100 m 直线位移，平均速度大小为？",c:"v_avg=Δx/Δt",o:["5 m/s","2000 m/s","0.2 m/s"],a:0,e:"长度除以时间得到速度，100/20=5。"},
+      {id:"daily-area",level:2,concept:"scale-conversion",p:"500 N 作用在 100 cm² 平板上，平均压强为？",c:"100 cm²=0.01 m²",o:["50 kPa","5 Pa","500 kPa"],a:0,e:"500/0.01=50000 Pa=50 kPa。"},
+      {id:"daily-exp",level:3,concept:"homogeneity",p:"衰减模型 e^(−t/τ) 中 t=10 s、τ=5 s，指数是多少？",c:"−t/τ",o:["−2（无量纲）","−2 s","−0.5 s⁻¹"],a:0,e:"两个时间相除后量纲抵消。"},
+      {id:"daily-torque",level:3,concept:"model-boundary",p:"20 N 垂直作用在 0.30 m 力臂上得到 6 N·m。仅凭单位能否称其为 6 J 的功？",c:"torque vs work",o:["不能；还需判断叉积力矩还是点积功","能；N·m 总是功","只有静止时能"],a:0,e:"力矩与功同量纲，但几何配对和物理语义不同。"},
+      {id:"daily-root",level:3,concept:"rational-exponent",p:"弦张力 100 N、线密度 0.25 kg/m，波速 √(T/μ) 为？",c:"√(100/0.25)",o:["20 m/s","400 m/s","10 m/s"],a:0,e:"T/μ=400 m²/s²，开方得 20 m/s。"},
+      {id:"daily-kmh",level:3,concept:"physlib-withdim",p:"54 km/h 换成 SI 速度是多少？",c:"54·5/18",o:["15 m/s","30 m/s","54 m/s"],a:0,e:"使用精确换算因子 5/18。"},
+      {id:"daily-vec3",level:1,concept:"euclidean-space",p:"速度 v=(3,4,0) m/s 的速率是？",c:"‖v‖",o:["5 m/s","7 m/s","25 m/s"],a:0,e:"欧式范数为 √(3²+4²)=5。"},
+      {id:"daily-dot",level:1,concept:"dot-metric",p:"50 N 竖直支持力作用于水平位移 3 m，做功为？",c:"N·d",o:["0 J","150 J","−150 J"],a:0,e:"两向量正交，点积为零。"},
+      {id:"daily-force",level:1,concept:"force-vector",p:"15 N 的力垂直作用在距门轴 0.8 m 处，力矩大小为？",c:"M=rF",o:["12 N·m","18.75 N·m","15 N"],a:0,e:"垂直时 sinθ=1，0.8×15=12。"},
+      {id:"daily-moment",level:1,concept:"moment-cross",p:"r=(2,0,0) m、F=(0,4,0) N，关于原点的力矩是？",c:"r×F",o:["(0,0,8) N·m","(0,8,0) N·m","8 J 的标量"],a:0,e:"eₓ×eᵧ=e_z。"},
+      {id:"daily-shift",level:2,concept:"moment-origin",p:"M_O=10 e_z N·m、R=5 e_y N，且 Q−O=1 e_x m。M_Q 是？",c:"M_Q=M_O−(Q−O)×R",o:["5 e_z N·m","15 e_z N·m","10 e_y N·m"],a:0,e:"修正项为 5e_z，所以新力矩为 5e_z。"},
+      {id:"daily-balance",level:2,concept:"equilibrium-balance",p:"两力大小相等、方向相反且作用在同一直线上。它们对刚体产生？",c:"F and −F, same line",o:["合力和合矩都为零","合力为零但必有力偶矩","合矩为零但合力非零"],a:0,e:"共线反向力既相消合力，也不形成非零力偶。"},
+      {id:"daily-beam",level:2,concept:"reactions",p:"跨长 4 m 的简支梁承受 1000 N 载荷，载荷距 A 为 1 m。R_B 是？",c:"R_B·4=1000·1",o:["250 N","750 N","1000 N"],a:0,e:"关于 A 取矩，R_B=1000/4=250 N。"},
+      {id:"daily-unique",level:2,concept:"static-determinacy",p:"刚性杆由三个竖直支座承托，只有合力与平面力矩两式。仅靠静力平衡通常属于？",c:"3 unknown reactions / 2 equations",o:["超静定","静定","必定无解"],a:0,e:"反力通常有一个自应力自由度。"},
+      {id:"daily-virtual",level:3,concept:"rigid-virtual-motion",p:"R=(0,3,0) N。取 v=R、ω=0 时虚功率为？",c:"R·v+M·ω",o:["9 W","0 W","3 N·m"],a:0,e:"R·R=9>0，因此该力系不是自由刚体平衡。"},
+      {id:"daily-potential",level:3,concept:"conservative-potential",p:"弹簧 k=50 N/m，在 x=0.20 m 处的恢复力是？",c:"F=−kx",o:["−10 N","+10 N","−2.5 N"],a:0,e:"负号表示指向平衡位置。"},
+      {id:"daily-selfstress",level:3,concept:"self-stress",p:"三个等距支座的反力增量 (1,−2,1) 同时满足合力与合矩为零，说明它是？",c:"Ak=0",o:["自应力方向","外载荷方向","刚体平移"],a:0,e:"沿该方向改变反力不改变整体平衡。"},
+      {id:"daily-stability",level:3,concept:"stability-energy",p:"二维势能 V=1/2(kₓx²+kᵧy²)，kₓ>0、kᵧ=0。二阶判据给出？",c:"semidefinite stiffness",o:["存在零模，不能仅凭二阶项断言严格稳定","严格稳定","严格不稳定"],a:0,e:"y 方向是平坦零模，需要高阶项或约束继续分析。"}
     ])
   };
 
