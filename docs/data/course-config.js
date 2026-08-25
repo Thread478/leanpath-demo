@@ -1,98 +1,118 @@
-/*
- * LeanPath Physics course configuration.
- *
- * Keep the presentation and progression data outside index.html so the course
- * theme can evolve without touching the quiz, XP, heart, or Lean-grading code.
- */
+/* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 1,
+    version: 2,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
       brand: "LeanPath Physics",
-      documentTitle: "LeanPath Physics — 物理学形式化互动学习",
-      description: "像闯关一样学习 Lean 4 物理学形式化：从量纲、单位与运动学，到守恒律、振动和轨道模型。",
-      eyebrow: "LEAN 4 · 物理学形式化路径",
-      heroTitle: "把物理定律，写成可检查的证明。",
-      heroSubtitle: "从量纲与运动学出发，逐步进入守恒律、振动、轨道与 Physlib。",
-      powered: "物理模型可讨论，推导过程可检查",
+      documentTitle: "LeanPath Physics — 从单位与量纲开始形式化物理",
+      description: "以 Lean 4 学习物理学形式化：单位与量纲、欧式空间静力学与动力学、黎曼流形和拉格朗日力学。",
+      eyebrow: "LEAN 4 · 五部分物理学形式化路径",
+      heroTitle: "从量纲开始，逐层构造可检查的物理学。",
+      heroSubtitle: "单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
+      powered: "物理定义公开，数学推导可检查",
       handbookTitle: "Lean 4 物理形式化手册",
-      writingTitle: "Lean 4 物理写作实验室",
+      writingTitle: "单位与量纲 · Lean 写作实验室",
+      showcaseTitle: "形式化成果图鉴",
       tipTitle: "今日形式化物理小知识",
-      tipText: "量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。",
-      tipCode: "Quantity speedDim → Quantity timeDim → Quantity lengthDim"
+      tipText: "量纲乘法就是指数向量相加；同量纲加法则由 Quantity d 的类型保证。",
+      tipCode: "[F] = [M] · [L] · [T]⁻²"
     },
     courseOrder: [
-      "quantities", "dimensions", "units", "practice", "chest",
-      "kinematics", "modeling", "conservation", "physlib"
+      "quantity", "si-base", "dimension-model", "dimension-ops",
+      "derived-dimensions", "dimensionless", "unit-systems", "unit-conversion",
+      "typed-quantity", "typed-ops", "homogeneity", "physlib-units",
+      "practice", "chest"
     ],
     prerequisites: {
-      quantities: null,
-      dimensions: "quantities",
-      units: "dimensions",
-      practice: "units",
-      chest: "practice",
-      kinematics: "practice",
-      modeling: "kinematics",
-      conservation: "modeling",
-      physlib: "conservation"
+      quantity: null,
+      "si-base": "quantity",
+      "dimension-model": "si-base",
+      "dimension-ops": "dimension-model",
+      "derived-dimensions": "dimension-ops",
+      dimensionless: "derived-dimensions",
+      "unit-systems": "dimensionless",
+      "unit-conversion": "unit-systems",
+      "typed-quantity": "unit-conversion",
+      "typed-ops": "typed-quantity",
+      homogeneity: "typed-ops",
+      "physlib-units": "homogeneity",
+      practice: "physlib-units",
+      chest: "practice"
     },
     units: [
       {
         n: 1,
-        t: "物理量、单位与量纲",
-        d: "从数值走向带量纲的类型安全模型",
+        t: "单位与量纲",
+        d: "从 SI 基本量到量纲代数、类型安全运算与 Physlib",
         lessons: [
-          {id:"quantities", icon:"ℝ", title:"物理量与类型", sub:"数值 · 单位 · 语义"},
-          {id:"dimensions", icon:"[L]", title:"基本量纲", sub:"质量 · 长度 · 时间"},
-          {id:"units", icon:"m/s", title:"单位与换算", sub:"SI · km/h · 无量纲量"},
-          {id:"practice", icon:"⌁", title:"量纲实验", sub:"随机组卷 · +20 XP"},
-          {id:"chest", icon:"◆", title:"单元宝箱", sub:"+50 XP"}
+          {id:"quantity", icon:"Q", title:"物理量的三层结构", sub:"数值 · 单位 · 量纲"},
+          {id:"si-base", icon:"SI", title:"七个 SI 基本量", sub:"s · m · kg · A · K · mol · cd"},
+          {id:"dimension-model", icon:"ℤ⁷", title:"构造量纲向量", sub:"BaseDimension → ℤ"},
+          {id:"dimension-ops", icon:"×÷", title:"量纲代数", sub:"乘 · 除 · 逆 · 整数幂"},
+          {id:"derived-dimensions", icon:"N", title:"导出量纲", sub:"速度 · 力 · 能量 · 电压"},
+          {id:"dimensionless", icon:"1", title:"无量纲量", sub:"比例 · 角度 · 相似准则"},
+          {id:"unit-systems", icon:"U", title:"单位与单位制", sub:"量纲不变 · 表示可变"},
+          {id:"unit-conversion", icon:"⇄", title:"单位换算", sub:"尺度因子 · SI 归一化"},
+          {id:"typed-quantity", icon:"Q[d]", title:"依赖类型物理量", sub:"Quantity d · 类型索引"},
+          {id:"typed-ops", icon:"⊗", title:"类型安全运算", sub:"同量纲加法 · 乘除合成"},
+          {id:"homogeneity", icon:"=ₐ", title:"量纲齐次性", sub:"公式检查 · 条件与边界"},
+          {id:"physlib-units", icon:"↗", title:"调用 Physlib", sub:"Dimension · WithDim · SI"},
+          {id:"practice", icon:"⌁", title:"单位与量纲综合实验", sub:"分层随机组卷 · +30 XP"},
+          {id:"chest", icon:"◆", title:"第一部分通关成果", sub:"解锁完整 Lean 展品 · +80 XP"}
         ]
       },
       {
         n: 2,
-        t: "从运动学到守恒律",
-        d: "把公式的条件、结论与代数推导写成定理",
+        t: "欧式空间中的静力学",
+        d: "后续部分：向量、力系、力矩、平衡与刚体",
         lessons: [
-          {id:"kinematics", icon:"x(t)", title:"一维运动学", sub:"位置 · 速度 · 加速度"},
-          {id:"modeling", icon:"⊢", title:"模型与假设", sub:"ℝ · 正性 · 适用条件"},
-          {id:"conservation", icon:"E", title:"方程与守恒", sub:"ring · rw · positivity"},
-          {id:"physlib", icon:"↗", title:"调用 Physlib", sub:"单位 · 振子 · 圆轨道"}
+          {icon:"ℝⁿ", title:"欧式空间与内积", sub:"向量 · 范数 · 正交分解"},
+          {icon:"F⃗", title:"力与力系", sub:"自由向量 · 作用点"},
+          {icon:"τ", title:"力矩与叉积", sub:"参考点 · 反对称性"},
+          {icon:"Σ", title:"质点系平衡", sub:"合力为零 · 必要充分条件"},
+          {icon:"▱", title:"刚体静力学", sub:"合力与合力矩"},
+          {icon:"⊥", title:"约束与支反力", sub:"接触 · 摩擦 · 分类讨论"}
         ]
       },
       {
         n: 3,
-        t: "能量与动力系统",
-        d: "下一阶段：功—能定理、动量与状态演化",
+        t: "欧式空间中的动力学",
+        d: "后续部分：轨迹、导数、牛顿方程与守恒律",
         lessons: [
-          {icon:"K", title:"动能与功", sub:"平方非负 · 功—能定理"},
-          {icon:"p", title:"动量守恒", sub:"封闭系统 · 碰撞"},
-          {icon:"U", title:"势能与力", sub:"梯度 · 保守力"},
-          {icon:"↻", title:"状态与不变量", sub:"轨迹 · 守恒量"}
+          {icon:"x(t)", title:"轨迹与运动学", sub:"速度 · 加速度 · 正则性"},
+          {icon:"ma", title:"牛顿第二定律", sub:"质量 · 力 · 二阶方程"},
+          {icon:"p", title:"动量与冲量", sub:"系统边界 · 守恒"},
+          {icon:"E", title:"功与能量", sub:"功率 · 势能 · 功能定理"},
+          {icon:"↻", title:"振动与轨道", sub:"振子 · 中心力"},
+          {icon:"ODE", title:"初值问题", sub:"存在唯一性 · 数值比较"}
         ]
       },
       {
         n: 4,
-        t: "振动、轨道与连续模型",
-        d: "下一阶段：从代数恒等式过渡到分析与微分方程",
+        t: "黎曼流形的构造",
+        d: "后续部分：从局部坐标到度量、联络和测地线",
         lessons: [
-          {icon:"∿", title:"简谐振子", sub:"ω² = k / m"},
-          {icon:"○", title:"圆轨道", sub:"v² = GM / r"},
-          {icon:"d/dt", title:"常微分方程", sub:"导数 · 初值"},
-          {icon:"→", title:"连续与极限", sub:"Continuous · Tendsto"}
+          {icon:"M", title:"光滑流形", sub:"图册 · 坐标变换"},
+          {icon:"Tₚ", title:"切空间与向量场", sub:"导子 · 切丛"},
+          {icon:"g", title:"黎曼度量", sub:"正定对称双线性型"},
+          {icon:"∇", title:"Levi-Civita 联络", sub:"无挠 · 度量相容"},
+          {icon:"γ", title:"测地线", sub:"能量泛函 · 局部最短"},
+          {icon:"R", title:"曲率", sub:"截面曲率 · 特殊情形"}
         ]
       },
       {
         n: 5,
-        t: "团队专题分支",
-        d: "按兴趣分工，并在共同的形式化接口上汇合",
+        t: "拉格朗日力学",
+        d: "后续部分：构型空间、作用量、变分与对称性",
         lessons: [
-          {icon:"T", title:"热力学与统计物理", sub:"理想气体 · 两能级系统"},
-          {icon:"E⃗", title:"电磁学", sub:"场 · 线性代数 · 微积分"},
-          {icon:"ψ", title:"有限维量子力学", sub:"复向量 · 算符 · 测量"},
-          {icon:"PR", title:"小组研究项目", sub:"模型 · 定理 · 可复现实验"}
+          {icon:"Q", title:"构型空间", sub:"约束系统 · 切丛状态"},
+          {icon:"L", title:"拉格朗日量", sub:"动能 − 势能"},
+          {icon:"S", title:"作用量与变分", sub:"固定端点变分"},
+          {icon:"EL", title:"Euler–Lagrange 方程", sub:"局部坐标 · 内禀形式"},
+          {icon:"N", title:"Noether 定理", sub:"连续对称 · 守恒量"},
+          {icon:"λ", title:"约束与乘子", sub:"完整约束 · 退化情形"}
         ]
       }
     ]

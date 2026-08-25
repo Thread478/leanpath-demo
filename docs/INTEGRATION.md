@@ -29,8 +29,8 @@ Lean elaboration 可以执行代码。自建服务必须使用沙箱、网络隔
 {
   "locale": "zh-CN",
   "task": {
-    "id": "phys-write-torricelli",
-    "title": "验证无时间速度公式",
+    "id": "unit-write-kinetic-dimension",
+    "title": "验证动能量纲",
     "prompt": "练习说明",
     "hint": "本地渐进提示"
   },
