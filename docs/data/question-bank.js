@@ -18,7 +18,26 @@
     "homogeneity": {title:"量纲齐次性是公式成立的必要条件",body:"等号两侧必须同量纲，同一加法中的各项也必须同量纲；sin、exp、log 等函数的自变量通常必须无量纲。但齐次性不能确定无量纲常数和具体函数形式。",code:"[E] = [m c²]\n[T] = [√(m/k)]\n-- 必要，但通常不充分"},
     "physlib-dimension": {title:"Physlib 的 Dimension",body:"Physlib 已实现更成熟的量纲代数，使用基本量类型 B 和有理指数，并给出交换群及有理幂结构。课程中的透明模型用于理解，研究代码应优先复用库。",code:"import Physlib.Units.Dimension\n-- Dimension B，指数取 ℚ"},
     "physlib-withdim": {title:"Physlib 的 WithDim",body:"WithDim d M 把底层数值类型 M 与量纲 d 绑定。相同量纲可相加，乘除自动组合量纲；Dimensionful 再处理单位制选择和换算。",code:"import Physlib.Units.WithDim.Basic\n#check WithDim\n#check DimSpeed.oneKilometerPerHour_in_SI"},
-    "model-boundary": {title:"量纲检查不替代物理建模",body:"量纲齐次只能排除一类错误。x = vt 与 x = 2vt 同样齐次，但系数和适用条件不同；形式化还需定义系统、假设、定律和实验解释。",code:"dimensionally valid ≠ physically established"}
+    "model-boundary": {title:"量纲检查不替代物理建模",body:"量纲齐次只能排除一类错误。x = vt 与 x = 2vt 同样齐次，但系数和适用条件不同；形式化还需定义系统、假设、定律和实验解释。",code:"dimensionally valid ≠ physically established"},
+    "euclidean-space": {title:"欧式向量先从有限坐标开始",body:"本章用 Vec3 := Fin 3 → ℝ 表示三维坐标向量，再通过 Mathlib 的 EuclideanSpace 与 Physlib 的 ReferenceFrame 连接到一般有限维内积空间。坐标模型透明，库模型更适合复用定理。",code:"abbrev Vec3 := Fin 3 → ℝ\n#check EuclideanSpace ℝ (Fin 3)"},
+    "dot-metric": {title:"内积同时产生长度、角度与正交",body:"点积是双线性的；v·v 非负，并且等于零当且仅当 v=0。范数由 √(v·v) 得到，距离是两点位移的范数，正交则由点积为零定义。",code:"dot v w := dotProduct v w\n‖v‖² = v ⬝ᵥ v"},
+    "affine-space": {title:"点与向量不是同一类对象",body:"向量可以相加，点通常不能；两点之差是位移向量，而点加位移仍是点。初级坐标模型会记录 point.coord，高阶实现可调用 Physlib.ReferenceFrame 区分原点、基底与空间点。",code:"displacement p q := q.coord - p.coord"},
+    "force-vector": {title:"力需要大小方向，也需要作用点",body:"单个集中力可建模为 AppliedForce，含作用点和力向量。合力只依赖力向量之和；关于原点的力矩还依赖作用点。把两者分开能避免把自由向量与滑移向量混淆。",code:"structure AppliedForce where\n  point : Point3\n  vector : Vec3"},
+    "force-system": {title:"力系用有限列表和叠加表示",body:"有限力系可以用 List AppliedForce 表示。合力是全部力向量之和，总力矩是各力矩之和；递归定义使空力系和加一项的定理可直接用 simp 与归纳证明。",code:"resultant [] = 0\nresultant (f :: S) = f.vector + resultant S"},
+    "moment-cross": {title:"三维力矩由叉积定义",body:"关于 O 的力矩 M_O = (P−O)×F。Mathlib 的 crossProduct 是 Fin 3 坐标上的线性映射，并提供叉积反交换、与两个因子正交、混合积等定理。",code:"momentAt o f := (f.point.coord - o.coord) ⨯₃ f.vector"},
+    "moment-origin": {title:"移矩定理追踪参考点变化",body:"把参考点从 O 改到 Q 时，总力矩满足 M_Q = M_O − (Q−O)×R，其中 R 是合力。因此平衡力系的总力矩与参考点无关；一般力系则不能忽略原点。",code:"M q S = M o S - (q-o) × resultant S"},
+    "couple": {title:"力偶的合力为零而力矩不为零",body:"一对大小相等、方向相反、作用线不重合的力构成力偶。它的合力为零，所以力偶矩不随参考点改变；这也是仅用合力无法完整描述刚体效应的原因。",code:"F + (-F) = 0\nM_q = M_o"},
+    "equilibrium-balance": {title:"刚体静力平衡包含两个向量方程",body:"有限刚体力系关于 O 平衡，定义为合力 R=0 且总力矩 M_O=0。第一项排除平动趋势，第二项排除转动趋势；在 R=0 时，选哪个参考点检查 M 都等价。",code:"IsBalancedAt o S := resultant S = 0 ∧ totalMomentAt o S = 0"},
+    "rigid-virtual-motion": {title:"刚体虚运动由平动与转动组成",body:"三维无穷小刚体运动可用一对 (v,ω) 表示。外力在该虚运动上的功率为 R·v + M·ω。它对所有 v、ω 都为零，当且仅当 R 与 M 都为零。",code:"virtualPower v ω := R ⬝ᵥ v + M ⬝ᵥ ω"},
+    "reactions": {title:"支反力是与约束相容的未知量",body:"静力题把支座提供的未知反力加入外力系，再求解平衡方程。简支梁在竖直集中载荷下给出两个未知反力，可由一个竖直合力方程和一个力矩方程唯一确定。",code:"R_A + R_B = P\nR_B L = P a"},
+    "static-determinacy": {title:"静定性是平衡算子的唯一可解性",body:"把未知反力 r 映到平衡残差的线性映射 A 称为平衡算子。对给定载荷，若 A r + load = 0 有唯一解，则静定；若有多个解，则仅靠静力平衡不能确定全部反力。",code:"∃! r, A r + load = 0"},
+    "self-stress": {title:"超静定与平衡算子的核相连",body:"非零 k 若满足 A k=0，就代表不改变外部平衡的自应力模式。已有一组反力 r₀ 时，r₀+t k 都满足同一平衡方程；还需材料刚度和变形协调条件才能选出物理解。",code:"k ∈ LinearMap.ker A\nr₀ + k is another solution"},
+    "work-dot": {title:"常力功是力与位移的内积",body:"常力 F 从 P 到 Q 所做的功 W=F·(Q−P)。内积线性立即给出路径分段可加性；但变力功需要积分，本章只在势能桥接中说明而不展开一般曲线积分。",code:"work F p q := F ⬝ᵥ (q.coord - p.coord)"},
+    "conservative-potential": {title:"保守力由势能的负梯度给出",body:"在欧式空间中，势能 V 的梯度指出增长最快方向，保守力定义为 F=−∇V。Physlib 已提供梯度运算与二次型示例所需定理，可验证弹簧势能 ½k‖x‖² 对应 F=−kx。",code:"V x = (k/2) * ⟪x,x⟫\nF x = -gradient V x"},
+    "virtual-work": {title:"约束系统只测试许可的虚位移",body:"虚功原理不是让所有位移都可取，而是对满足线性化约束的虚运动测试外力功率。理想约束的反力在许可虚运动上不做功，从而可从方程中消去。",code:"∀ δ ∈ admissible, virtualPower δ = 0"},
+    "stability-energy": {title:"局部势能极小给出保守系统的稳定判据",body:"一维二次势能 V(x)=½kx² 中，k>0 时原点严格极小，k=0 时为中性平坦，k<0 时任意邻域都有更低势能方向。一般非线性系统还需局部性、约束和保守性假设。",code:"k > 0 → V 0 < V x  (x ≠ 0)"},
+    "library-statics": {title:"Mathlib 与 Physlib 各自承担一层",body:"Mathlib 提供 EuclideanSpace、内积、线性映射、核与三维叉积；Physlib 提供物理参考系和梯度等桥接。当前 Physlib 尚无覆盖整章静力学的统一 API，因此课程定义轻量 AppliedForce 与 ForceSystem，并把底层数学交给库。",code:"import Mathlib.LinearAlgebra.CrossProduct\nimport Physlib.Mathematics.Calculus.Gradient"},
+    "statics-scope": {title:"本章的适用边界是有限维刚体",body:"课程形式化有限个集中力、线性支反力、刚体虚运动和二次势能。连续介质弱形式、摩擦接触互补、随动力、屈曲和一般非线性稳定性留给后续专题，避免用一个过强的势能口号覆盖不同物理机制。",code:"finite rigid system ≠ continuum mechanics"}
   };
 
   function deck(label, desc, xp, questions, draw) {
@@ -170,6 +189,198 @@
       {id:"pl-boundary",level:3,concept:"model-boundary",p:"Physlib 接受单位定理后还需审查什么？",c:"Lean: accepted",o:["模型定义、单位约定与应用语境","定理是否有类型","加法字符颜色"],a:0,e:"库验证演绎关系，不代替实验与领域解释。"}
     ]),
 
+    "euclidean-vectors": deck("欧式空间与坐标向量","从 Fin 3 → ℝ 进入有限维欧式空间，掌握向量运算与坐标外延性。",12,[
+      {id:"ev-type",level:1,concept:"euclidean-space",p:"三维实坐标向量的透明类型可以写成？",c:"abbrev Vec3 := ___",o:["Fin 3 → ℝ","ℝ → Fin 3","List ℝ"],a:0,e:"Fin 3 提供恰好三个坐标。"},
+      {id:"ev-zero",level:1,concept:"euclidean-space",p:"(0 : Vec3) 的每个坐标是什么？",c:"fun i => ?",o:["0","i","1"],a:0,e:"函数空间的零向量逐坐标为零。"},
+      {id:"ev-add",level:1,concept:"euclidean-space",p:"向量加法 v+w 如何作用在坐标 i？",c:"(v + w) i",o:["v i + w i","v i * w i","v (w i)"],a:0,e:"函数空间继承逐点加法。"},
+      {id:"ev-ext",level:2,concept:"euclidean-space",p:"证明 v=w 时，ext i 把目标变成什么？",c:"⊢ v = w",o:["⊢ v i = w i","⊢ ‖v‖ = ‖w‖","⊢ i = 0"],a:0,e:"函数外延性要求逐坐标相等。"},
+      {id:"ev-smul",level:2,concept:"euclidean-space",p:"标量 a 对向量 v 的作用满足？",c:"(a • v) i",o:["a * v i","a + v i","v (a*i)"],a:0,e:"实向量空间的数乘逐坐标进行。"},
+      {id:"ev-euclidean",level:2,concept:"euclidean-space",p:"Mathlib 的标准有限维欧式空间类型是？",c:"___ ℝ (Fin 3)",o:["EuclideanSpace","TopologicalSpace","ForceSystem"],a:0,e:"EuclideanSpace ℝ ι 是带标准内积结构的坐标空间。"},
+      {id:"ev-finite",level:3,concept:"statics-scope",p:"本章先固定三维有限坐标的主要理由是？",c:"finite rigid statics",o:["叉积和刚体力矩可直接计算且学习曲线平缓","物理空间必然只有三个点","Mathlib 不支持一般维数"],a:0,e:"一般内积结果仍可在 EuclideanSpace 中复用。"},
+      {id:"ev-basis",level:3,concept:"euclidean-space",p:"标准基向量 eᵢ 的第 j 坐标由什么决定？",c:"eᵢ j",o:["i=j 时为 1，否则为 0","总为 i+j","总为 1"],a:0,e:"它是有限函数空间的单坐标基。"},
+      {id:"ev-point",level:3,concept:"affine-space",p:"为什么不把空间点的加法当作基本物理操作？",c:"P + Q",o:["点是仿射对象，没有天然原点时不能相加","实数不能相加","Lean 禁止任何结构相加"],a:0,e:"点之差才天然给出位移向量。"}
+    ]),
+
+    "inner-metric": deck("内积、范数与距离","用点积组织长度、距离、夹角与正交，并调用正定性。",14,[
+      {id:"im-dot",level:1,concept:"dot-metric",p:"三维点积的坐标公式是？",c:"v ⬝ᵥ w",o:["Σ i, v i * w i","v ⨯₃ w","Σ i, v i + w i"],a:0,e:"点积是对应坐标乘积之和。"},
+      {id:"im-orth",level:1,concept:"dot-metric",p:"v 与 w 正交的代数条件是？",c:"orthogonal",o:["v·w = 0","v×w = 0","v=w"],a:0,e:"实内积空间中正交由内积为零定义。"},
+      {id:"im-distance",level:1,concept:"dot-metric",p:"两点 p、q 的欧式距离应由什么给出？",c:"dist p q",o:["‖q-p‖","‖q+p‖","q·p"],a:0,e:"距离是位移向量的范数。"},
+      {id:"im-sym",level:2,concept:"dot-metric",p:"实点积交换 v·w=w·v 的依据是？",c:"dot symmetry",o:["实内积的对称性","叉积反交换","列表排序"],a:0,e:"复内积是共轭对称，本章标量为 ℝ。"},
+      {id:"im-positive",level:2,concept:"dot-metric",p:"v·v=0 可以推出什么？",c:"dotProduct_self_eq_zero",o:["v=0","‖v‖=1","v 的坐标和为 0"],a:0,e:"点积正定，不允许非零零长度向量。"},
+      {id:"im-cauchy",level:2,concept:"dot-metric",p:"Cauchy–Schwarz 控制哪个量？",c:"|v·w|",o:["≤ ‖v‖‖w‖","= ‖v+w‖","≥ ‖v‖+‖w‖"],a:0,e:"它保证夹角余弦的绝对值不超过 1。"},
+      {id:"im-normsq",level:3,concept:"dot-metric",p:"计算与证明中先用 normSq v := v·v 有什么优势？",c:"squared norm",o:["避免平方根并保留多项式结构","改变向量量纲","让负长度合法"],a:0,e:"许多平衡与稳定性证明可交给 ring/nlinarith。"},
+      {id:"im-degenerate",level:3,concept:"dot-metric",p:"若只用任意双线性型而没有正定性，v·v=0⇒v=0 是否仍成立？",c:"bilinear form",o:["不一定","一定","只对零维不成立"],a:0,e:"正定性是欧式度量的关键假设。"},
+      {id:"im-library",level:3,concept:"library-statics",p:"研究代码为何优先使用 EuclideanSpace 的范数而非重写平方根？",c:"Mathlib",o:["可复用完备的内积与拓扑定理","范数不需要证明","自定义代码不能运行"],a:0,e:"透明坐标定义仍用于教学和叉积计算。"}
+    ]),
+
+    "affine-points": deck("点、位移与参考原点","区分空间点和自由向量，并理解参考系坐标。",14,[
+      {id:"ap-diff",level:1,concept:"affine-space",p:"从 p 指向 q 的位移向量是？",c:"displacement p q",o:["q.coord - p.coord","p.coord + q.coord","p.coord - q.coord"],a:0,e:"终点减起点。"},
+      {id:"ap-zero",level:1,concept:"affine-space",p:"p 到自身的位移是多少？",c:"displacement p p",o:["0","p.coord","1"],a:0,e:"逐坐标相减为零。"},
+      {id:"ap-chain",level:1,concept:"affine-space",p:"位移的首尾相接关系是？",c:"(q-p)+(r-q)",o:["r-p","p-r","q"],a:0,e:"中间点 q 消去。"},
+      {id:"ap-origin",level:2,concept:"affine-space",p:"点 p 的“位置向量”依赖什么选择？",c:"p - O",o:["参考原点 O","力的单位","时间参数"],a:0,e:"改变原点会改变坐标位置向量。"},
+      {id:"ap-vector-free",level:2,concept:"affine-space",p:"同一个位移向量换原点后怎样？",c:"q-p",o:["保持不变","加上新原点","变为相反数"],a:0,e:"两点差消去了共同的原点平移。"},
+      {id:"ap-frame",level:2,concept:"library-statics",p:"Physlib ReferenceFrame 额外记录什么？",c:"reference frame",o:["原点与基底","只有单位字符串","只有力列表"],a:0,e:"参考系把仿射点转换为坐标向量。"},
+      {id:"ap-rotate",level:3,concept:"affine-space",p:"换一个正交基底时，点积为何保持？",c:"orthonormal frame",o:["正交变换保持内积","所有矩阵都保持内积","坐标完全不变"],a:0,e:"坐标变了，欧式几何量不变。"},
+      {id:"ap-moment",level:3,concept:"moment-origin",p:"为什么力矩必须声明参考点？",c:"r × F",o:["位置向量 r 依赖原点","叉积没有类型","力的方向依赖质量"],a:0,e:"合力不为零时不同参考点得到不同总力矩。"},
+      {id:"ap-model",level:3,concept:"statics-scope",p:"用 Point3.coord 的教学模型牺牲了什么？",c:"coordinate model",o:["仿射不变性在类型中的显式表达","三维坐标","实数运算"],a:0,e:"最终展品用注释与 Physlib bridge 说明这层边界。"}
+    ]),
+
+    "applied-force": deck("力与作用点","把集中力建模为作用点和向量，区分合力与转动效应。",16,[
+      {id:"af-fields",level:1,concept:"force-vector",p:"AppliedForce 至少需要哪两个字段？",c:"force",o:["point 与 vector","mass 与 time","unit 与 string"],a:0,e:"同一力向量作用在不同点可产生不同力矩。"},
+      {id:"af-free",level:1,concept:"force-vector",p:"若只关心质点平动，力通常可视为什么？",c:"F",o:["自由向量","空间点","无量纲数"],a:0,e:"刚体转动问题还必须保留作用点。"},
+      {id:"af-line",level:1,concept:"force-vector",p:"沿自身作用线平移力的作用点，关于任一点的力矩如何？",c:"(r+tF)×F",o:["不变","增加 tF","变为零且仅当 t=0"],a:0,e:"F×F=0，所以沿作用线的附加项消失。"},
+      {id:"af-newton",level:2,concept:"force-vector",p:"力向量的量纲来自？",c:"F = ma",o:["MLT⁻²","ML²T⁻²","LT⁻¹"],a:0,e:"质量乘加速度。"},
+      {id:"af-neg",level:2,concept:"force-vector",p:"-F 表示什么？",c:"vector negation",o:["大小相同方向相反的力向量","负质量","删除作用点"],a:0,e:"作用点需要另行指定。"},
+      {id:"af-structure",level:2,concept:"force-vector",p:"Lean 中读取 f 的力向量字段写作？",c:"f : AppliedForce",o:["f.vector","vector(f.point)","f[force]"],a:0,e:"结构投影使用点记法。"},
+      {id:"af-equivalent",level:3,concept:"moment-origin",p:"两个集中力对刚体静力等效通常需什么相同？",c:"wrench",o:["合力与关于同一点的力矩","仅大小","仅作用点"],a:0,e:"这对有限刚体的平动和转动效应都相同。"},
+      {id:"af-distributed",level:3,concept:"statics-scope",p:"分布载荷能否直接当作一个 AppliedForce 而不作假设？",c:"distributed load",o:["不能；需积分或先证明等效合力与作用点","能；任何函数都是集中力","只能在一维能"],a:0,e:"本章仅用已等效化的有限集中力。"},
+      {id:"af-contact",level:3,concept:"statics-scope",p:"带库仑摩擦的接触反力为什么不在基础模型中自动解决？",c:"friction cone",o:["它含不等式、接触状态与互补条件","叉积不能计算","摩擦没有量纲"],a:0,e:"这里只处理已知线性约束方向的反力。"}
+    ]),
+
+    "force-system": deck("力系与合力","用 List 组织有限力系，理解叠加、顺序无关与等效。",16,[
+      {id:"fs-empty",level:1,concept:"force-system",p:"空力系的合力应定义为？",c:"resultant []",o:["0","1","undefined"],a:0,e:"零向量是力叠加的单位元。"},
+      {id:"fs-cons",level:1,concept:"force-system",p:"resultant (f::S) 的递归式是？",c:"list recursion",o:["f.vector + resultant S","f.vector × resultant S","resultant S"],a:0,e:"有限力叠加就是向量求和。"},
+      {id:"fs-pair",level:1,concept:"force-system",p:"F 与 -F 两力的合力是？",c:"F + (-F)",o:["0","2F","F"],a:0,e:"向量相消。"},
+      {id:"fs-append",level:2,concept:"force-system",p:"两个力系列表拼接后的合力满足？",c:"resultant (S ++ T)",o:["resultant S + resultant T","resultant S × resultant T","resultant S"],a:0,e:"可由列表归纳证明。"},
+      {id:"fs-order",level:2,concept:"force-system",p:"交换列表中两项会改变合力吗？",c:"F₁+F₂",o:["不会，因为向量加法交换","会，因为 List 有顺序","只改变单位"],a:0,e:"存储有顺序，合力的数学值与顺序无关。"},
+      {id:"fs-zeroR",level:2,concept:"force-system",p:"合力为零是否足以保证刚体平衡？",c:"resultant S = 0",o:["不够，还需总力矩为零","足够","只需再检查质量"],a:0,e:"力偶正是合力零但仍有转动效应的例子。"},
+      {id:"fs-reduce",level:3,concept:"moment-origin",p:"一般三维力系关于点 O 的静力信息可归约为何？",c:"force-couple system",o:["合力 R 与总力矩 M_O","单个力大小","三个单位符号"],a:0,e:"也称力—力偶或 wrench 表示。"},
+      {id:"fs-semantic",level:3,concept:"force-system",p:"List AppliedForce 是否编码刚体形状和接触几何？",c:"data model",o:["没有；它只记录外力数据","完整编码","只要列表足够长就编码"],a:0,e:"系统边界与几何可作为更高层结构添加。"},
+      {id:"fs-induction",level:3,concept:"force-system",p:"证明所有有限力系的求和恒等式最自然用什么？",c:"S : List AppliedForce",o:["对 S 做归纳","只检查三个样例","浮点采样"],a:0,e:"nil 和 cons 分支覆盖全部有限列表。"}
+    ]),
+
+    moment: deck("力矩与叉积","调用 Mathlib 三维叉积，掌握方向、正交性和量纲。",18,[
+      {id:"mo-def",level:1,concept:"moment-cross",p:"关于 O 的集中力矩公式是？",c:"P @ F",o:["(P-O)×F","P·F","F×F"],a:0,e:"力臂位移叉乘力。"},
+      {id:"mo-order",level:1,concept:"moment-cross",p:"交换叉积顺序会怎样？",c:"F × r",o:["得到原力矩的相反数","不变","得到点积"],a:0,e:"叉积反交换。"},
+      {id:"mo-unit",level:1,concept:"moment-cross",p:"力矩的量纲是？",c:"r×F",o:["ML²T⁻²","MLT⁻²","ML²T⁻¹"],a:0,e:"长度乘力。数值单位常写 N·m。"},
+      {id:"mo-perp-r",level:2,concept:"moment-cross",p:"r×F 与 r 的点积是多少？",c:"r·(r×F)",o:["0","‖r‖²","r·F"],a:0,e:"叉积垂直于两个因子。"},
+      {id:"mo-parallel",level:2,concept:"moment-cross",p:"若 r 与 F 平行，力矩如何？",c:"r × F",o:["0","r·F","无定义"],a:0,e:"平行向量夹角为零，叉积为零。"},
+      {id:"mo-lever",level:2,concept:"moment-cross",p:"力矩大小可写成？",c:"‖r×F‖",o:["‖r‖‖F‖sinθ","‖r‖+‖F‖","‖r‖‖F‖cosθ"],a:0,e:"等于力乘垂直力臂。"},
+      {id:"mo-mathlib",level:3,concept:"library-statics",p:"Mathlib 三维叉积的类型为何是线性映射？",c:"crossProduct v",o:["固定第一个向量后对第二个向量线性","叉积对两个变量一起线性","因为返回标量"],a:0,e:"它也对第一变量线性，但不是把二元对整体当一元线性映射。"},
+      {id:"mo-energy",level:3,concept:"model-boundary",p:"力矩与能量同为 N·m，能直接作为同一物理类型吗？",c:"torque vs energy",o:["不应；同量纲但语义与变换性质不同","可以且总相等","只有数值非零时可以"],a:0,e:"本章用 Vec3 表示力矩、用 ℝ 表示功来保留差异。"},
+      {id:"mo-2d",level:3,concept:"statics-scope",p:"平面静力学中力矩常写成标量，三维模型中对应什么？",c:"planar moment",o:["垂直平面的轴向分量","合力大小","势能"],a:0,e:"三维叉积能统一平面与空间问题。"}
+    ]),
+
+    "moment-shift": deck("移矩定理与力偶","证明换参考点公式，并识别力偶矩的不变性。",20,[
+      {id:"ms-formula",level:1,concept:"moment-origin",p:"从 O 换到 Q 的总力矩公式是？",c:"M_Q",o:["M_O − (Q−O)×R","M_O + R","M_O"],a:0,e:"展开 P−Q=(P−O)−(Q−O)。"},
+      {id:"ms-balanced",level:1,concept:"moment-origin",p:"若 R=0，M_Q 与 M_O 的关系是？",c:"zero resultant",o:["相等","互为相反数","都必须非零"],a:0,e:"参考点修正项消失。"},
+      {id:"ms-couple",level:1,concept:"couple",p:"力偶为何能作为自由力矩移动？",c:"couple",o:["它的合力为零，所以力矩与参考点无关","两个力作用点相同","叉积恒为零"],a:0,e:"力偶矩仍可能非零。"},
+      {id:"ms-sign",level:2,concept:"moment-origin",p:"若误写 M_Q=M_O+(Q−O)×R，主要错误是什么？",c:"origin shift",o:["位移分解的符号反了","量纲不齐次","叉积应换成点积"],a:0,e:"P−Q=(P−O)−(Q−O)。"},
+      {id:"ms-proof",level:2,concept:"moment-origin",p:"单个力移矩定理的代数核心是？",c:"(a-b)×F",o:["叉积对加减法的线性","点积正定","范数三角不等式"],a:0,e:"再对力系列表归纳即可得总公式。"},
+      {id:"ms-axis",level:2,concept:"couple",p:"一对 ±F 相距 d 的力偶矩可写成？",c:"couple moment",o:["d×F","d·F","2F"],a:0,e:"d 是两条作用线之间的位移向量。"},
+      {id:"ms-equivalence",level:3,concept:"moment-origin",p:"两力系在 O 有相同 R 和 M_O，换到 Q 后是否仍静力等效？",c:"same wrench",o:["是，移矩公式给出相同 M_Q","不一定","仅当 Q=O"],a:0,e:"两者使用相同的参考点修正项。"},
+      {id:"ms-zero-moment",level:3,concept:"moment-origin",p:"能否总能选择 Q 使一般空间力系的 M_Q=0？",c:"central axis",o:["不能；存在不可消去的沿 R 力偶分量","总能","只要 R=0 就能"],a:0,e:"本章不展开螺旋理论，但保留这一模型边界。"},
+      {id:"ms-origin-ind",level:3,concept:"equilibrium-balance",p:"证明平衡定义不依赖参考点时，先用哪个条件？",c:"R=0 ∧ M_O=0",o:["R=0","M_O=0 单独","‖R‖=1"],a:0,e:"R=0 让移矩修正项消失，再运输 M_O=0。"}
+    ]),
+
+    equilibrium: deck("静力平衡","把平动与转动平衡写成一个可复用的 Lean 命题。",20,[
+      {id:"eq-def",level:1,concept:"equilibrium-balance",p:"刚体关于 O 平衡的定义是？",c:"IsBalancedAt O S",o:["R=0 ∧ M_O=0","R=M_O","R·M_O=0"],a:0,e:"需要两个三分量向量方程。"},
+      {id:"eq-trans",level:1,concept:"equilibrium-balance",p:"平动平衡对应哪个条件？",c:"translation",o:["ΣF=0","ΣM=0","ΣW=0"],a:0,e:"合力为零。"},
+      {id:"eq-rot",level:1,concept:"equilibrium-balance",p:"转动平衡对应哪个条件？",c:"rotation",o:["ΣM_O=0","ΣF=0","V=0"],a:0,e:"关于一点的总力矩为零。"},
+      {id:"eq-components",level:2,concept:"equilibrium-balance",p:"三维刚体平衡通常提供多少个标量方程？",c:"R,M ∈ ℝ³",o:["最多 6 个","3 个","9 个"],a:0,e:"合力三分量、合力矩三分量。独立性仍由几何决定。"},
+      {id:"eq-particle",level:2,concept:"equilibrium-balance",p:"质点模型为何常只写 ΣF=0？",c:"particle",o:["质点没有需独立追踪的取向与力偶","力矩恒为能量","质点没有位置"],a:0,e:"刚体模型则必须检查转动效应。"},
+      {id:"eq-origin",level:2,concept:"moment-origin",p:"已知关于 O 平衡，关于 Q 的总力矩怎样证明为零？",c:"M_Q = M_O-(Q-O)×R",o:["代入 M_O=0 与 R=0","只代入 Q=O","使用单位换算"],a:0,e:"因此平衡与参考点选择无关。"},
+      {id:"eq-sufficient",level:3,concept:"equilibrium-balance",p:"R=0 与 M=0 对本章的有限刚体静力模型是什么？",c:"balance",o:["定义上的充要条件","仅必要不充分","实验定律的完整证明"],a:0,e:"它刻画外力对任意无穷小刚体运动的功率为零。"},
+      {id:"eq-contact",level:3,concept:"statics-scope",p:"满足平衡方程是否自动保证单边接触反力方向可行？",c:"reaction ≥ 0",o:["不保证，还要检查接触不等式","保证","只要力矩为零就保证"],a:0,e:"平衡是方程；接触可行性还含不等式。"},
+      {id:"eq-dynamics",level:3,concept:"statics-scope",p:"瞬时 R=0、M=0 是否证明物体永远静止？",c:"initial velocity",o:["不证明；还需初速度和动力学假设","证明","仅需质量为正"],a:0,e:"静力平衡与运动状态是不同层次。"}
+    ]),
+
+    "equilibrium-iff": deck("平衡充要条件","用任意刚体虚速度上的功率为零刻画合力与合矩同时为零。",22,[
+      {id:"ei-power",level:1,concept:"rigid-virtual-motion",p:"刚体虚功率的有限维表达式是？",c:"P(v,ω)",o:["R·v + M·ω","R×v + M×ω","R+M"],a:0,e:"平动速度与合力配对，角速度与合力矩配对。"},
+      {id:"ei-forward",level:1,concept:"rigid-virtual-motion",p:"若 R=0 且 M=0，任意虚功率是多少？",c:"P(v,ω)",o:["0","1","取决于原点"],a:0,e:"两个点积项都为零。"},
+      {id:"ei-testR",level:1,concept:"rigid-virtual-motion",p:"要从“所有虚功率为零”推出 R=0，可选哪组测试？",c:"v=?, ω=?",o:["v=R, ω=0","v=0, ω=R","v=M, ω=R"],a:0,e:"得到 R·R=0，再用内积正定性。"},
+      {id:"ei-testM",level:2,concept:"rigid-virtual-motion",p:"推出 M=0 时选什么？",c:"v=?, ω=?",o:["v=0, ω=M","v=M, ω=0","v=R, ω=R"],a:0,e:"得到 M·M=0。"},
+      {id:"ei-positive",level:2,concept:"dot-metric",p:"上述反向证明关键调用哪个事实？",c:"x·x=0",o:["正定性给出 x=0","叉积反交换","列表长度非负"],a:0,e:"若配对退化，结论不再成立。"},
+      {id:"ei-six",level:2,concept:"rigid-virtual-motion",p:"“对所有 v,ω”与六个基方向测试的关系是？",c:"linearity",o:["在线性模型中等价","六个测试永远不够","只需一个随机方向"],a:0,e:"线性泛函在基上为零即处处为零。"},
+      {id:"ei-constraints",level:3,concept:"virtual-work",p:"有约束时只对许可虚运动功率为零，能否仍推出全部 R=M=0？",c:"admissible subspace",o:["一般不能，只能推出载荷泛函在许可子空间上为零","总能","只推出 R=M"],a:0,e:"约束反力可位于许可子空间的正交补。"},
+      {id:"ei-origin",level:3,concept:"moment-origin",p:"虚功率表达式换参考点时，平动速度应如何配套变换？",c:"rigid twist",o:["按刚体运动学调整，物理功率保持不变","不需任何处理","把点积换成叉积"],a:0,e:"本课程在固定参考点陈述定理，避免隐藏坐标变换。"},
+      {id:"ei-theorem",level:3,concept:"rigid-virtual-motion",p:"该充要条件在 Lean 中最适合写成？",c:"equilibrium",o:["theorem ... : (∀ v ω, P v ω = 0) ↔ R=0 ∧ M=0","def P := True","#eval equilibrium"],a:0,e:"↔ 同时包含两个方向的证明。"}
+    ]),
+
+    "support-reactions": deck("约束与支反力","用简支梁把未知反力、平衡方程与解的可行性连接起来。",20,[
+      {id:"sr-unknown",level:1,concept:"reactions",p:"支反力在静力模型中是什么？",c:"support",o:["约束施加的未知力或力矩","已知势能常数","单位换算系数"],a:0,e:"由平衡与约束关系共同确定。"},
+      {id:"sr-beam-sum",level:1,concept:"reactions",p:"竖直向下集中载荷 P 下，简支梁合力方程是？",c:"up positive",o:["R_A+R_B=P","R_A-R_B=P","R_AR_B=P"],a:0,e:"向上反力平衡向下载荷。"},
+      {id:"sr-beam-moment",level:1,concept:"reactions",p:"以 A 点取矩，跨长 L、载荷距 A 为 a 时？",c:"ΣM_A=0",o:["R_B L = P a","R_A L = P a","R_A+R_B=0"],a:0,e:"A 点反力力臂为零。"},
+      {id:"sr-solA",level:2,concept:"reactions",p:"由两式解得 R_A？",c:"L ≠ 0",o:["P(L-a)/L","Pa/L","P/L"],a:0,e:"先得 R_B=Pa/L，再代回合力方程。"},
+      {id:"sr-solB",level:2,concept:"reactions",p:"R_B 等于？",c:"L ≠ 0",o:["Pa/L","P(L-a)/L","PL/a"],a:0,e:"由 A 点力矩方程直接得到。"},
+      {id:"sr-assumption",level:2,concept:"reactions",p:"Lean 证明反力公式为何显式要求 L≠0？",c:"division",o:["除以跨长需要非零假设","梁必须无质量","力必须为整数"],a:0,e:"物理上通常还要求 0≤a≤L。"},
+      {id:"sr-positive",level:3,concept:"reactions",p:"若 P≥0 且 0≤a≤L、L>0，两个反力怎样？",c:"simple supports",o:["都非负","都为零","必一正一负"],a:0,e:"这验证单边支承在该载荷情形下可行。"},
+      {id:"sr-fixed",level:3,concept:"reactions",p:"固定端相对铰支座还能提供什么反力分量？",c:"fixed support",o:["约束力矩","质量","势能单位"],a:0,e:"不同支座类型决定未知反力空间。"},
+      {id:"sr-model",level:3,concept:"statics-scope",p:"求得反力后是否已经得到梁内应力分布？",c:"beam mechanics",o:["没有，还需截面、材料与连续体/梁理论","已经得到","只需换单位"],a:0,e:"本章在刚体外部平衡层停止。"}
+    ]),
+
+    determinacy: deck("静定与超静定","以线性平衡算子的解与核精确定义唯一性和自应力。",22,[
+      {id:"dt-unique",level:1,concept:"static-determinacy",p:"对给定载荷静定意味着？",c:"A r + load = 0",o:["反力解存在且唯一","没有反力","任意反力都可"],a:0,e:"Lean 中可用 ∃! 表达。"},
+      {id:"dt-hyper",level:1,concept:"static-determinacy",p:"超静定的直接代数表现是？",c:"equilibrium equations",o:["平衡方程有多个反力解","平衡方程无解","合力单位错误"],a:0,e:"还需变形协调和本构关系选解。"},
+      {id:"dt-kernel",level:1,concept:"self-stress",p:"A 的非零核向量 k 表示？",c:"A k=0",o:["自应力模式","外载荷","刚体位移"],a:0,e:"它不改变平衡残差。"},
+      {id:"dt-addk",level:2,concept:"self-stress",p:"若 r₀ 是解且 Ak=0，则哪一个仍是解？",c:"reaction family",o:["r₀+k","A+r₀","load+k"],a:0,e:"A(r₀+k)+load=(Ar₀+load)+Ak=0。"},
+      {id:"dt-inj",level:2,concept:"static-determinacy",p:"已有解时，A 的什么性质保证唯一？",c:"LinearMap",o:["Injective A","Surjective A","Continuous A"],a:0,e:"两解相减落入核；单射使核只有零。"},
+      {id:"dt-count",level:2,concept:"static-determinacy",p:"只数“未知数=方程数”为何不总能证明静定？",c:"rank",o:["方程可能线性相关，需检查秩/单射性","实数不能计数","力矩不是方程"],a:0,e:"几何退化会降低平衡算子的秩。"},
+      {id:"dt-inconsistent",level:3,concept:"static-determinacy",p:"若载荷不在 A 的像加可平衡范围内，会怎样？",c:"no solution",o:["没有平衡反力解","自动成为超静定","核自动非零"],a:0,e:"无解不是超静定，而是约束/载荷模型不相容。"},
+      {id:"dt-compat",level:3,concept:"self-stress",p:"超静定结构为何要引入材料与变形？",c:"compatibility",o:["平衡只确定到核方向，兼容与本构补足条件","材料改变量纲","为了计算合力"],a:0,e:"这正是从刚体静力向弹性力学扩展的入口。"},
+      {id:"dt-library",level:3,concept:"library-statics",p:"Mathlib 哪个对象直接表达平衡算子？",c:"A : R →ₗ[ℝ] E",o:["LinearMap","SetLike","Float"],a:0,e:"LinearMap.ker 表达自应力空间。"}
+    ]),
+
+    work: deck("功的形式化","从常力点积功出发，证明路径分段可加并划定变力边界。",22,[
+      {id:"wk-def",level:1,concept:"work-dot",p:"常力 F 从 p 到 q 做功是？",c:"W",o:["F·(q-p)","F×(q-p)","‖F‖+‖q-p‖"],a:0,e:"功是标量。"},
+      {id:"wk-unit",level:1,concept:"work-dot",p:"功的 SI 单位是？",c:"force × displacement",o:["J = N·m","N","W"],a:0,e:"瓦特 W 是功率单位。"},
+      {id:"wk-zero",level:1,concept:"work-dot",p:"位移与力正交时常力功？",c:"F·d",o:["0","‖F‖‖d‖","负无穷"],a:0,e:"点积为零。"},
+      {id:"wk-add",level:2,concept:"work-dot",p:"经中间点 q 的分段功满足？",c:"p→q→r",o:["W(p,r)=W(p,q)+W(q,r)","W(p,r)=W(p,q)W(q,r)","仅当 q=0"],a:0,e:"位移首尾相接与点积线性。"},
+      {id:"wk-sign",level:2,concept:"work-dot",p:"F 与位移方向相反时功的符号？",c:"θ=π",o:["负","正","必为零"],a:0,e:"cos π=-1。"},
+      {id:"wk-origin",level:2,concept:"affine-space",p:"常力功是否依赖坐标原点？",c:"F·(q-p)",o:["不依赖","依赖","只在 F=0 时不依赖"],a:0,e:"两点差消去共同原点。"},
+      {id:"wk-variable",level:3,concept:"statics-scope",p:"空间变力 F(x) 的功一般需要什么？",c:"path γ",o:["沿路径的线积分","只用终点点积","叉积求和"],a:0,e:"本章不展开一般曲线积分。"},
+      {id:"wk-path",level:3,concept:"conservative-potential",p:"何时变力功只依赖端点？",c:"conservative",o:["力场保守且区域条件适当","任何连续力场","只要路径直线"],a:0,e:"此时可由势能差表示。"},
+      {id:"wk-torque",level:3,concept:"model-boundary",p:"功和力矩都用 N·m，为什么一个是标量一个是向量？",c:"semantics",o:["它们来自不同几何配对与变换规则","单位决定类型相同","三维中功也是向量"],a:0,e:"同量纲不代表同对象类型。"}
+    ]),
+
+    potential: deck("势能与保守力","连接负梯度、弹簧二次势能与功—势能关系。",22,[
+      {id:"pt-force",level:1,concept:"conservative-potential",p:"保守力由势能 V 怎样定义？",c:"F(x)",o:["−∇V(x)","∇V(x)","V(x)·x"],a:0,e:"力指向势能下降方向。"},
+      {id:"pt-spring",level:1,concept:"conservative-potential",p:"各向同性线性弹簧的势能是？",c:"k stiffness",o:["½k‖x‖²","kx","½k‖x‖"],a:0,e:"二次势能的梯度为 kx。"},
+      {id:"pt-hooke",level:1,concept:"conservative-potential",p:"上述势能对应的力？",c:"-gradient",o:["−k x","k x","−k‖x‖"],a:0,e:"这就是向原点恢复的 Hooke 力。"},
+      {id:"pt-constant",level:2,concept:"conservative-potential",p:"给势能加常数 C 会改变力吗？",c:"V+C",o:["不会，常数梯度为零","会增加 C","会反向"],a:0,e:"势能零点可以任意选择。"},
+      {id:"pt-work",level:2,concept:"conservative-potential",p:"保守力从 p 到 q 的功等于？",c:"potential difference",o:["V(p)-V(q)","V(q)-V(p)","V(p)+V(q)"],a:0,e:"力是负梯度。"},
+      {id:"pt-gradient",level:2,concept:"library-statics",p:"Physlib 哪个模块提供本章使用的梯度规则？",c:"import",o:["Physlib.Mathematics.Calculus.Gradient","Physlib.Units.Dimension","Mathlib.Data.String"],a:0,e:"可复用 gradient_inner_self 等结果。"},
+      {id:"pt-diff",level:3,concept:"conservative-potential",p:"陈述 F=−∇V 默认需要 V 具有什么性质？",c:"gradient",o:["在所讨论点可微","只需可排序","必须是多项式"],a:0,e:"二次势能满足该条件。"},
+      {id:"pt-nonconservative",level:3,concept:"statics-scope",p:"摩擦力通常能否由全局单值势能表示？",c:"dry friction",o:["通常不能","总能","仅单位换成 J 即可"],a:0,e:"因此势能极小判据不能覆盖所有静力系统。"},
+      {id:"pt-phys",level:3,concept:"model-boundary",p:"Lean 证明 −∇V=−kx 后还未验证什么？",c:"model",o:["真实装置确实服从该势能模型","代数等式","梯度类型"],a:0,e:"形式化验证的是给定模型内部推导。"}
+    ]),
+
+    "virtual-work": deck("虚功原理","在有限维刚体与线性约束范围内形式化许可虚运动。",24,[
+      {id:"vw-def",level:1,concept:"virtual-work",p:"虚位移首先必须满足什么？",c:"δq",o:["线性化约束/许可条件","真实时间演化方程","单位数值为 1"],a:0,e:"虚位移是瞬时可容许变化，不一定是真实轨迹。"},
+      {id:"vw-power",level:1,concept:"rigid-virtual-motion",p:"刚体虚运动 (v,ω) 上外力虚功率是？",c:"δP",o:["R·v+M·ω","R×v+M×ω","V(v)+V(ω)"],a:0,e:"这是力系与刚体 twist 的自然配对。"},
+      {id:"vw-ideal",level:1,concept:"virtual-work",p:"理想约束反力的特点是？",c:"reaction",o:["对所有许可虚位移不做虚功","合力必为零","势能必为零"],a:0,e:"这允许在虚功方程中消去反力。"},
+      {id:"vw-free",level:2,concept:"rigid-virtual-motion",p:"无约束刚体允许所有 v、ω 时，虚功原理等价于？",c:"∀ v ω",o:["R=0∧M=0","R=M","V=0"],a:0,e:"这就是上一关的充要条件。"},
+      {id:"vw-subspace",level:2,concept:"virtual-work",p:"线性许可空间 A 上虚功为零表示载荷泛函位于？",c:"annihilator",o:["A 的零化子/正交补","A 自身必为零","所有空间"],a:0,e:"约束反力正位于未许可方向。"},
+      {id:"vw-beam",level:2,concept:"virtual-work",p:"只允许梁绕 A 微转时，虚功方程主要恢复哪个平衡式？",c:"virtual rotation",o:["关于 A 的力矩平衡","水平合力","单位换算"],a:0,e:"选择合适虚运动可直接提取平衡分量。"},
+      {id:"vw-finite",level:3,concept:"statics-scope",p:"本章为何把虚功限制在有限维？",c:"scope",o:["避免在入门章引入函数空间、弱导数和积分边界项","虚功只在三维成立","Mathlib 无集合"],a:0,e:"连续介质弱形式可作为后续研究专题。"},
+      {id:"vw-nonideal",level:3,concept:"virtual-work",p:"若约束力对许可位移做功，能否直接删除它？",c:"non-ideal constraint",o:["不能","可以","只要合力为零"],a:0,e:"必须把该力显式保留在虚功方程中。"},
+      {id:"vw-static",level:3,concept:"statics-scope",p:"虚功为零本身是否说明动力过程耗散？",c:"static virtual work",o:["不说明；这是静力/瞬时变分条件","说明无耗散","说明动能为零"],a:0,e:"动力学与耗散需要额外结构。"}
+    ]),
+
+    stability: deck("势能极值与稳定性","在保守的一维二次模型中严格区分稳定、中性与不稳定。",24,[
+      {id:"st-pos",level:1,concept:"stability-energy",p:"V(x)=½kx² 且 k>0 时，x=0 是？",c:"quadratic potential",o:["严格全局极小点","严格极大点","非驻点"],a:0,e:"x≠0 时 x²>0。"},
+      {id:"st-zero",level:1,concept:"stability-energy",p:"k=0 时势能图像怎样？",c:"V(x)",o:["处处相等，对应中性平坦","严格极小","向下开口"],a:0,e:"势能法不提供恢复刚度。"},
+      {id:"st-neg",level:1,concept:"stability-energy",p:"k<0 时 x=0 是？",c:"V(x)",o:["严格极大且存在降能方向","严格极小","中性"],a:0,e:"任意非零小位移都使势能更低。"},
+      {id:"st-first",level:2,concept:"stability-energy",p:"势能平衡点通常先满足什么一阶条件？",c:"equilibrium",o:["∇V=0","V=0","V=1"],a:0,e:"保守力 F=−∇V 在平衡点为零。"},
+      {id:"st-second",level:2,concept:"stability-energy",p:"多维二次势能的稳定性由什么控制？",c:"Hessian/stiffness",o:["刚度二次型的正定性","坐标和","单位字符串"],a:0,e:"正定给出各许可方向上的正二阶变化。"},
+      {id:"st-neutral",level:2,concept:"stability-energy",p:"半正定而非正定时应警惕什么？",c:"zero modes",o:["零模与高阶项，需要进一步分析","自动严格稳定","量纲不齐次"],a:0,e:"二阶判据可能退化。"},
+      {id:"st-local",level:3,concept:"stability-energy",p:"一般势能极小判据为何强调局部？",c:"nonlinear V",o:["远处可能有其他极值或模型失效","Lean 不能比较全局","物理空间无全局点"],a:0,e:"稳定性关注平衡附近扰动。"},
+      {id:"st-buckling",level:3,concept:"statics-scope",p:"屈曲为何不能被一个标量弹簧 k 的例子完整覆盖？",c:"buckling",o:["涉及构型空间、几何非线性与载荷类型","没有势能","只发生在二维"],a:0,e:"本章只建立后续学习所需的最小严谨原型。"},
+      {id:"st-friction",level:3,concept:"statics-scope",p:"势能严格极小是否适用于任意摩擦耗散系统？",c:"nonconservative",o:["不直接适用","总适用","只需 k>0"],a:0,e:"非保守力需要 Lyapunov、耗散或微分包含等框架。"}
+    ]),
+
+    "statics-physlib": deck("调用 Mathlib 与 Physlib","把透明教学定义连接到叉积、欧式空间、参考系、线性映射核与梯度 API。",24,[
+      {id:"sp-cross",level:1,concept:"library-statics",p:"三维叉积来自哪个 Mathlib 模块？",c:"import",o:["Mathlib.LinearAlgebra.CrossProduct","Mathlib.Data.Nat.Basic","Physlib.Units.Dimension"],a:0,e:"其中定义 crossProduct 与 Matrix 作用域中的 ⨯₃ 记号。"},
+      {id:"sp-frame",level:1,concept:"library-statics",p:"物理参考系的点/向量桥接来自？",c:"Physlib",o:["Physlib.SpaceAndTime.ReferenceFrame","Physlib.Units.WithDim.Speed","Mathlib.Tactic"],a:0,e:"它区分空间点、原点、基底和坐标向量。"},
+      {id:"sp-grad",level:1,concept:"library-statics",p:"验证二次势能负梯度需要导入？",c:"gradient",o:["Physlib.Mathematics.Calculus.Gradient","Physlib.SpaceAndTime.Time","String"],a:0,e:"Physlib 提供 gradient_inner_self 等规则。"},
+      {id:"sp-check",level:2,concept:"library-statics",p:"调用陌生库定理前最安全的第一步是？",c:"___ theoremName",o:["#check","#eval","inductive"],a:0,e:"先确认命名空间、参数和假设。"},
+      {id:"sp-kernel",level:2,concept:"self-stress",p:"自应力空间可直接写成？",c:"A : R →ₗ[ℝ] E",o:["LinearMap.ker A","Set.range A","Matrix.det R"],a:0,e:"核中元素映到零平衡残差。"},
+      {id:"sp-dotzero",level:2,concept:"dot-metric",p:"由 v·v=0 推出 v=0 可复用？",c:"Mathlib",o:["dotProduct_self_eq_zero","cross_anticomm","gradient_add_const"],a:0,e:"这是平衡充要条件的关键数学引理。"},
+      {id:"sp-gap",level:3,concept:"library-statics",p:"Physlib 当前没有整章统一静力学 API 时，合理策略是？",c:"library gap",o:["定义轻量领域结构，底层数学继续复用库","伪造不存在的定理名","完全不用库"],a:0,e:"展品的 AppliedForce/ForceSystem 正是这一桥层。"},
+      {id:"sp-coordinate",level:3,concept:"affine-space",p:"最终作品为何仍保留 Vec3 坐标版本？",c:"teaching artifact",o:["便于完整证明移矩、力偶和梁反力，再标注参考系升级路径","Physlib 只能用 Vec3","坐标比几何更真实"],a:0,e:"教学透明性与库复用并不冲突。"},
+      {id:"sp-boundary",level:3,concept:"statics-scope",p:"库中有 gradient 是否就自动获得一般稳定性定理？",c:"API reuse",o:["不会，还需势能正则性、约束、局部极小等假设","会","只需 import Mathlib"],a:0,e:"复用计算规则不等于省略物理假设。"}
+    ]),
+
     practice: deck("单位与量纲综合实验","跨越概念、代数、换算、依赖类型与 Physlib 的分层随机组卷。",30,[
       {id:"p-si",level:1,concept:"si-seven",p:"哪一个不是 SI 基本单位？",c:"___",o:["newton","kelvin","mole"],a:0,e:"N 是 kg·m·s⁻² 的导出单位。"},
       {id:"p-speed",level:1,concept:"derived-dimension",p:"速度的时间指数是？",c:"LT^?",o:["−1","1","−2"],a:0,e:"速度为长度除时间。"},
@@ -185,7 +396,22 @@
       {id:"p-physlib",level:3,concept:"physlib-withdim",p:"研究代码中已有成熟单位 API 时应优先？",c:"___",o:["检查并复用 Physlib 定义与定理","复制变量名模拟单位","只用 Float"],a:0,e:"复用经审查的库能减少重复定义。"}
     ],6),
 
-    daily: deck("单位与量纲练习场","每日跨关卡复习；从基本识别、概念连接和综合判断各抽两题。",5,[
+    "statics-practice": deck("欧式静力学综合实验","跨越向量、力矩、平衡、静定性、虚功与势能稳定性的分层随机组卷。",35,[
+      {id:"stp-vec",level:1,concept:"euclidean-space",p:"Vec3 := Fin 3 → ℝ 中向量相等怎样证明？",c:"v=w",o:["逐坐标 ext","比较列表长度","比较单位"],a:0,e:"函数外延性覆盖三个坐标。"},
+      {id:"stp-dot",level:1,concept:"dot-metric",p:"v·v=0 在欧式空间中推出？",c:"positive definite",o:["v=0","v=1","Σvᵢ=0"],a:0,e:"内积正定。"},
+      {id:"stp-force",level:1,concept:"force-system",p:"有限力系的合力是？",c:"S",o:["各力向量之和","各作用点之和","各力矩叉积"],a:0,e:"作用点只影响力矩。"},
+      {id:"stp-moment",level:1,concept:"moment-cross",p:"M_O 的公式是？",c:"force at P",o:["(P-O)×F","(P-O)·F","P+F"],a:0,e:"叉积给出轴向力矩。"},
+      {id:"stp-shift",level:2,concept:"moment-origin",p:"合力为零时换参考点，总力矩怎样？",c:"R=0",o:["不变","反号","总为零"],a:0,e:"力偶矩可能非零但参考点无关。"},
+      {id:"stp-balance",level:2,concept:"equilibrium-balance",p:"三维刚体平衡需要？",c:"static",o:["R=0 且 M=0","R=0 即可","R·M=0"],a:0,e:"分别排除平动和转动。"},
+      {id:"stp-reaction",level:2,concept:"reactions",p:"简支梁 R_A+R_B=P 且 R_BL=Pa，R_B 是？",c:"L≠0",o:["Pa/L","P(L-a)/L","PL/a"],a:0,e:"由力矩方程直接解得。"},
+      {id:"stp-kernel",level:2,concept:"self-stress",p:"Ak=0 且 k≠0 说明？",c:"equilibrium operator",o:["存在自应力方向","载荷无解","结构一定失稳"],a:0,e:"已有解可沿 k 生成另一解。"},
+      {id:"stp-work",level:3,concept:"work-dot",p:"常力功为何可沿中间点分段相加？",c:"F·(r-p)",o:["位移相加与点积线性","叉积反交换","势能必为零"],a:0,e:"r-p=(q-p)+(r-q)。"},
+      {id:"stp-vw",level:3,concept:"virtual-work",p:"有约束虚功原理只测试？",c:"δq",o:["许可虚位移","所有空间向量","真实加速度"],a:0,e:"约束反力可能在禁阻方向非零。"},
+      {id:"stp-stable",level:3,concept:"stability-energy",p:"V=½kx² 且 k<0 时原点？",c:"energy",o:["不稳定，有降能方向","严格稳定","中性"],a:0,e:"任意非零 x 都使 V(x)<V(0)。"},
+      {id:"stp-scope",level:3,concept:"statics-scope",p:"本章结论不能直接覆盖哪一项？",c:"scope",o:["连续体屈曲与摩擦接触","有限集中力合力","三维叉积"],a:0,e:"那些需要更丰富的函数空间与非线性/不等式结构。"}
+    ],6),
+
+    daily: deck("物理学形式化练习场","每日从已学习路线跨关卡复习，按难度随机抽题。",5,[
       {id:"daily-seven",level:1,concept:"si-seven",p:"SI 有几个基本量？",c:"International System of Quantities",o:["7","3","9"],a:0,e:"七个基本量对应七个基本单位。"},
       {id:"daily-energy",level:1,concept:"derived-dimension",p:"能量量纲是？",c:"F·L",o:["ML²T⁻²","MLT⁻²","ML²T⁻³"],a:0,e:"力乘长度。"},
       {id:"daily-charge",level:1,concept:"derived-dimension",p:"库仑 C 展开为？",c:"charge",o:["A·s","A/s","kg·m/s"],a:0,e:"电流乘时间。"},
@@ -197,7 +423,19 @@
       {id:"daily-exp",level:3,concept:"homogeneity",p:"exp(−t/τ) 的量纲条件？",c:"t/τ",o:["无量纲","长度","能量"],a:0,e:"指数函数自变量需无量纲。"},
       {id:"daily-torque",level:3,concept:"model-boundary",p:"同量纲是否必为同一物理概念？",c:"torque / energy",o:["不是","是","只在 CGS 中是"],a:0,e:"量纲不能编码全部语义。"},
       {id:"daily-root",level:3,concept:"rational-exponent",p:"Physlib 允许有理量纲指数的主要意义？",c:"ℚ exponents",o:["表达根式量纲","让单位换算变近似","删除类型检查"],a:0,e:"平方根对应指数乘 1/2。"},
-      {id:"daily-kmh",level:3,concept:"physlib-withdim",p:"1 km/h 的 SI 数值是？",c:"DimSpeed.oneKilometerPerHour_in_SI",o:["5/18","18/5","1000"],a:0,e:"精确换算为 5/18 m/s。"}
+      {id:"daily-kmh",level:3,concept:"physlib-withdim",p:"1 km/h 的 SI 数值是？",c:"DimSpeed.oneKilometerPerHour_in_SI",o:["5/18","18/5","1000"],a:0,e:"精确换算为 5/18 m/s。"},
+      {id:"daily-vec3",level:1,concept:"euclidean-space",p:"Fin 3 → ℝ 表示？",c:"Vec3",o:["三维实坐标向量","三个实数的集合命题","三维整数"],a:0,e:"Fin 3 是三个坐标索引。"},
+      {id:"daily-dot",level:1,concept:"dot-metric",p:"正交向量的点积是？",c:"v ⟂ w",o:["0","1","‖v‖+‖w‖"],a:0,e:"正交由内积为零定义。"},
+      {id:"daily-force",level:1,concept:"force-vector",p:"刚体集中力为何记录作用点？",c:"AppliedForce",o:["作用点影响力矩","作用点改变量纲","作用点决定质量"],a:0,e:"同力异点可有不同转动效应。"},
+      {id:"daily-moment",level:1,concept:"moment-cross",p:"力矩使用哪个运算？",c:"r ? F",o:["叉积","点积","除法"],a:0,e:"M=r×F。"},
+      {id:"daily-shift",level:2,concept:"moment-origin",p:"移矩公式的修正项含什么？",c:"M_Q-M_O",o:["−(Q−O)×R","Q·R","V(Q)-V(O)"],a:0,e:"修正项由原点位移和合力决定。"},
+      {id:"daily-balance",level:2,concept:"equilibrium-balance",p:"刚体平动与转动平衡合写为？",c:"static equilibrium",o:["R=0∧M=0","R=M","R×M=0"],a:0,e:"两个向量条件都需要。"},
+      {id:"daily-beam",level:2,concept:"reactions",p:"简支梁以 A 取矩的优势是？",c:"ΣM_A",o:["A 点反力力臂为零","合力自动为零","不需 L≠0"],a:0,e:"可先独立求另一端反力。"},
+      {id:"daily-unique",level:2,concept:"static-determinacy",p:"静定在 Lean 中适合用哪个量词结构？",c:"reaction solution",o:["∃!","∀!","¬∃"],a:0,e:"存在唯一解。"},
+      {id:"daily-virtual",level:3,concept:"rigid-virtual-motion",p:"对所有 v,ω 有 R·v+M·ω=0 推出？",c:"free rigid body",o:["R=0∧M=0","R=M","R×M=0"],a:0,e:"分别测试 v=R 与 ω=M。"},
+      {id:"daily-potential",level:3,concept:"conservative-potential",p:"V=½k‖x‖² 对应力？",c:"F=-∇V",o:["−kx","kx","−k‖x‖"],a:0,e:"二次势能梯度为 kx。"},
+      {id:"daily-selfstress",level:3,concept:"self-stress",p:"非零 ker A 主要提示？",c:"equilibrium map",o:["超静定/自应力自由度","势能必为负","合力单位错误"],a:0,e:"平衡方程不能唯一确定核方向。"},
+      {id:"daily-stability",level:3,concept:"stability-energy",p:"正刚度二次势能的原点是？",c:"k>0",o:["严格极小","严格极大","中性"],a:0,e:"非零扰动增加势能。"}
     ])
   };
 
@@ -207,6 +445,9 @@
     {id:"si",name:"BIPM SI Brochure",url:"https://www.bipm.org/en/publications/si-brochure",license:"BIPM publication"},
     {id:"workshop",name:"暑校 Type Theory / Inductive Type 物理量练习",license:"课程材料"},
     {id:"physlib",name:"Physlib",url:"https://github.com/leanprover-community/Physlib",license:"Apache-2.0"},
-    {id:"mil",name:"Mathematics in Lean",url:"https://github.com/leanprover-community/mathematics_in_lean",license:"Apache-2.0"}
+    {id:"mil",name:"Mathematics in Lean",url:"https://github.com/leanprover-community/mathematics_in_lean",license:"Apache-2.0"},
+    {id:"mathlib-cross",name:"Mathlib CrossProduct",url:"https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/LinearAlgebra/CrossProduct.lean",license:"Apache-2.0"},
+    {id:"physlib-frame",name:"Physlib ReferenceFrame",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/SpaceAndTime/ReferenceFrame.lean",license:"Apache-2.0"},
+    {id:"physlib-gradient",name:"Physlib Gradient",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Mathematics/Calculus/Gradient.lean",license:"Apache-2.0"}
   ];
 }());

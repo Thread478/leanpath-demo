@@ -2,7 +2,7 @@
 
 课程主题与路线位于 [course-config.js](./course-config.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。四者均与页面运行逻辑分离。
 
-当前主题为 **LeanPath Physics**，完整路线分成五部分：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学 → 黎曼流形的构造 → 拉格朗日力学。第一部分已经实现，其余四部分在地图中作为后续路线展示。
+当前主题为 **LeanPath Physics**，完整路线分成五部分：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学 → 黎曼流形的构造 → 拉格朗日力学。第一、二部分已经实现，后三部分在地图中作为后续路线展示。
 
 ## 题库结构
 
@@ -46,7 +46,7 @@
 3. 题目仍按 1 → 2 → 3 的难度顺序呈现；
 4. 每题的答案位置再次随机打乱。
 
-因此随机性不会破坏学习曲线。第一部分的 12 个知识关卡各有 9 题、每次抽取 6 题；综合实验和每日练习各有 12 题、每次抽取 6 题，总计 132 道选择题。
+因此随机性不会破坏学习曲线。第一部分和第二部分共 28 个知识关卡，每关各有 9 题、每次抽取 6 题；两次综合实验各有 12 题，每日练习含 24 题，总计 300 道选择题。
 
 ## 一次性语法导学
 
@@ -73,6 +73,8 @@
 - `placeholder`：编辑器为空时的提示，不会进入提交源码；
 - `hint`：AI 不可用时的本地渐进提示；
 - `guide`：可选的一次性新概念导学；
+- `part`：所属部分；省略时默认为第一部分；
+- `unlock`：可选的课程关卡 ID，只有完成该关后才开放这道写作题；
 - `xp`：首次被 Lean 接受后的经验奖励。
 
 学习者只编辑 `{{ANSWER}}`。提交时，页面会组合完整源码并交给 Lean Language Server；判定不依赖参考答案字符串。`sorry`、`admit`、`axiom`、`unsafe` 及答案建议占位符会被完整性检查拒绝。
@@ -83,7 +85,7 @@
 2. 题目陈述与测试位于不可编辑模板中；
 3. 为题目准备至少一个通过答案与一个明确失败的答案，并进行真实 Lean 测试；
 4. 不把完整答案写进 `starter` 或默认提示；
-5. 保持由 SI 枚举、量纲向量、量纲代数、单位换算、依赖类型物理量到 Physlib 定理复用的渐进顺序；
+5. 在各部分内部保持渐进顺序；第二部分从欧式向量逐步进入力矩、平衡、静定性、虚功与能量稳定性；
 6. 同时说明模型假设与现实适用范围，避免把 Lean 的演绎验证表述成经验验证。
 
 判题与 AI 运行时配置见 [../INTEGRATION.md](../INTEGRATION.md)。
@@ -92,4 +94,4 @@
 
 [showcase-bank.js](./showcase-bank.js) 记录逐步解锁的代码展品。每个展品的 `unlock` 必须是 `course-config.js` 中存在的关卡 ID；小型展品可直接使用 `code`，完整章节使用 `file` 指向独立 Lean 文件。
 
-第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，只在领取 `chest` 通关成果后展示。该文件应作为一份完整作品维护，不得只拼接题目答案；修改后需检查其中的导入、全部定理以及最后的 Physlib 调用。
+第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。

@@ -202,7 +202,7 @@
 
     function openLesson(id) {
       if (lessonStatus({id:id}) === "locked") return locked();
-      if (id === "chest") return claimChest();
+      if (course.completionRewards && course.completionRewards[id]) return claimChest(id);
       openQuiz(id);
     }
 
@@ -249,6 +249,11 @@
       return id;
     }
 
+    function partTitle(part) {
+      const unit = units.find(function(item){return item.n === Number(part);});
+      return unit ? "第" + ["零","一","二","三","四","五"][unit.n] + "部分 · " + unit.t : "第" + part + "部分";
+    }
+
     function showcaseEntry() {
       return SHOWCASE_ENTRIES.find(function(entry){return entry.id === activeShowcaseId;}) || SHOWCASE_ENTRIES[0];
     }
@@ -283,16 +288,19 @@
       const unlocked = showcaseUnlocked(entry);
       const unlockedCount = SHOWCASE_ENTRIES.filter(showcaseUnlocked).length;
       document.querySelector("#showcaseSummary").textContent = unlockedCount + " / " + SHOWCASE_ENTRIES.length + " 已解锁";
-      document.querySelector("#showcaseList").innerHTML = SHOWCASE_ENTRIES.map(function(item, index) {
+      document.querySelector("#showcaseList").innerHTML = SHOWCASE_ENTRIES.map(function(item) {
         const available = showcaseUnlocked(item);
-        return '<button class="showcase-entry ' + (available ? "unlocked" : "locked") + (item.id === entry.id ? " active" : "") + '" onclick="selectShowcase(\'' + item.id + '\')"><i>' + (available ? "✓" : "◆") + '</i><span><b>' + escapeHtml(item.title) + '</b><small>第一部分 · 展品 ' + (index + 1) + '</small></span></button>';
+        const partEntries = SHOWCASE_ENTRIES.filter(function(candidate){return Number(candidate.part || 1) === Number(item.part || 1);});
+        const partIndex = partEntries.indexOf(item) + 1;
+        return '<button class="showcase-entry ' + (available ? "unlocked" : "locked") + (item.id === entry.id ? " active" : "") + '" onclick="selectShowcase(\'' + item.id + '\')"><i>' + (available ? "✓" : "◆") + '</i><span><b>' + escapeHtml(item.title) + '</b><small>' + escapeHtml(partTitle(item.part || 1)) + ' · 展品 ' + partIndex + '</small></span></button>';
       }).join("");
-      document.querySelector("#showcasePart").textContent = "第一部分 · 单位与量纲 · 展品 " + (SHOWCASE_ENTRIES.indexOf(entry) + 1);
+      const samePartEntries = SHOWCASE_ENTRIES.filter(function(item){return Number(item.part || 1) === Number(entry.part || 1);});
+      document.querySelector("#showcasePart").textContent = partTitle(entry.part || 1) + " · 展品 " + (samePartEntries.indexOf(entry) + 1);
       document.querySelector("#showcaseEntryTitle").textContent = entry.title;
       document.querySelector("#showcaseEntrySummary").textContent = unlocked ? entry.summary : "完成「" + lessonTitle(entry.unlock) + "」后解锁。已解锁的展品会保留在这里，最终汇成完整章节代码。";
       const status = document.querySelector("#showcaseStatus");
       status.className = "showcase-status" + (unlocked ? "" : " locked");
-      status.textContent = unlocked ? (entry.completion ? "第一部分通关作品" : "已解锁") : "尚未解锁";
+      status.textContent = unlocked ? (entry.completion ? "本部分通关作品" : "已解锁") : "尚未解锁";
       document.querySelector("#showcaseFilename").textContent = unlocked ? entry.filename : "locked.lean";
       const copyButton = document.querySelector("#showcaseCopy");
       copyButton.classList.toggle("hidden", !unlocked);
@@ -384,9 +392,10 @@
       return gained;
     }
 
-    function claimChest() {
-      const gained = awardProgress("chest", 80);
-      showToast(gained ? "第一部分完成：+80 XP，完整《单位与量纲》Lean 作品已收入成果图鉴。" : "第一部分成果已经领取，可在成果图鉴中查看。");
+    function claimChest(id) {
+      const reward = (course.completionRewards && course.completionRewards[id]) || {xp:80,message:"通关完成：+80 XP，完整 Lean 作品已收入成果图鉴。",repeat:"本部分成果已经领取，可在成果图鉴中查看。"};
+      const gained = awardProgress(id, Number(reward.xp) || 0);
+      showToast(gained ? reward.message : reward.repeat);
     }
 
     const leanRefs = [
@@ -403,6 +412,14 @@
     ];
 
     const refs = [
+      {id:"euclideanRef",s:"ℝ³",l:"欧式向量",t:"坐标、内积、范数与仿射点",sum:"本章以 Vec3 := Fin 3 → ℝ 建立透明三维坐标，再用 EuclideanSpace 连接 Mathlib 的一般内积空间。点与向量必须区分：两点之差是位移，点积给出正交和长度，点积正定性是平衡充要条件的关键。",source:"Mathlib EuclideanSpace / Physlib ReferenceFrame",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/SpaceAndTime/ReferenceFrame.lean",code:"import Mathlib\n\nabbrev Vec3 := Fin 3 → ℝ\nstructure Point3 where coord : Vec3\n\ndef displacement (p q : Point3) : Vec3 :=\n  q.coord - p.coord\n\ndef dot (v w : Vec3) : ℝ :=\n  dotProduct v w",calls:[["Fin 3 → ℝ","恰有三个实坐标的向量"],["EuclideanSpace ℝ (Fin n)","Mathlib 的标准有限维欧式空间"],["q.coord - p.coord","点之差是位移向量"],["dotProduct_self_eq_zero","自点积为零 iff 向量为零"]]},
+      {id:"forceMomentRef",s:"r×F",l:"力系与力矩",t:"集中力、合力、叉积和移矩",sum:"集中力同时记录作用点和力向量。有限力系的合力是向量和，关于 O 的总力矩是 Σ(P−O)×F。换参考点满足 M_Q=M_O−(Q−O)×R；因此合力为零的力偶矩和任何平衡力系的总力矩都与参考点无关。",source:"Mathlib CrossProduct",url:"https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/LinearAlgebra/CrossProduct.lean",code:"import Mathlib.LinearAlgebra.CrossProduct\n\nstructure AppliedForce where\n  point : Point3\n  vector : Vec3\n\ndef momentAt (o : Point3) (f : AppliedForce) : Vec3 :=\n  crossProduct\n    (f.point.coord - o.coord) f.vector\n\n-- M q = M o - (q-o) × resultant",calls:[["crossProduct v w","Mathlib 的三维叉积"],["cross_self","v×v=0"],["dot_self_cross","叉积与第一因子正交"],["List.rec / induction","从单力公式推广到有限力系"]]},
+      {id:"equilibriumRef",s:"Σ=0",l:"刚体平衡",t:"平动、转动与虚功率充要条件",sum:"刚体静力平衡定义为合力 R=0 且关于一点的总力矩 M=0。无穷小刚体运动由虚平动 v 和虚转动 ω 表示，外力功率为 R·v+M·ω；它对所有 v、ω 为零 iff R=M=0。",source:"LeanPath finite rigid statics model",url:"https://github.com/Thread478/leanpath-demo/blob/main/docs/lean/EuclideanStatics.lean",code:"def IsBalancedAt (o : Point3) (S : ForceSystem) : Prop :=\n  resultant S = 0 ∧ totalMomentAt o S = 0\n\ndef rigidVirtualPower (R M v ω : Vec3) : ℝ :=\n  dotProduct R v +\n  dotProduct M ω\n\n-- (∀ v ω, power v ω = 0) ↔ R=0 ∧ M=0",calls:[["constructor","分开证明充要条件两个方向"],["h R 0","测试纯虚平动以得到 R·R=0"],["h 0 M","测试纯虚转动以得到 M·M=0"],["dotProduct_self_eq_zero","由正定性推出向量为零"]]},
+      {id:"reactionRef",s:"△",l:"支反力",t:"简支梁的平衡方程与可行性",sum:"支反力是约束施加的未知量。跨长 L、距左端 a 处有向下载荷 P 的简支梁满足 R_A+R_B=P 与 R_B L=Pa，所以 R_A=P(L−a)/L、R_B=Pa/L。形式化必须显式保留 L≠0，并可进一步证明 0≤a≤L 时反力非负。",source:"Elementary engineering statics / LeanPath formalization",url:"https://github.com/Thread478/leanpath-demo/blob/main/docs/lean/EuclideanStatics.lean",code:"def leftReaction (P a L : ℝ) := P*(L-a)/L\ndef rightReaction (P a L : ℝ) := P*a/L\n\ntheorem force_balance (hL : L ≠ 0) :\n    leftReaction P a L + rightReaction P a L = P := by\n  field_simp [leftReaction, rightReaction, hL]\n  ring",calls:[["(hL : L ≠ 0)","除以跨长的显式前提"],["field_simp","清除非零分母"],["ring","验证平衡多项式恒等式"],["positivity","检查单边支座反力非负"]]},
+      {id:"determinacyRef",s:"ker",l:"静定性",t:"平衡算子、唯一性与自应力",sum:"把反力 r 映到合力/合矩残差的线性映射 A 称为平衡算子。给定载荷时 ∃! r, Ar+load=0 表示静定；非零 k∈ker A 是自应力方向，已有解 r₀ 后 r₀+k 仍是解，说明仅靠平衡不足。单纯计数不替代秩与核的检查。",source:"Mathlib LinearMap",url:"https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basic.html",code:"def IsStaticallyDeterminate\n    (A : R →ₗ[ℝ] E) (load : E) : Prop :=\n  ∃! r, A r + load = 0\n\n-- k ≠ 0, A k = 0\n-- A (r₀ + k) + load = 0",calls:[["R →ₗ[ℝ] E","线性平衡算子"],["∃! r","存在唯一反力解"],["LinearMap.ker A","自应力子空间"],["Function.Injective A","已有解时保证其唯一"]]},
+      {id:"workPotentialRef",s:"W,V",l:"功与势能",t:"常力功、负梯度与弹簧模型",sum:"常力从 p 到 q 的功是 F·(q−p)，并由位移相加和点积线性得到路径分段可加。保守力定义为势能的负梯度；Physlib 的梯度规则可严格证明 ½k⟪x,x⟫ 的梯度是 k•x，故弹簧力为 −k•x。",source:"Physlib Gradient",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Mathematics/Calculus/Gradient.lean",code:"import Physlib.Mathematics.Calculus.Gradient\n\ndef V (k : ℝ) (x : EuclideanSpace ℝ (Fin n)) :=\n  (1/2 : ℝ) * k * ⟪x,x⟫_ℝ\n\ntheorem gradV : gradient (V k) x = k • x := by\n  rw [V, gradient_const_mul_inner_self]\n  module",calls:[["F ⬝ᵥ (q-p)","常力功"],["gradient","Mathlib 的 Hilbert 空间梯度"],["gradient_const_mul_inner_self","Physlib 二次型梯度规则"],["−gradient V","保守力的定义"]]},
+      {id:"virtualWorkRef",s:"δW",l:"虚功原理",t:"许可虚运动与理想约束",sum:"虚位移不是任意位移，而是满足线性化约束的瞬时许可方向。理想约束反力在这些方向上不做虚功，因此可从虚功方程中消去。无约束刚体的许可空间是全部 (v,ω)，此时虚功原理退化为合力与合矩同时为零。",source:"LeanPath finite-dimensional virtual work model",url:"https://github.com/Thread478/leanpath-demo/blob/main/docs/lean/EuclideanStatics.lean",code:"abbrev AdmissibleMotions := Set (Vec3 × Vec3)\n\ndef VirtualWorkPrincipleAt (o) (S) (A) : Prop :=\n  ∀ motion ∈ A,\n    rigidVirtualPowerAt o S motion.1 motion.2 = 0",calls:[["Set (Vec3 × Vec3)","许可虚平动/虚转动集合"],["motion ∈ admissible","只测试满足约束的运动"],["Set.univ","自由刚体允许所有虚运动"],["annihilator / orthogonal complement","约束反力所在的对偶方向"]]},
+      {id:"stabilityRef",s:"min V",l:"能量稳定性",t:"正刚度、中性与不稳定",sum:"对保守的一维二次势能 V(x)=½kx²，k>0 时原点严格极小，k=0 时势能平坦而中性，k<0 时任何非零小位移都降低势能。本结论是可完整证明的最小原型；屈曲、摩擦和一般非线性系统不能无条件套用。",source:"LeanPath quadratic stability model",url:"https://github.com/Thread478/leanpath-demo/blob/main/docs/lean/EuclideanStatics.lean",code:"def scalarPotential (k x : ℝ) := (1/2 : ℝ)*k*x^2\n\ntheorem strict_min (hk : 0 < k) (hx : x ≠ 0) :\n    scalarPotential k 0 < scalarPotential k x := by\n  have hx2 : 0 < x^2 := sq_pos_of_ne_zero hx\n  simp [scalarPotential]\n  nlinarith",calls:[["sq_pos_of_ne_zero","非零扰动的平方为正"],["nlinarith","组合刚度正性与平方正性"],["k = 0","零模/中性情形"],["k < 0","存在势能下降方向"]]},
       {id:"quantitySi",s:"Q",l:"物理量与 SI",t:"数值、单位、量纲与七个基本量",sum:"物理量的数值依赖单位，量纲描述它属于哪一类量。SI 以时间、长度、质量、电流、热力学温度、物质的量和发光强度七个基本量为基底；相应基本单位是 s、m、kg、A、K、mol、cd。",source:"BIPM SI Brochure (9th edition)",url:"https://www.bipm.org/en/publications/si-brochure",code:"inductive BaseDimension where\n  | time | length | mass | electricCurrent\n  | temperature | amountOfSubstance | luminousIntensity\n  deriving DecidableEq, Repr\n\ndef baseUnitSymbol : BaseDimension → String\n  | .time => \"s\"\n  | .length => \"m\"\n  | .mass => \"kg\"\n  | .electricCurrent => \"A\"\n  | .temperature => \"K\"\n  | .amountOfSubstance => \"mol\"\n  | .luminousIntensity => \"cd\"",calls:[["BaseDimension","有限枚举七个 SI 基本量"],["deriving DecidableEq","自动生成基本量相等判定"],["BaseDimension → String","为每个基本量给出单位符号"],["match / | .time =>","对七种情况作无遗漏模式匹配"]]},
       {id:"dimConstruction",s:"ℤ⁷",l:"量纲构造",t:"把量纲建模为整数指数向量",sum:"一个常用教学模型是记录每个基本量的整数指数。Dimension 的相等由七个分量决定；basis b 只在第 b 个基本量上取指数 1。分数指数需要把 ℤ 换成 ℚ，不能悄悄塞进当前模型。",source:"Physlib Units and LeanPath teaching model",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"structure Dimension where\n  exponent : BaseDimension → ℤ\n\n@[ext] theorem Dimension.ext {d₁ d₂ : Dimension}\n    (h : ∀ b, d₁.exponent b = d₂.exponent b) : d₁ = d₂ := by\n  cases d₁ with\n  | mk e₁ =>\n    cases d₂ with\n    | mk e₂ =>\n      congr\n      funext b\n      exact h b\n\ndef basis (b₀ : BaseDimension) : Dimension :=\n  ⟨fun b => if b = b₀ then 1 else 0⟩",calls:[["BaseDimension → ℤ","七个基本量的整数指数"],["Dimension.ext","逐分量证明量纲相等"],["basis .length","构造纯长度量纲 L"],["ℚ 指数","表示开方等分数次幂时应显式扩展模型"]]},
       {id:"dimAlgebra",s:"×÷",l:"量纲代数",t:"乘、除、逆与整数幂",sum:"物理量相乘时量纲指数相加，相除时相减，取倒数时取负，整数幂时所有指数乘以幂次。由逐分量整数运算可以证明结合律、交换律和消去律。",source:"Physlib Units and Mathematics in Lean",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"instance : One Dimension := ⟨⟨fun _ => 0⟩⟩\ninstance : Mul Dimension :=\n  ⟨fun d₁ d₂ => ⟨fun b => d₁.exponent b + d₂.exponent b⟩⟩\ninstance : Inv Dimension :=\n  ⟨fun d => ⟨fun b => -d.exponent b⟩⟩\ninstance : Div Dimension := ⟨fun d₁ d₂ => d₁ * d₂⁻¹⟩\ninstance : HPow Dimension ℤ Dimension :=\n  ⟨fun d n => ⟨fun b => n * d.exponent b⟩⟩\n\ntheorem self_div (d : Dimension) : d / d = 1 := by\n  ext b\n  simp",calls:[["d₁ * d₂","指数逐分量相加"],["d₁ / d₂","指数逐分量相减"],["d⁻¹","所有指数取负"],["d ^ (n : ℤ)","所有指数乘整数 n"]]},
@@ -622,7 +639,8 @@
       const gained = awardProgress(activeDeckId, deck.xp);
       closeQuiz();
       if (gained) {
-        const nextText = activeDeckId === "practice" ? "，第一部分通关成果已解锁。" : "";
+        const isPartPractice = activeDeckId === "practice" || activeDeckId.endsWith("-practice");
+        const nextText = isPartPractice ? "，本部分通关成果已解锁。" : "";
         showToast("完成 " + deck.label + "：+" + gained + " XP" + nextText);
       } else {
         showToast("复习完成，本关奖励已领取。");
@@ -640,10 +658,27 @@
       return WRITING_TASKS.find(function(task){return task.id === activeWritingId;}) || WRITING_TASKS[0];
     }
 
+    function writingPart(task) {
+      return Number(task && task.part) || 1;
+    }
+
+    function writingPartTasks(task) {
+      const part = writingPart(task);
+      return WRITING_TASKS.filter(function(item){return writingPart(item) === part;});
+    }
+
+    function nextWritingTask(task) {
+      const siblings = writingPartTasks(task);
+      const next = siblings[siblings.indexOf(task) + 1];
+      return next && writingStatus(next) !== "locked" ? next : null;
+    }
+
     function writingStatus(task) {
-      const index = WRITING_ORDER.indexOf(task.id);
       if (progressState.writingCompleted.includes(task.id)) return "done";
-      if (index === 0 || progressState.writingCompleted.includes(WRITING_ORDER[index - 1])) return "current";
+      if (task.unlock && !progressState.completed.includes(task.unlock)) return "locked";
+      const siblings = writingPartTasks(task);
+      const index = siblings.indexOf(task);
+      if (index === 0 || progressState.writingCompleted.includes(siblings[index - 1].id)) return "current";
       return "locked";
     }
 
@@ -721,12 +756,13 @@
       if (!task) return;
       const done = progressState.writingCompleted.length;
       document.querySelector("#writingSummary").textContent = done + " / " + WRITING_TASKS.length + " 已通过";
-      document.querySelector("#writingTaskList").innerHTML = WRITING_TASKS.map(function(item, index) {
+      document.querySelector("#writingTaskList").innerHTML = WRITING_TASKS.map(function(item) {
         const status = writingStatus(item);
-        const icon = status === "done" ? "✓" : (status === "locked" ? "◆" : String(index + 1));
-        return '<button class="writing-task ' + status + (item.id === task.id ? ' active' : '') + '" onclick="selectWritingTask(\'' + item.id + '\')"' + (status === "locked" ? " disabled" : "") + '><i>' + icon + '</i><span><b>' + item.title + '</b><small>' + item.section + ' · +' + item.xp + ' XP</small></span></button>';
+        const localIndex = writingPartTasks(item).indexOf(item) + 1;
+        const icon = status === "done" ? "✓" : (status === "locked" ? "◆" : String(localIndex));
+        return '<button class="writing-task ' + status + (item.id === task.id ? ' active' : '') + '" onclick="selectWritingTask(\'' + item.id + '\')"' + (status === "locked" ? " disabled" : "") + '><i>' + icon + '</i><span><b>' + item.title + '</b><small>第' + ["零","一","二","三","四","五"][writingPart(item)] + '部分 · ' + item.section + ' · +' + item.xp + ' XP</small></span></button>';
       }).join("");
-      document.querySelector("#writingSection").textContent = task.section + " · 第 " + (WRITING_ORDER.indexOf(task.id) + 1) + " 题";
+      document.querySelector("#writingSection").textContent = "第" + ["零","一","二","三","四","五"][writingPart(task)] + "部分 · " + task.section + " · 第 " + (writingPartTasks(task).indexOf(task) + 1) + " 题";
       document.querySelector("#writingTitle").textContent = task.title;
       document.querySelector("#writingDifficulty").textContent = "难度 " + task.level;
       document.querySelector("#writingPrompt").textContent = task.prompt;
@@ -766,9 +802,9 @@
       const task = writingTask();
       if (!task || writingChecking) return;
       if (lastWritingResult && lastWritingResult.ok) {
-        const nextIndex = WRITING_ORDER.indexOf(task.id) + 1;
-        if (nextIndex < WRITING_ORDER.length) selectWritingTask(WRITING_ORDER[nextIndex]);
-        else showToast("全部写作题已经通过 Lean 验证！");
+        const next = nextWritingTask(task);
+        if (next) selectWritingTask(next.id);
+        else showToast("本部分当前可用写作题已经通过 Lean 验证！");
         return;
       }
       if (progressState.hearts <= 0) {
@@ -829,12 +865,13 @@
       const task = writingTask();
       const done = progressState.writingCompleted.length;
       document.querySelector("#writingSummary").textContent = done + " / " + WRITING_TASKS.length + " 已通过";
-      document.querySelector("#writingTaskList").innerHTML = WRITING_TASKS.map(function(item, index) {
+      document.querySelector("#writingTaskList").innerHTML = WRITING_TASKS.map(function(item) {
         const status = writingStatus(item);
-        const icon = status === "done" ? "✓" : (status === "locked" ? "◆" : String(index + 1));
-        return '<button class="writing-task ' + status + (item.id === task.id ? ' active' : '') + '" onclick="selectWritingTask(\'' + item.id + '\')"' + (status === "locked" ? " disabled" : "") + '><i>' + icon + '</i><span><b>' + item.title + '</b><small>' + item.section + ' · +' + item.xp + ' XP</small></span></button>';
+        const localIndex = writingPartTasks(item).indexOf(item) + 1;
+        const icon = status === "done" ? "✓" : (status === "locked" ? "◆" : String(localIndex));
+        return '<button class="writing-task ' + status + (item.id === task.id ? ' active' : '') + '" onclick="selectWritingTask(\'' + item.id + '\')"' + (status === "locked" ? " disabled" : "") + '><i>' + icon + '</i><span><b>' + item.title + '</b><small>第' + ["零","一","二","三","四","五"][writingPart(item)] + '部分 · ' + item.section + ' · +' + item.xp + ' XP</small></span></button>';
       }).join("");
-      document.querySelector("#leanCheckBtn").textContent = WRITING_ORDER.indexOf(task.id) < WRITING_ORDER.length - 1 ? "下一题" : "全部完成";
+      document.querySelector("#leanCheckBtn").textContent = nextWritingTask(task) ? "下一题" : "本部分已完成";
       if (!document.querySelector("#progressOverlay").classList.contains("hidden")) renderProgress();
     }
 
