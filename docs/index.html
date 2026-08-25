@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="像闯关一样学习 Lean 4 物理学形式化：从量纲、单位与运动学，到守恒律、振动和轨道模型。">
-  <title>LeanPath Physics — 物理学形式化互动学习</title>
+  <meta name="description" content="像闯关一样学习 Lean 4 物理学形式化：从单位与量纲出发，进入静力学、动力学、黎曼几何与拉格朗日力学。">
+  <title>LeanPath Physics — 五部分物理学形式化路线</title>
   <style>
     :root{--ink:#26352f;--muted:#718079;--line:#e3eae6;--mint:#56c9a2;--deep:#26936d;--pale:#e9f9f3;--paper:#fafcfb}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button,a{font:inherit;color:inherit}button{cursor:pointer}a{text-decoration:none}
@@ -21,33 +21,34 @@
     .bar:after{display:none}.bar i{display:block;width:0;height:100%;border-radius:inherit;background:var(--mint);transition:width .35s ease}
     .tabs{overflow-y:auto}.source-note{margin:18px 0 0;padding:11px 13px;border-radius:10px;background:#f4f7f5;color:#74817b;font-size:9px}.source-note a{color:var(--deep);text-decoration:underline}
     .reward{display:inline-block;margin-top:12px;padding:4px 9px;border-radius:999px;background:var(--pale);color:var(--deep);font-size:10px;font-weight:900}.toast{position:fixed;z-index:80;left:50%;bottom:28px;transform:translate(-50%,18px);padding:12px 18px;border-radius:12px;background:#20352e;color:#fff;box-shadow:0 12px 35px #14251f55;font-weight:800;opacity:0;pointer-events:none;transition:.25s}.toast.show{transform:translate(-50%,0);opacity:1}
-    .progress-modal{width:min(820px,100%)}.progress-body{max-height:calc(100vh - 128px);overflow:auto;padding:28px}.progress-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{padding:18px;border:1px solid var(--line);border-radius:14px;background:#f8faf9}.metric small,.metric b{display:block}.metric small{color:var(--muted);font-size:9px}.metric b{margin-top:4px;color:var(--deep);font-size:23px}.unit-progress-list{margin-top:24px;display:grid;gap:12px}.unit-progress{padding:14px 15px;border:1px solid var(--line);border-radius:13px}.unit-progress header{display:flex;justify-content:space-between;gap:12px}.unit-progress header b{font-size:11px}.unit-progress header span{color:var(--muted);font-size:9px}.mini-bar{height:7px;margin-top:10px;overflow:hidden;border-radius:7px;background:#edf1ef}.mini-bar i{display:block;height:100%;border-radius:inherit;background:var(--mint)}.progress-actions{margin-top:20px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line)}.progress-actions p{margin:0;color:var(--muted);font-size:9px}.refill{height:40px;padding:0 15px;border:0;border-radius:10px;background:#fff0f1;color:#bd5059;font-weight:800}.heart-pop{animation:heartPop .25s ease}@keyframes heartPop{50%{transform:scale(1.22)}}
+    .progress-modal{width:min(900px,100%)}.progress-body{max-height:calc(100vh - 128px);overflow:auto;padding:28px}.progress-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.metric{padding:18px;border:1px solid var(--line);border-radius:14px;background:#f8faf9}.metric small,.metric b{display:block}.metric small{color:var(--muted);font-size:9px}.metric b{margin-top:4px;color:var(--deep);font-size:23px}.unit-progress-list{margin-top:24px;display:grid;gap:12px}.unit-progress{padding:14px 15px;border:1px solid var(--line);border-radius:13px}.unit-progress header{display:flex;justify-content:space-between;gap:12px}.unit-progress header b{font-size:11px}.unit-progress header span{color:var(--muted);font-size:9px}.mini-bar{height:7px;margin-top:10px;overflow:hidden;border-radius:7px;background:#edf1ef}.mini-bar i{display:block;height:100%;border-radius:inherit;background:var(--mint)}.progress-actions{margin-top:20px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line)}.progress-actions p{margin:0;color:var(--muted);font-size:9px}.refill{height:40px;padding:0 15px;border:0;border-radius:10px;background:#fff0f1;color:#bd5059;font-weight:800}.heart-pop{animation:heartPop .25s ease}@keyframes heartPop{50%{transform:scale(1.22)}}
     .concept-overlay{z-index:65;background:#20352ea8}.concept-modal{width:min(560px,100%);padding:31px}.concept-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:999px;background:var(--pale);color:var(--deep);font-size:9px;font-weight:900;letter-spacing:.8px}.concept-modal h2{margin:15px 0 8px;font-size:25px}.concept-modal p{margin:0;color:var(--muted);font-size:12px}.concept-code{margin:20px 0;padding:16px;border-radius:12px;background:#24342e;color:#ddf3e7;white-space:pre-wrap;font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace}.concept-actions{display:flex;align-items:center;justify-content:space-between;gap:16px}.concept-actions small{color:#8a9690;font-size:9px}.concept-actions .action{min-width:150px}
     .writing-modal{width:min(1120px,100%)}.writing-layout{height:min(700px,calc(100vh - 128px));display:grid;grid-template-columns:285px 1fr}.writing-side{min-width:0;padding:20px 14px;overflow:auto;border-right:1px solid var(--line);background:#f7f9f8}.writing-summary{margin:0 6px 14px;padding:13px;border-radius:12px;background:#eaf8f2}.writing-summary b,.writing-summary small{display:block}.writing-summary b{color:var(--deep);font-size:12px}.writing-summary small{margin-top:3px;color:var(--muted);font-size:9px}.writing-task-list{display:grid;gap:7px}.writing-task{width:100%;min-height:62px;padding:9px 10px;display:grid;grid-template-columns:33px 1fr;align-items:center;gap:9px;border:1px solid transparent;border-radius:11px;background:transparent;text-align:left}.writing-task:hover:not(:disabled),.writing-task.active{border-color:#cde9de;background:#fff}.writing-task:disabled{color:#a2aca7;cursor:not-allowed}.writing-task i{width:33px;height:33px;display:grid;place-items:center;border-radius:10px;background:#e6ece9;font-style:normal;font-weight:900}.writing-task.done i{background:var(--mint);color:#fff}.writing-task.active i{background:var(--deep);color:#fff}.writing-task b,.writing-task small{display:block}.writing-task b{font-size:10px}.writing-task small{color:#89958f;font-size:8px}.writing-main{min-width:0;overflow:auto;padding:29px 34px 35px}.writing-title-row{display:flex;align-items:start;justify-content:space-between;gap:20px}.writing-title-row h2{margin:4px 0 7px;font-size:25px}.difficulty{flex:none;padding:5px 9px;border-radius:999px;background:#f1edff;color:#725ec4;font-size:9px;font-weight:900}.writing-prompt{margin:0;color:var(--muted);font-size:11px}.writing-editor{margin-top:21px;overflow:hidden;border-radius:15px;background:#24342e;box-shadow:0 10px 28px #223b3224}.writing-editor .code-head strong{color:#8cd6ba}.template-code{margin:0;padding:13px 18px;color:#a8b7b0;white-space:pre-wrap;font:11px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}.answer-editor{width:100%;min-height:118px;padding:14px 18px;display:block;resize:vertical;border:0;border-block:1px solid #ffffff17;outline:0;background:#1c2a25;color:#effff8;caret-color:#70d4b3;font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2}.answer-editor:focus{box-shadow:inset 4px 0 var(--mint)}.writing-toolbar{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.writing-toolbar>div{display:flex;gap:9px}.secondary-action{height:44px;padding:0 14px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#586860;font-weight:800}.secondary-action:disabled{color:#a4ada9;background:#f5f7f6}.lean-status{display:flex;align-items:center;gap:8px;color:#738079;font-size:9px}.lean-status i{width:9px;height:9px;border-radius:50%;background:#aeb8b3}.lean-status.checking i{background:#d7a23e;animation:pulse 1s infinite}.lean-status.pass i{background:#42b98c}.lean-status.fail i{background:#d9616b}@keyframes pulse{50%{opacity:.3}}.diagnostic-panel{margin-top:17px;padding:15px;border:1px solid var(--line);border-radius:13px;background:#f8faf9}.diagnostic-panel.pass{border-color:#c9eadc;background:#effaf6}.diagnostic-panel.fail{border-color:#f0cdd0;background:#fff5f6}.diagnostic-panel h3{margin:0 0 7px;font-size:11px}.diagnostic-panel pre{margin:0;max-height:190px;overflow:auto;white-space:pre-wrap;color:#5e6b65;font:10px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}.ai-panel{margin-top:12px;padding:15px;border-radius:13px;background:#f4f1ff;color:#554a7f}.ai-panel header{display:flex;align-items:center;justify-content:space-between;gap:12px}.ai-panel h3{margin:0;font-size:11px}.ai-panel small{color:#8176aa;font-size:8px}.ai-panel p{margin:8px 0 0;white-space:pre-wrap;font-size:10px}.privacy-note{margin:16px 0 0;color:#8a9690;font-size:8px}.privacy-note a{color:var(--deep);text-decoration:underline}
-    @media(max-width:720px){.mobile-nav{grid-template-columns:repeat(6,1fr)}.progress-summary{grid-template-columns:1fr}.progress-body{padding:20px 16px 90px}.progress-actions{align-items:stretch;flex-direction:column}.refill{width:100%}.concept-overlay{padding:16px}.concept-modal{width:100%;height:auto;max-height:calc(100vh - 32px);overflow:auto;padding:25px 20px;border-radius:18px}.concept-actions{align-items:stretch;flex-direction:column}.concept-actions .action{width:100%}.writing-layout{height:calc(100vh - 76px);display:block;overflow:auto}.writing-side{padding:10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.writing-summary{display:none}.writing-task-list{display:flex}.writing-task{width:190px;min-width:190px}.writing-main{overflow:visible;padding:22px 15px 100px}.writing-title-row h2{font-size:21px}.writing-toolbar{align-items:stretch;flex-direction:column}.writing-toolbar>div{display:grid;grid-template-columns:1fr 1fr}.writing-toolbar .action,.writing-toolbar .secondary-action{width:100%;min-width:0}.answer-editor{min-height:140px}}
+    .showcase-modal{width:min(1120px,100%)}.showcase-layout{height:min(700px,calc(100vh - 128px));display:grid;grid-template-columns:285px 1fr}.showcase-side{padding:20px 14px;overflow:auto;border-right:1px solid var(--line);background:#f7f9f8}.showcase-summary{margin:0 6px 14px;padding:14px;border-radius:12px;background:#eaf8f2}.showcase-summary b,.showcase-summary small{display:block}.showcase-summary b{color:var(--deep);font-size:12px}.showcase-summary small{margin-top:3px;color:var(--muted);font-size:9px}.showcase-list{display:grid;gap:7px}.showcase-entry{width:100%;min-height:66px;padding:10px;display:grid;grid-template-columns:36px 1fr;align-items:center;gap:10px;border:1px solid transparent;border-radius:12px;background:transparent;text-align:left}.showcase-entry:hover,.showcase-entry.active{border-color:#cde9de;background:#fff}.showcase-entry.locked{color:#9aa49f}.showcase-entry i{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#e6ece9;font-style:normal;font-weight:900}.showcase-entry.unlocked i{background:var(--mint);color:#fff}.showcase-entry.active i{background:var(--deep);color:#fff}.showcase-entry b,.showcase-entry small{display:block}.showcase-entry b{font-size:10px}.showcase-entry small{color:#89958f;font-size:8px}.showcase-main{min-width:0;overflow:auto;padding:31px 36px 38px}.showcase-hero{display:flex;justify-content:space-between;align-items:start;gap:20px}.showcase-hero h2{margin:5px 0 7px;font-size:27px}.showcase-status{flex:none;padding:5px 10px;border-radius:999px;background:var(--pale);color:var(--deep);font-size:9px;font-weight:900}.showcase-status.locked{background:#eff2f0;color:#8b9691}.showcase-code{margin-top:22px}.showcase-code pre{max-height:380px}.showcase-actions{margin-top:14px;display:flex;justify-content:flex-end}.showcase-download{height:40px;padding:0 14px;display:inline-flex;align-items:center;border-radius:10px;background:var(--pale);color:var(--deep);font-weight:900}.milestones{margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px}.milestones h3{margin:0 0 8px;font-size:12px}.milestones ul{margin:0;padding-left:19px;color:var(--muted);font-size:10px}.milestones li+li{margin-top:5px}
+    @media(max-width:720px){.mobile-nav{grid-template-columns:repeat(7,1fr)}.progress-summary{grid-template-columns:1fr}.progress-body{padding:20px 16px 90px}.progress-actions{align-items:stretch;flex-direction:column}.refill{width:100%}.concept-overlay{padding:16px}.concept-modal{width:100%;height:auto;max-height:calc(100vh - 32px);overflow:auto;padding:25px 20px;border-radius:18px}.concept-actions{align-items:stretch;flex-direction:column}.concept-actions .action{width:100%}.writing-layout,.showcase-layout{height:calc(100vh - 76px);display:block;overflow:auto}.writing-side,.showcase-side{padding:10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.writing-summary,.showcase-summary{display:none}.writing-task-list,.showcase-list{display:flex}.writing-task,.showcase-entry{width:190px;min-width:190px}.writing-main,.showcase-main{overflow:visible;padding:22px 15px 100px}.writing-title-row h2,.showcase-hero h2{font-size:21px}.showcase-hero{display:block}.showcase-status{display:inline-block;margin-top:7px}.writing-toolbar{align-items:stretch;flex-direction:column}.writing-toolbar>div{display:grid;grid-template-columns:1fr 1fr}.writing-toolbar .action,.writing-toolbar .secondary-action{width:100%;min-width:0}.answer-editor{min-height:140px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
   <aside class="side">
     <a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a>
-    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>学习路线</a><button onclick="openQuiz('daily')"><i>◎</i>物理练习场</button><button onclick="openWriting()"><i>✎</i>物理写作</button><button onclick="openRef()"><i>⌘</i>形式化手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
-    <div class="powered"><b>∃　Powered by Lean 4</b><span id="poweredText">物理模型可讨论，推导过程可检查</span></div>
+    <nav class="nav"><a class="active" href="#learn"><i>⌂</i>学习</a><a href="#map"><i>▦</i>学习路线</a><button onclick="openQuiz('daily')"><i>◎</i>物理练习场</button><button onclick="openWriting()"><i>✎</i>物理写作</button><button onclick="openShowcase()"><i>✦</i>成果图鉴</button><button onclick="openRef()"><i>⌘</i>形式化手册</button><button onclick="openProgress()"><i>♙</i>我的进度</button></nav>
+    <div class="powered"><b>∃　Powered by Lean 4</b><span id="poweredText">从 SI 基本量到可检查的量纲代数</span></div>
   </aside>
   <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
   <main class="main" id="learn">
-    <section class="hero"><p class="eyebrow" id="heroEyebrow">LEAN 4 · 物理学形式化路径</p><h1 id="heroTitle">把物理定律，写成可检查的证明。</h1><p id="heroSubtitle">从量纲与运动学出发，逐步进入守恒律、振动、轨道与 Physlib。</p></section>
+    <section class="hero"><p class="eyebrow" id="heroEyebrow">LEAN 4 · 五部分物理学形式化路径</p><h1 id="heroTitle">先让每一个物理式，量纲正确。</h1><p id="heroSubtitle">第一部分完整学习 SI 单位、量纲向量、量纲代数、换算、类型安全物理量与 Physlib。</p></section>
     <div class="path" id="map"></div>
   </main>
-  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，让模型、假设与证明逐渐连成一条线。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / <span data-daily-goal>20</span> XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3 id="tipTitle">💡　今日形式化物理小知识</h3><p id="tipText">量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。</p><code id="tipCode">Quantity speedDim → Quantity timeDim → Quantity lengthDim</code></section></aside>
-  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>路线</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openWriting()"><b>✎</b>物理写作</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
+  <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，让定义、量纲与证明逐渐连成一条线。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / <span data-daily-goal>20</span> XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3 id="tipTitle">💡　今日量纲小知识</h3><p id="tipText">量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。</p><code id="tipCode">Quantity speedDim → Quantity timeDim → Quantity lengthDim</code></section></aside>
+  <nav class="mobile-nav"><a href="#learn"><b>⌂</b>学习</a><a href="#map"><b>▦</b>路线</a><button onclick="openQuiz('daily')"><b>◎</b>练习</button><button onclick="openWriting()"><b>✎</b>写作</button><button onclick="openShowcase()"><b>✦</b>图鉴</button><button onclick="openRef()"><b>⌘</b>手册</button><button onclick="openProgress()"><b>♙</b>进度</button></nav>
 
   <div class="overlay hidden" id="refOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理形式化手册">
     <div class="modal"><header class="modal-head"><div><span class="logo">λ</span><h2 id="handbookTitle">Lean 4 物理形式化手册</h2></div><button class="close" onclick="closeRef()" aria-label="关闭">×</button></header><div class="ref-layout"><nav class="tabs" id="tabs"></nav><article class="ref" id="refContent"></article></div></div>
   </div>
 
   <div class="overlay hidden" id="progressOverlay" role="dialog" aria-modal="true" aria-label="我的学习进度">
-    <div class="modal progress-modal"><header class="modal-head"><div><span class="logo">♙</span><h2>我的学习进度</h2></div><button class="close" onclick="closeProgress()" aria-label="关闭">×</button></header><article class="progress-body"><div class="progress-summary"><section class="metric"><small>累计经验</small><b><span id="progressTotalXp">120</span> XP</b></section><section class="metric"><small>今日经验</small><b><span id="progressDailyXp">0</span> XP</b></section><section class="metric"><small>当前红心</small><b style="color:#dc6670">♥ <span id="progressHearts">5</span> / 5</b></section><section class="metric"><small>物理写作</small><b><span id="progressWriting">0</span> / <span id="progressWritingTotal">0</span></b></section></div><div class="unit-progress-list" id="progressUnits"></div><div class="progress-actions"><p>学习数据保存在当前浏览器。红心每天自动补满，也可在 Demo 中手动恢复。</p><button class="refill" onclick="refillHearts()">恢复 5 颗红心</button></div></article></div>
+    <div class="modal progress-modal"><header class="modal-head"><div><span class="logo">♙</span><h2>我的学习进度</h2></div><button class="close" onclick="closeProgress()" aria-label="关闭">×</button></header><article class="progress-body"><div class="progress-summary"><section class="metric"><small>累计经验</small><b><span id="progressTotalXp">120</span> XP</b></section><section class="metric"><small>今日经验</small><b><span id="progressDailyXp">0</span> XP</b></section><section class="metric"><small>当前红心</small><b style="color:#dc6670">♥ <span id="progressHearts">5</span> / 5</b></section><section class="metric"><small>物理写作</small><b><span id="progressWriting">0</span> / <span id="progressWritingTotal">0</span></b></section><section class="metric"><small>成果图鉴</small><b><span id="progressShowcase">0</span> / <span id="progressShowcaseTotal">0</span></b></section></div><div class="unit-progress-list" id="progressUnits"></div><div class="progress-actions"><p>学习数据保存在当前浏览器。红心每天自动补满，也可在 Demo 中手动恢复。</p><button class="refill" onclick="refillHearts()">恢复 5 颗红心</button></div></article></div>
   </div>
 
   <div class="overlay hidden" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 物理互动练习">
@@ -59,12 +60,16 @@
   <div class="overlay hidden" id="writingOverlay" role="dialog" aria-modal="true" aria-label="Lean 4 写作训练">
     <div class="modal writing-modal"><header class="modal-head"><div><span class="logo">✎</span><h2 id="writingLabTitle">Lean 4 物理写作实验室</h2></div><button class="close" onclick="closeWriting()" aria-label="关闭">×</button></header><div class="writing-layout"><aside class="writing-side"><section class="writing-summary"><b id="writingSummary">0 / 0 已通过</b><small>由 Lean 内核判定 · 顺序解锁</small></section><nav class="writing-task-list" id="writingTaskList"></nav></aside><main class="writing-main"><div class="writing-title-row"><div><p class="eyebrow" id="writingSection">物理量与函数</p><h2 id="writingTitle">写出匀速位置</h2></div><span class="difficulty" id="writingDifficulty">难度 1</span></div><p class="writing-prompt" id="writingPrompt"></p><div class="writing-editor"><div class="code-head"><span>LeanPathPhysics.lean</span><strong id="leanServiceLabel">Lean 4 + Mathlib + Physlib</strong></div><pre class="template-code" id="writingBefore"></pre><textarea class="answer-editor" id="writingAnswer" spellcheck="false" aria-label="Lean 答案编辑器"></textarea><pre class="template-code" id="writingAfter"></pre></div><div class="writing-toolbar"><div class="lean-status" id="leanStatus"><i></i><span>尚未提交给 Lean</span></div><div><button class="secondary-action" id="aiExplainBtn" onclick="explainWriting()" disabled>AI 讲解</button><button class="action" id="leanCheckBtn" onclick="checkWriting()">交给 Lean 检查</button></div></div><section class="diagnostic-panel hidden" id="diagnosticPanel"><h3 id="diagnosticTitle"></h3><pre id="diagnosticText"></pre></section><section class="ai-panel hidden" id="aiPanel"><header><h3>助教反馈</h3><small id="aiProvider"></small></header><p id="aiText"></p></section><p class="privacy-note">提交时，完整练习源码会发送到配置的 Lean 服务；AI 只解释诊断或给提示。正确与否始终只由 Lean 判断，物理模型的现实适用性仍需学习者审查。<a href="https://live.lean-lang.org/" target="_blank" rel="noreferrer">打开官方 Lean 编辑器</a></p></main></div></div>
   </div>
+  <div class="overlay hidden" id="showcaseOverlay" role="dialog" aria-modal="true" aria-label="物理学形式化成果图鉴">
+    <div class="modal showcase-modal"><header class="modal-head"><div><span class="logo">✦</span><h2 id="showcaseTitle">物理学形式化成果图鉴</h2></div><button class="close" onclick="closeShowcase()" aria-label="关闭">×</button></header><div class="showcase-layout"><aside class="showcase-side"><section class="showcase-summary"><b id="showcaseSummary">0 / 0 已解锁</b><small>关卡里学过的定义与定理，会在这里汇成作品</small></section><nav class="showcase-list" id="showcaseList"></nav></aside><main class="showcase-main"><div class="showcase-hero"><div><p class="eyebrow" id="showcasePart">第一部分 · 单位与量纲</p><h2 id="showcaseEntryTitle">SI 七个基本量</h2><p class="summary" id="showcaseEntrySummary"></p></div><span class="showcase-status" id="showcaseStatus">已解锁</span></div><div class="code showcase-code"><div class="code-head"><span id="showcaseFilename">UnitAndDimension.lean</span><button id="showcaseCopy" onclick="copyShowcase()">复制代码</button></div><pre><code id="showcaseCode"></code></pre></div><div class="showcase-actions"><a class="showcase-download hidden" id="showcaseDownload" download>下载完整 Lean 文件</a></div><section class="milestones" id="showcaseMilestones"><h3>这份作品包含</h3><ul id="showcaseMilestoneList"></ul></section></main></div></div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="data/runtime-config.js"></script>
   <script src="data/course-config.js"></script>
   <script src="data/question-bank.js"></script>
   <script src="data/writing-bank.js"></script>
+  <script src="data/showcase-bank.js"></script>
   <script src="js/lean-checker.js"></script>
   <script src="js/ai-feedback.js"></script>
   <script>
@@ -76,6 +81,7 @@
     const PREREQUISITES = course.prerequisites || {};
     const WRITING_TASKS = (window.LEANPATH_WRITING_BANK && window.LEANPATH_WRITING_BANK.tasks) || [];
     const WRITING_ORDER = WRITING_TASKS.map(function(task){return task.id;});
+    const SHOWCASE_ENTRIES = (window.LEANPATH_SHOWCASE && window.LEANPATH_SHOWCASE.entries) || [];
     const units = course.units || [];
 
     function applyCourseTheme() {
@@ -83,10 +89,11 @@
       const description = document.querySelector('meta[name="description"]');
       if (description && theme.description) description.setAttribute("content", theme.description);
       document.querySelectorAll("[data-course-brand]").forEach(function(el){el.textContent = theme.brand || "LeanPath Physics";});
-      const fields = {heroEyebrow:"eyebrow",heroTitle:"heroTitle",heroSubtitle:"heroSubtitle",poweredText:"powered",handbookTitle:"handbookTitle",writingLabTitle:"writingTitle",tipTitle:"tipTitle",tipText:"tipText",tipCode:"tipCode"};
+      const fields = {heroEyebrow:"eyebrow",heroTitle:"heroTitle",heroSubtitle:"heroSubtitle",poweredText:"powered",handbookTitle:"handbookTitle",writingLabTitle:"writingTitle",showcaseTitle:"showcaseTitle",tipTitle:"tipTitle",tipText:"tipText",tipCode:"tipCode"};
       Object.keys(fields).forEach(function(id){const el=document.querySelector("#"+id);if(el && theme[fields[id]]) el.textContent=theme[fields[id]];});
       document.querySelectorAll("[data-daily-goal]").forEach(function(el){el.textContent = DAILY_GOAL;});
       document.querySelector("#progressWritingTotal").textContent = WRITING_TASKS.length;
+      document.querySelector("#progressShowcaseTotal").textContent = SHOWCASE_ENTRIES.length;
     }
 
     applyCourseTheme();
@@ -118,6 +125,15 @@
           if (Number.isFinite(oldXp) && oldXp > 0) fallback.xp = oldXp;
         }
       } catch (error) {}
+      const sequentialCompleted = [];
+      COURSE_ORDER.forEach(function(id) {
+        const prerequisite = PREREQUISITES[id];
+        if (fallback.completed.includes(id) &&
+            (prerequisite === null || sequentialCompleted.includes(prerequisite))) {
+          sequentialCompleted.push(id);
+        }
+      });
+      fallback.completed = sequentialCompleted;
       if (fallback.dailyDate !== todayKey()) {
         fallback.dailyDate = todayKey();
         fallback.dailyXp = 0;
@@ -195,6 +211,7 @@
       document.querySelector("#progressDailyXp").textContent = progressState.dailyXp;
       document.querySelector("#progressHearts").textContent = progressState.hearts;
       document.querySelector("#progressWriting").textContent = progressState.writingCompleted.length;
+      document.querySelector("#progressShowcase").textContent = SHOWCASE_ENTRIES.filter(showcaseUnlocked).length;
       const courseProgress = units.map(function(unit) {
         const total = unit.lessons.length;
         const done = unit.lessons.filter(function(lesson){return lesson.id && progressState.completed.includes(lesson.id);}).length;
@@ -215,6 +232,116 @@
     function closeProgress() {
       document.querySelector("#progressOverlay").classList.add("hidden");
       document.body.style.overflow = "";
+    }
+
+    const showcaseCodeCache = {};
+    let activeShowcaseId = SHOWCASE_ENTRIES[0] ? SHOWCASE_ENTRIES[0].id : "";
+
+    function showcaseUnlocked(entry) {
+      return Boolean(entry) && (!entry.unlock || progressState.completed.includes(entry.unlock));
+    }
+
+    function lessonTitle(id) {
+      for (const unit of units) {
+        const lesson = unit.lessons.find(function(item){return item.id === id;});
+        if (lesson) return lesson.title;
+      }
+      return id;
+    }
+
+    function showcaseEntry() {
+      return SHOWCASE_ENTRIES.find(function(entry){return entry.id === activeShowcaseId;}) || SHOWCASE_ENTRIES[0];
+    }
+
+    function openShowcase(entryId) {
+      if (!SHOWCASE_ENTRIES.length) return showToast("成果图鉴暂时不可用。");
+      const requested = SHOWCASE_ENTRIES.find(function(entry){return entry.id === entryId;});
+      if (requested) activeShowcaseId = requested.id;
+      else {
+        const unlocked = SHOWCASE_ENTRIES.filter(showcaseUnlocked);
+        activeShowcaseId = (unlocked[unlocked.length - 1] || SHOWCASE_ENTRIES[0]).id;
+      }
+      renderShowcase();
+      document.querySelector("#showcaseOverlay").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeShowcase() {
+      document.querySelector("#showcaseOverlay").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    function selectShowcase(entryId) {
+      if (!SHOWCASE_ENTRIES.some(function(entry){return entry.id === entryId;})) return;
+      activeShowcaseId = entryId;
+      renderShowcase();
+    }
+
+    async function renderShowcase() {
+      const entry = showcaseEntry();
+      if (!entry) return;
+      const unlocked = showcaseUnlocked(entry);
+      const unlockedCount = SHOWCASE_ENTRIES.filter(showcaseUnlocked).length;
+      document.querySelector("#showcaseSummary").textContent = unlockedCount + " / " + SHOWCASE_ENTRIES.length + " 已解锁";
+      document.querySelector("#showcaseList").innerHTML = SHOWCASE_ENTRIES.map(function(item, index) {
+        const available = showcaseUnlocked(item);
+        return '<button class="showcase-entry ' + (available ? "unlocked" : "locked") + (item.id === entry.id ? " active" : "") + '" onclick="selectShowcase(\'' + item.id + '\')"><i>' + (available ? "✓" : "◆") + '</i><span><b>' + escapeHtml(item.title) + '</b><small>第一部分 · 展品 ' + (index + 1) + '</small></span></button>';
+      }).join("");
+      document.querySelector("#showcasePart").textContent = "第一部分 · 单位与量纲 · 展品 " + (SHOWCASE_ENTRIES.indexOf(entry) + 1);
+      document.querySelector("#showcaseEntryTitle").textContent = entry.title;
+      document.querySelector("#showcaseEntrySummary").textContent = unlocked ? entry.summary : "完成「" + lessonTitle(entry.unlock) + "」后解锁。已解锁的展品会保留在这里，最终汇成完整章节代码。";
+      const status = document.querySelector("#showcaseStatus");
+      status.className = "showcase-status" + (unlocked ? "" : " locked");
+      status.textContent = unlocked ? (entry.completion ? "第一部分通关作品" : "已解锁") : "尚未解锁";
+      document.querySelector("#showcaseFilename").textContent = unlocked ? entry.filename : "locked.lean";
+      const copyButton = document.querySelector("#showcaseCopy");
+      copyButton.classList.toggle("hidden", !unlocked);
+      const download = document.querySelector("#showcaseDownload");
+      download.classList.toggle("hidden", !(unlocked && entry.file));
+      if (unlocked && entry.file) {
+        download.href = entry.file;
+        download.setAttribute("download", entry.filename);
+      } else {
+        download.removeAttribute("href");
+      }
+      const milestones = Array.isArray(entry.milestones) ? entry.milestones : [];
+      document.querySelector("#showcaseMilestones").classList.toggle("hidden", !unlocked || !milestones.length);
+      document.querySelector("#showcaseMilestoneList").innerHTML = milestones.map(function(item){return "<li>" + escapeHtml(item) + "</li>";}).join("");
+      const code = document.querySelector("#showcaseCode");
+      if (!unlocked) {
+        code.textContent = "-- 展品尚未解锁\n-- 完成「" + lessonTitle(entry.unlock) + "」后查看代码。";
+        return;
+      }
+      if (entry.code) {
+        code.textContent = entry.code;
+        return;
+      }
+      if (!entry.file) {
+        code.textContent = "-- 暂无代码";
+        return;
+      }
+      if (showcaseCodeCache[entry.file]) {
+        code.textContent = showcaseCodeCache[entry.file];
+        return;
+      }
+      code.textContent = "-- 正在载入完整 Lean 作品……";
+      const requestedId = entry.id;
+      try {
+        const response = await fetch(entry.file);
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const source = await response.text();
+        showcaseCodeCache[entry.file] = source;
+        if (activeShowcaseId === requestedId) code.textContent = source;
+      } catch (error) {
+        if (activeShowcaseId === requestedId) code.textContent = "-- 载入失败，请使用下方下载按钮打开完整文件。\n-- " + (error.message || String(error));
+      }
+    }
+
+    function copyShowcase() {
+      const entry = showcaseEntry();
+      if (!entry || !showcaseUnlocked(entry)) return;
+      const source = entry.code || showcaseCodeCache[entry.file] || document.querySelector("#showcaseCode").textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(source).then(function(){showToast("成果代码已复制。");});
     }
 
     function refillHearts() {
@@ -258,8 +385,8 @@
     }
 
     function claimChest() {
-      const gained = awardProgress("chest", 50);
-      showToast(gained ? "单元宝箱已开启：+50 XP，单元二已解锁。" : "这个宝箱已经领取过了。");
+      const gained = awardProgress("chest", 80);
+      showToast(gained ? "第一部分完成：+80 XP，完整《单位与量纲》Lean 作品已收入成果图鉴。" : "第一部分成果已经领取，可在成果图鉴中查看。");
     }
 
     const leanRefs = [
@@ -276,6 +403,12 @@
     ];
 
     const refs = [
+      {id:"quantitySi",s:"Q",l:"物理量与 SI",t:"数值、单位、量纲与七个基本量",sum:"物理量的数值依赖单位，量纲描述它属于哪一类量。SI 以时间、长度、质量、电流、热力学温度、物质的量和发光强度七个基本量为基底；相应基本单位是 s、m、kg、A、K、mol、cd。",source:"BIPM SI Brochure (9th edition)",url:"https://www.bipm.org/en/publications/si-brochure",code:"inductive BaseDimension where\n  | time | length | mass | electricCurrent\n  | temperature | amountOfSubstance | luminousIntensity\n  deriving DecidableEq, Repr\n\ndef baseUnitSymbol : BaseDimension → String\n  | .time => \"s\"\n  | .length => \"m\"\n  | .mass => \"kg\"\n  | .electricCurrent => \"A\"\n  | .temperature => \"K\"\n  | .amountOfSubstance => \"mol\"\n  | .luminousIntensity => \"cd\"",calls:[["BaseDimension","有限枚举七个 SI 基本量"],["deriving DecidableEq","自动生成基本量相等判定"],["BaseDimension → String","为每个基本量给出单位符号"],["match / | .time =>","对七种情况作无遗漏模式匹配"]]},
+      {id:"dimConstruction",s:"ℤ⁷",l:"量纲构造",t:"把量纲建模为整数指数向量",sum:"一个常用教学模型是记录每个基本量的整数指数。Dimension 的相等由七个分量决定；basis b 只在第 b 个基本量上取指数 1。分数指数需要把 ℤ 换成 ℚ，不能悄悄塞进当前模型。",source:"Physlib Units and LeanPath teaching model",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"structure Dimension where\n  exponent : BaseDimension → ℤ\n\n@[ext] theorem Dimension.ext {d₁ d₂ : Dimension}\n    (h : ∀ b, d₁.exponent b = d₂.exponent b) : d₁ = d₂ := by\n  cases d₁ with\n  | mk e₁ =>\n    cases d₂ with\n    | mk e₂ =>\n      congr\n      funext b\n      exact h b\n\ndef basis (b₀ : BaseDimension) : Dimension :=\n  ⟨fun b => if b = b₀ then 1 else 0⟩",calls:[["BaseDimension → ℤ","七个基本量的整数指数"],["Dimension.ext","逐分量证明量纲相等"],["basis .length","构造纯长度量纲 L"],["ℚ 指数","表示开方等分数次幂时应显式扩展模型"]]},
+      {id:"dimAlgebra",s:"×÷",l:"量纲代数",t:"乘、除、逆与整数幂",sum:"物理量相乘时量纲指数相加，相除时相减，取倒数时取负，整数幂时所有指数乘以幂次。由逐分量整数运算可以证明结合律、交换律和消去律。",source:"Physlib Units and Mathematics in Lean",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"instance : One Dimension := ⟨⟨fun _ => 0⟩⟩\ninstance : Mul Dimension :=\n  ⟨fun d₁ d₂ => ⟨fun b => d₁.exponent b + d₂.exponent b⟩⟩\ninstance : Inv Dimension :=\n  ⟨fun d => ⟨fun b => -d.exponent b⟩⟩\ninstance : Div Dimension := ⟨fun d₁ d₂ => d₁ * d₂⁻¹⟩\ninstance : HPow Dimension ℤ Dimension :=\n  ⟨fun d n => ⟨fun b => n * d.exponent b⟩⟩\n\ntheorem self_div (d : Dimension) : d / d = 1 := by\n  ext b\n  simp",calls:[["d₁ * d₂","指数逐分量相加"],["d₁ / d₂","指数逐分量相减"],["d⁻¹","所有指数取负"],["d ^ (n : ℤ)","所有指数乘整数 n"]]},
+      {id:"derivedDimensions",s:"N",l:"导出量纲",t:"从速度一直构造到电压",sum:"导出量纲不是新增基底，而是七个基本量的组合。速度 LT⁻¹、加速度 LT⁻²、力 MLT⁻²、能量 ML²T⁻²、功率 ML²T⁻³、压强 ML⁻¹T⁻²、电荷 IT、电压 ML²T⁻³I⁻¹。",source:"BIPM SI Brochure and Physlib",url:"https://www.bipm.org/en/publications/si-brochure",code:"def speedDim := lengthDim / timeDim\ndef accelerationDim := speedDim / timeDim\ndef forceDim := massDim * accelerationDim\ndef energyDim := forceDim * lengthDim\ndef powerDim := energyDim / timeDim\ndef pressureDim := forceDim / (lengthDim ^ (2 : ℤ))\ndef chargeDim := currentDim * timeDim\ndef voltageDim := energyDim / chargeDim\n\ntheorem kinetic_energy_dimension :\n    massDim * (speedDim ^ (2 : ℤ)) = energyDim := by\n  ext b\n  cases b <;> rfl",calls:[["speedDim","L T⁻¹"],["forceDim","M L T⁻²"],["energyDim","M L² T⁻²"],["voltageDim","M L² T⁻³ I⁻¹"]]},
+      {id:"dimensionlessRef",s:"1",l:"无量纲与齐次性",t:"零指数向量、相似准则和公式检查",sum:"无量纲表示七个指数全为零，但不等于“没有语义”：弧度、应变、折射率和雷诺数都可无量纲而含义不同。等式两边同量纲是物理公式成立的必要条件，并非充分条件；sin、exp、log 的参数通常必须无量纲。",source:"BIPM SI Brochure",url:"https://www.bipm.org/en/publications/si-brochure",code:"def dimensionless : Dimension := 1\n\ntheorem speed_time_homogeneous :\n    speedDim * timeDim = lengthDim := by\n  ext b\n  cases b <;> rfl\n\ntheorem pressure_volume_homogeneous :\n    pressureDim * (lengthDim ^ (3 : ℤ)) = energyDim := by\n  ext b\n  cases b <;> rfl\n\n-- 齐次性只能排除一类错误，不能证明模型正确。",calls:[["d / d = 1","同一物理量之比无量纲"],["sin θ","θ 的输入应无量纲"],["[v][t] = [x]","匀速位移式通过量纲检查"],["必要非充分","量纲正确不保证系数、符号或模型正确"]]},
+      {id:"conversionRef",s:"⇄",l:"单位换算",t:"线性尺度、面积体积与仿射温标",sum:"同一量纲可以有不同单位。线性单位换算乘尺度因子，面积与体积必须把尺度因子平方或立方；摄氏温度与开尔文绝对温度含零点平移，是仿射换算，而温差仍按线性尺度换算。对数单位也不能用普通线性因子统一处理。",source:"BIPM SI Brochure",url:"https://www.bipm.org/en/publications/si-brochure",code:"def kilometre : ℝ := 1000 * metre\ndef hour : ℝ := 3600 * second\n\ntheorem thirty_six_kmh_eq_ten_mps :\n    36 * (kilometre / hour) = 10 * (metre / second) := by\n  norm_num [kilometre, hour, metre, second]\n\ndef celsiusToKelvin (c : ℝ) : ℝ := c + 273.15\n\ntheorem temperatureDifference (a b : ℝ) :\n    celsiusToKelvin a - celsiusToKelvin b = a - b := by\n  simp [celsiusToKelvin]",calls:[["km ↔ m","长度尺度乘 1000"],["km² ↔ m²","尺度因子必须平方"],["°C ↔ K","绝对温度含 273.15 的零点平移"],["温差","平移抵消，仍是线性换算"]]},
       {id:"models",s:"x(t)",l:"物理模型",t:"对象、假设、结论与解释",sum:"形式化物理不只是把公式抄进 Lean。先声明对象与定义，再把正性、系统边界和适用范围写成假设，最后区分“Lean 已验证推导”和“实验支持模型”。",source:"Physlib README",url:"https://github.com/leanprover-community/Physlib",code:"import Mathlib\n\nstructure ParticleState where\n  mass : ℝ\n  position : ℝ\n  velocity : ℝ\n\ndef uniformPosition (x₀ v t : ℝ) : ℝ :=\n  x₀ + v * t\n\ntheorem at_initial_time (x₀ v : ℝ) :\n    uniformPosition x₀ v 0 = x₀ := by\n  simp [uniformPosition]",calls:[["structure State where","把模型状态组织为带字段的类型"],["(hm : 0 < m)","把物理条件作为定理输入"],["theorem name ... : P := by","陈述在给定模型下可验证的结论"],["#check theoremName","阅读结论依赖的全部参数与假设"]]},
       {id:"dimensions",s:"[L]",l:"量纲",t:"基本量纲与指数向量",sum:"量纲可表示为从基本量纲到整数指数的函数。速度是 L¹T⁻¹，加速度是 L¹T⁻²；乘法使指数相加，除法使指数相减。",source:"Physlib Units",url:"https://github.com/leanprover-community/Physlib/tree/master/Physlib/Units",code:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\n\nabbrev Dimension := BaseDimension → Int\n\ndef speedDimension : Dimension\n  | .mass => 0\n  | .length => 1\n  | .time => -1\n\n#eval speedDimension .length\n#eval speedDimension .time",calls:[["BaseDimension → Int","为每个基本量纲记录指数"],["L¹T⁻¹","长度除以时间的速度量纲"],["d₁ * d₂","量纲乘法：对应指数相加"],["d₁ / d₂","量纲除法：对应指数相减"]]},
       {id:"typedQuantity",s:"Q[d]",l:"类型安全物理量",t:"让错误的量纲运算无法通过类型检查",sum:"把量纲 d 放进 Quantity d 的类型后，加法只接受相同 d 的两个量；乘法则在结果类型中组合量纲。这样“米 + 秒”在 elaboration 阶段就会失败。",source:"暑校 Inductive Type 物理量练习与 Physlib",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Units/WithDim/Basic.lean",code:"import Mathlib\n\ninductive BaseDimension where\n  | mass | length | time\nabbrev Dimension := BaseDimension → Int\n\nstructure Quantity (d : Dimension) where\n  value : ℝ\n\ndef Quantity.add {d : Dimension}\n    (x y : Quantity d) : Quantity d :=\n  ⟨x.value + y.value⟩",calls:[["Quantity d","数值携带编译期量纲索引"],["Quantity d → Quantity d → Quantity d","只允许同量纲加法"],["x.value","读取底层数值"],["WithDim","Physlib 中更成熟的带量纲实现"]]},
@@ -284,7 +417,7 @@
       {id:"physlib",s:"↗",l:"Physlib 调用",t:"从 #check 到复用现有物理定理",sum:"Physlib 按物理领域组织 Lean 代码，覆盖单位、经典力学、电磁学、相对论和量子理论等方向。聚焦导入、检查签名、提供假设，是从学习题走向库贡献的基本工作流。",source:"Physlib",url:"https://github.com/leanprover-community/Physlib",code:"import Physlib.ClassicalMechanics.HarmonicOscillator.Basic\nimport Physlib.ClassicalMechanics.OrbitalMechanics.VisViva\n\n#check ClassicalMechanics.HarmonicOscillator.ω_sq\n#check ClassicalMechanics.VisViva.speedCircular_sq\n\n-- ω² = k/m\n-- v_circular² = GM/r",calls:[["import Physlib.Module","只导入当前练习需要的模块"],["#check full.name","确认参数顺序、隐式参数和假设"],["S.ω_sq","用点记法调用对象命名空间中的定理"],["exact theorem args","把通用库定理实例化到当前目标"]]}
     ].concat(leanRefs);
 
-    let activeRef = "models";
+    let activeRef = "quantitySi";
 
     function escapeHtml(value) {
       return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -489,7 +622,7 @@
       const gained = awardProgress(activeDeckId, deck.xp);
       closeQuiz();
       if (gained) {
-        const nextText = activeDeckId === "practice" ? "，单元宝箱与单元二已解锁。" : "";
+        const nextText = activeDeckId === "practice" ? "，第一部分通关成果已解锁。" : "";
         showToast("完成 " + deck.label + "：+" + gained + " XP" + nextText);
       } else {
         showToast("复习完成，本关奖励已领取。");
@@ -767,6 +900,7 @@
         closeQuiz();
         closeProgress();
         closeWriting();
+        closeShowcase();
         hideConceptGuide();
       }
     });
