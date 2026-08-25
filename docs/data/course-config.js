@@ -1,16 +1,16 @@
 /* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 3,
+    version: 4,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
       brand: "LeanPath Physics",
-      documentTitle: "LeanPath Physics — 单位、量纲与欧式静力学",
-      description: "以 Lean 4 学习物理学形式化：单位与量纲、欧式空间静力学与动力学、黎曼流形和拉格朗日力学。",
-      eyebrow: "LEAN 4 · 五部分物理学形式化路径",
-      heroTitle: "从量纲到平衡，逐层构造可检查的物理学。",
-      heroSubtitle: "单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
+      documentTitle: "LeanPath Physics — 用 Lean 学习形式化物理",
+      description: "面向较熟悉 Lean 4 的学习者，以可检查的模型学习单位与量纲、欧式静力学与动力学、黎曼流形和拉格朗日力学。",
+      eyebrow: "面向 LEAN 用户 · 五单元物理学习路径",
+      heroTitle: "让 Lean 成为学习物理的语言。",
+      heroSubtitle: "从真实物理情境出发：单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
       powered: "物理定义公开，数学推导可检查",
       handbookTitle: "Lean 4 物理形式化手册",
       writingTitle: "物理学形式化 · Lean 写作实验室",
@@ -76,16 +76,16 @@
         lessons: [
           {id:"quantity", icon:"Q", title:"物理量的三层结构", sub:"数值 · 单位 · 量纲"},
           {id:"si-base", icon:"SI", title:"七个 SI 基本量", sub:"s · m · kg · A · K · mol · cd"},
-          {id:"dimension-model", icon:"ℤ⁷", title:"构造量纲向量", sub:"BaseDimension → ℤ"},
+          {id:"dimension-model", icon:"ℤ⁷", title:"构造量纲向量", sub:"指数向量 · 反推物理参数"},
           {id:"dimension-ops", icon:"×÷", title:"量纲代数", sub:"乘 · 除 · 逆 · 整数幂"},
           {id:"derived-dimensions", icon:"N", title:"导出量纲", sub:"速度 · 力 · 能量 · 电压"},
           {id:"dimensionless", icon:"1", title:"无量纲量", sub:"比例 · 角度 · 相似准则"},
           {id:"unit-systems", icon:"U", title:"单位与单位制", sub:"量纲不变 · 表示可变"},
           {id:"unit-conversion", icon:"⇄", title:"单位换算", sub:"尺度因子 · SI 归一化"},
-          {id:"typed-quantity", icon:"Q[d]", title:"依赖类型物理量", sub:"Quantity d · 类型索引"},
-          {id:"typed-ops", icon:"⊗", title:"类型安全运算", sub:"同量纲加法 · 乘除合成"},
+          {id:"typed-quantity", icon:"Q[d]", title:"量纲约束下的物理量", sub:"公式合法性 · 单位与语义边界"},
+          {id:"typed-ops", icon:"⊗", title:"物理公式的类型安全运算", sub:"冲量 · 功 · 密度 · 动能"},
           {id:"homogeneity", icon:"=ₐ", title:"量纲齐次性", sub:"公式检查 · 条件与边界"},
-          {id:"physlib-units", icon:"↗", title:"调用 Physlib", sub:"Dimension · WithDim · SI"},
+          {id:"physlib-units", icon:"↗", title:"用 Physlib 表达物理单位", sub:"精确换算 · 根式量纲 · SI"},
           {id:"practice", icon:"⌁", title:"单位与量纲综合实验", sub:"分层随机组卷 · +30 XP"},
           {id:"chest", icon:"◆", title:"第一部分通关成果", sub:"解锁完整 Lean 展品 · +80 XP"}
         ]
@@ -95,12 +95,12 @@
         t: "欧式空间中的静力学",
         d: "有限维欧式空间中的向量、力系、刚体平衡、虚功与能量稳定性",
         lessons: [
-          {id:"euclidean-vectors", icon:"ℝ³", title:"欧式空间与坐标向量", sub:"Fin 3 → ℝ · 加法 · 数乘"},
-          {id:"inner-metric", icon:"⟪·,·⟫", title:"内积、范数与距离", sub:"点积 · 正交 · EuclideanSpace"},
+          {id:"euclidean-vectors", icon:"ℝ³", title:"欧式空间与坐标向量", sub:"位移 · 相对速度 · 合力"},
+          {id:"inner-metric", icon:"⟪·,·⟫", title:"内积、范数与距离", sub:"功 · 距离 · 动能"},
           {id:"affine-points", icon:"P→Q", title:"点、位移与参考原点", sub:"仿射点 · 位置向量 · ReferenceFrame"},
           {id:"applied-force", icon:"F@P", title:"力与作用点", sub:"滑移向量 · 作用线 · AppliedForce"},
-          {id:"force-system", icon:"ΣF", title:"力系与合力", sub:"List · 叠加 · 合力"},
-          {id:"moment", icon:"r×F", title:"力矩与叉积", sub:"Mathlib crossProduct · 正交性"},
+          {id:"force-system", icon:"ΣF", title:"力系与合力", sub:"多力叠加 · 力偶 · 等效"},
+          {id:"moment", icon:"r×F", title:"力矩与叉积", sub:"力臂 · 右手系 · 正交性"},
           {id:"moment-shift", icon:"M↦", title:"移矩定理与力偶", sub:"换参考点 · 力偶矩不变"},
           {id:"equilibrium", icon:"0⃗", title:"静力平衡", sub:"平动平衡 ∧ 转动平衡"},
           {id:"equilibrium-iff", icon:"⇔", title:"平衡充要条件", sub:"任意刚体虚速度功率为零"},
@@ -110,7 +110,7 @@
           {id:"potential", icon:"V", title:"势能与保守力", sub:"F = −∇V · 二次势能"},
           {id:"virtual-work", icon:"δW", title:"虚功原理", sub:"有限维刚体 · 线性约束"},
           {id:"stability", icon:"min", title:"势能极值与稳定性", sub:"正刚度 · 中性 · 不稳定"},
-          {id:"statics-physlib", icon:"↗", title:"调用 Mathlib 与 Physlib", sub:"叉积 · 参考系 · 梯度"},
+          {id:"statics-physlib", icon:"↗", title:"用库承载静力学", sub:"参考系 · 梯度 · 自应力"},
           {id:"statics-practice", icon:"⌁", title:"欧式静力学综合实验", sub:"分层随机组卷 · +35 XP"},
           {id:"statics-chest", icon:"◆", title:"第二部分通关成果", sub:"解锁完整 Lean 展品 · +100 XP"}
         ]
