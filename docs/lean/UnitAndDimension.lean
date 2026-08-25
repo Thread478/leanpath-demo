@@ -44,11 +44,11 @@ theorem ext (d₁ d₂ : Dimension)
     (h : ∀ b, d₁.exponent b = d₂.exponent b) : d₁ = d₂ := by
   cases d₁ with
   | mk e₁ =>
-      cases d₂ with
-      | mk e₂ =>
-          congr
-          funext b
-          exact h b
+    cases d₂ with
+    | mk e₂ =>
+      have he : e₁ = e₂ := funext h
+      cases he
+      rfl
 
 /-- The dimensionless dimension. -/
 instance : One Dimension where
@@ -77,7 +77,9 @@ instance : HPow Dimension ℤ Dimension where
     (d⁻¹).exponent b = -d.exponent b := rfl
 @[simp] theorem exponent_div (d₁ d₂ : Dimension) (b) :
     (d₁ / d₂).exponent b = d₁.exponent b - d₂.exponent b := by
-  simp only [HDiv.hDiv, Div.div, exponent_mul, exponent_inv, sub_eq_add_neg]
+  change d₁.exponent b + -d₂.exponent b =
+    d₁.exponent b - d₂.exponent b
+  exact (sub_eq_add_neg _ _).symm
 @[simp] theorem exponent_zpow (d : Dimension) (n : ℤ) (b) :
     (d ^ n).exponent b = n * d.exponent b := rfl
 
@@ -305,7 +307,8 @@ theorem zero_celsius_in_kelvin : degreeCelsius.toSI 0 = 273.15 := by
 
 theorem celsius_temperature_difference (a b : ℝ) :
     degreeCelsius.toSI a - degreeCelsius.toSI b = a - b := by
-  simp [degreeCelsius, AffineUnit.toSI]
+  simp only [AffineUnit.toSI, degreeCelsius]
+  ring
 
 theorem three_square_kilometres_in_square_metres :
     (3 : ℝ) * kilometreUnit.scaleToSI ^ 2 = 3_000_000 := by
