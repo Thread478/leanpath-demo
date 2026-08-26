@@ -1,20 +1,3 @@
-/-!
-# LeanPath Physics: Euclidean dynamics
-
-This file is the final exhibit for Unit III.  It deliberately separates two
-layers:
-
-* transparent finite-dimensional definitions used by the course;
-* algebraic lemmas that Mathlib can check without hiding the physical model.
-
-The trajectory derivative operators below are explicit arguments.  A complete
-ODE development would additionally choose a differentiability API and prove
-existence, uniqueness, maximal interval and collision-avoidance results.  The
-Kepler section therefore formalizes the conservation/conic algebraic core under
-regular non-collision assumptions; it does not claim that every initial-value
-problem has already been constructed here.
--/
-
 import Mathlib
 
 noncomputable section
@@ -62,8 +45,11 @@ theorem constant_force_impulse (m F v₀ v₁ Δt : ℝ)
     (hm : m ≠ 0) (hv : v₁ = v₀ + (F / m) * Δt) :
     m * v₁ - m * v₀ = impulse F Δt := by
   rw [hv]
-  field_simp [impulse, hm]
-  <;> ring
+  calc
+    m * (v₀ + (F / m) * Δt) - m * v₀ = F * Δt := by
+      field_simp [hm]
+      ring
+    _ = impulse F Δt := by rfl
 
 theorem inelastic_collision_velocity (m₁ m₂ v₁ v₂ : ℝ)
     (hm : m₁ + m₂ ≠ 0) :
@@ -83,11 +69,11 @@ def angularMomentum {n : ℕ} (r : VecN n) (m : ℝ)
 theorem wedge_skew {n : ℕ} (r p : VecN n) (i j : Fin n) :
     wedge r p i j = -wedge r p j i := by
   simp [wedge]
-  ring
 
 theorem wedge_self {n : ℕ} (r : VecN n) : wedge r r = 0 := by
   ext i j
   simp [wedge]
+  ring
 
 theorem central_force_zero_torque {n : ℕ} (c : ℝ) (r : VecN n) :
     wedge r (c • r) = 0 := by
@@ -132,6 +118,7 @@ theorem inPhase_generalized_eigenpair (m k : ℝ) (hm : m ≠ 0) :
       massAction m ((k / m) • inPhaseMode) := by
   ext <;> simp [stiffnessAction, massAction, inPhaseMode]
   <;> field_simp [hm]
+  <;> ring
 
 theorem antiPhase_stiffness (k : ℝ) :
     stiffnessAction k antiPhaseMode = (3 * k) • antiPhaseMode := by
@@ -151,7 +138,7 @@ def rotationalEnergy (I : PrincipalInertia) (ω₁ ω₂ ω₃ : ℝ) : ℝ :=
 def dumbbellIy (m a : ℝ) : ℝ := m * a ^ 2 + m * (-a) ^ 2
 
 theorem dumbbell_Iy (m a : ℝ) : dumbbellIy m a = 2 * m * a ^ 2 := by
-  simp [dumbbellIy]
+  unfold dumbbellIy
   ring
 
 structure EulerResidual where
@@ -167,7 +154,7 @@ def eulerResidual (I : PrincipalInertia)
 
 theorem principal_axis_free_rotation (I : PrincipalInertia) (ω : ℝ) :
     eulerResidual I ω 0 0 0 0 0 0 0 0 = ⟨0, 0, 0⟩ := by
-  ext <;> simp [eulerResidual]
+  simp [eulerResidual]
 
 /-! ## 7. D'Alembert and Lagrange residuals -/
 
@@ -202,7 +189,8 @@ def conicRadius (p e θ : ℝ) : ℝ := p / (1 + e * Real.cos θ)
 theorem conicRadius_characterization (p e θ : ℝ)
     (h : 1 + e * Real.cos θ ≠ 0) :
     conicRadius p e θ * (1 + e * Real.cos θ) = p := by
-  field_simp [conicRadius, h]
+  rw [conicRadius]
+  exact div_mul_cancel₀ p h
 
 theorem ellipse_has_negative_energy (E e β : ℝ)
     (hβ : 0 < β) (he : e ^ 2 < 1)
@@ -211,7 +199,7 @@ theorem ellipse_has_negative_energy (E e β : ℝ)
   exact div_neg_of_neg_of_pos (sub_neg.mpr he) hβ
 
 theorem parabola_has_zero_energy (E e β : ℝ)
-    (hβ : β ≠ 0) (he : e ^ 2 = 1)
+  (_hβ : β ≠ 0) (he : e ^ 2 = 1)
     (hE : E = (e ^ 2 - 1) / β) : E = 0 := by
   rw [hE, he]
   simp
