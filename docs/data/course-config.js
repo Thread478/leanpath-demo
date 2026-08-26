@@ -1,7 +1,7 @@
 /* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 6,
+    version: 7,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
@@ -72,7 +72,7 @@
       {
         n: 1,
         t: "单位与量纲",
-        d: "从 SI 基本量到量纲代数、类型安全运算与 Physlib",
+        d: "从 SI 基本量到量纲代数，并连接原 PhysLean、现 Physlib 的单位接口",
         lessons: [
           {id:"quantity", icon:"Q", title:"物理量的三层结构", sub:"数值 · 单位 · 量纲"},
           {id:"si-base", icon:"SI", title:"七个 SI 基本量", sub:"s · m · kg · A · K · mol · cd"},
@@ -85,7 +85,7 @@
           {id:"typed-quantity", icon:"Q[d]", title:"量纲约束下的物理量", sub:"公式合法性 · 单位与语义边界"},
           {id:"typed-ops", icon:"⊗", title:"物理公式的类型安全运算", sub:"冲量 · 功 · 密度 · 动能"},
           {id:"homogeneity", icon:"=ₐ", title:"量纲齐次性", sub:"公式检查 · 条件与边界"},
-          {id:"physlib-units", icon:"↗", title:"用 Physlib 表达物理单位", sub:"精确换算 · 根式量纲 · SI"},
+          {id:"physlib-units", icon:"↗", title:"从 PhysLean 连接现行 Physlib", sub:"历史来源 · 当前接口 · 精确换算"},
           {id:"practice", icon:"⌁", title:"单位与量纲综合实验", sub:"分层随机组卷 · +30 XP"},
           {id:"chest", icon:"◆", title:"第一部分通关成果", sub:"解锁完整 Lean 展品 · +80 XP"}
         ]
@@ -110,7 +110,7 @@
           {id:"potential", icon:"V", title:"势能与保守力", sub:"F = −∇V · 二次势能"},
           {id:"virtual-work", icon:"δW", title:"虚功原理", sub:"有限维刚体 · 线性约束"},
           {id:"stability", icon:"min", title:"势能极值与稳定性", sub:"正刚度 · 中性 · 不稳定"},
-          {id:"statics-physlib", icon:"↗", title:"用库承载静力学", sub:"参考系 · 梯度 · 自应力"},
+          {id:"statics-physlib", icon:"↗", title:"区分课程模型与上游库", sub:"Mathlib · PhysLean → Physlib"},
           {id:"statics-practice", icon:"⌁", title:"欧式静力学综合实验", sub:"分层随机组卷 · +35 XP"},
           {id:"statics-chest", icon:"◆", title:"第二部分通关成果", sub:"解锁完整 Lean 展品 · +100 XP"}
         ]
