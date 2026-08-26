@@ -4,7 +4,7 @@
   const opsPrelude = basePrelude + "\ndef basis (b : BaseDimension) : Dim :=\n  fun i => if i = b then 1 else 0\n\ndef dimOne : Dim := fun _ => 0\ndef dimMul (d₁ d₂ : Dim) : Dim := fun b => d₁ b + d₂ b\ndef dimInv (d : Dim) : Dim := fun b => -d b\ndef dimDiv (d₁ d₂ : Dim) : Dim := dimMul d₁ (dimInv d₂)\ndef dimPow (d : Dim) (n : Int) : Dim := fun b => n * d b\n\ndef timeDim : Dim := basis .time\ndef lengthDim : Dim := basis .length\ndef massDim : Dim := basis .mass\ndef currentDim : Dim := basis .electricCurrent\n";
 
   window.LEANPATH_WRITING_BANK = {
-    version: 4,
+    version: 5,
     tasks: [
       {
         id:"unit-write-symbol",level:1,section:"SI 基本量",title:"写出七个基本单位符号",
@@ -161,22 +161,22 @@
         template:"import Mathlib\n\nabbrev Vec3 := Fin 3 → ℝ\nstructure Point3 where coord : Vec3\nstructure AppliedForce where point : Point3; vector : Vec3\n\ndef resultant : List AppliedForce → Vec3 :=\n  {{ANSWER}}\n\nexample : resultant [] = 0 := by rfl\n"
       },
       {
-        id:"statics-write-moment",part:2,unlock:"moment",level:2,section:"力矩",title:"用叉积定义力矩",
-        prompt:"补全关于 o 的力矩：(作用点−参考点) 叉乘力向量。",
-        concept:"moment-cross",xp:12,starter:"",placeholder:"调用 crossProduct",
-        hint:"crossProduct (f.point.coord - o.coord) f.vector。",
-        template:"import Mathlib.LinearAlgebra.CrossProduct\n\nabbrev Vec3 := Fin 3 → ℝ\nstructure Point3 where coord : Vec3\nstructure AppliedForce where point : Point3; vector : Vec3\n\ndef momentAt (o : Point3) (f : AppliedForce) : Vec3 :=\n  {{ANSWER}}\n\nexample (o : Point3) (F : Vec3) :\n    momentAt o { point := o, vector := F } = 0 := by\n  simp [momentAt]\n"
+        id:"statics-write-moment",part:2,unlock:"moment",level:2,section:"一般维力矩",title:"用楔积定义力矩张量",
+        prompt:"补全一般 ℝⁿ 中的 wedge，使 (r∧F)ᵢⱼ = rᵢFⱼ-rⱼFᵢ。",
+        concept:"moment-cross",xp:12,starter:"fun i j =>\n  ",placeholder:"按分量写出两个乘积之差",
+        hint:"使用 r i * F j - r j * F i。",
+        template:"import Mathlib\n\nabbrev VecN (n : ℕ) := Fin n → ℝ\nabbrev MomentTensor (n : ℕ) := Matrix (Fin n) (Fin n) ℝ\n\ndef wedge {n : ℕ} (r F : VecN n) : MomentTensor n :=\n  {{ANSWER}}\n\nexample {n : ℕ} (r F : VecN n) (i : Fin n) :\n    wedge r F i i = 0 := by\n  simp [wedge]\n"
       },
       {
-        id:"statics-write-cross-self",part:2,unlock:"moment",level:2,section:"力矩",title:"引用叉积自反为零",
-        prompt:"调用 Mathlib 定理证明任意向量与自身叉积为零。",
+        id:"statics-write-cross-self",part:2,unlock:"moment",level:2,section:"三维专门化",title:"引用叉积自反为零",
+        prompt:"三维中 Hodge 对偶把楔积变成叉积；调用 Mathlib 定理证明任意向量与自身叉积为零。",
         concept:"moment-cross",xp:12,starter:"by\n  ",placeholder:"使用 exact 与 cross_self",
         hint:"目标正是 cross_self v。",
         template:"import Mathlib.LinearAlgebra.CrossProduct\n\nabbrev Vec3 := Fin 3 → ℝ\n\nexample (v : Vec3) : crossProduct v v = 0 :=\n  {{ANSWER}}\n"
       },
       {
-        id:"statics-write-shift",part:2,unlock:"moment-shift",level:3,section:"移矩定理",title:"证明单个力的移矩公式",
-        prompt:"展开三维叉积坐标，证明换参考点的力矩公式。",
+        id:"statics-write-shift",part:2,unlock:"moment-shift",level:3,section:"三维移矩定理",title:"证明叉积专门化的移矩公式",
+        prompt:"一般公式是 M_Q=M_O−(Q−O)∧R；在三维中展开叉积坐标，证明其 Hodge 对偶版本。",
         concept:"moment-origin",xp:15,starter:"by\n  ext i\n  fin_cases i <;>\n    ",placeholder:"展开并交给 ring",
         hint:"simp [momentAt, cross_apply] <;> ring。",
         template:"import Mathlib.LinearAlgebra.CrossProduct\n\nabbrev Vec3 := Fin 3 → ℝ\nstructure Point3 where coord : Vec3\nstructure AppliedForce where point : Point3; vector : Vec3\n\ndef momentAt (o : Point3) (f : AppliedForce) : Vec3 :=\n  crossProduct (f.point.coord - o.coord) f.vector\n\ntheorem momentAt_change_origin (o q : Point3) (f : AppliedForce) :\n    momentAt q f = momentAt o f -\n      crossProduct (q.coord - o.coord) f.vector :=\n  {{ANSWER}}\n"
