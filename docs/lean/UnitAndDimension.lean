@@ -331,6 +331,159 @@ theorem thirtySix_kilometers_per_hour :
   norm_num [Quantity.scale, kilometerPerHour, meterPerSecond,
     Quantity.div, kilometer, hour, meter, second]
 
+
+/-! ## Structural dimensional analysis: integer nullspaces and Π groups -/
+
+namespace DimensionalAnalysis
+
+/-- Mass density has dimension `M L⁻³`. -/
+def densityDim : Dimension := massDim / volumeDim
+
+/-- Dynamic viscosity has dimension `M L⁻¹ T⁻¹ = pressure × time`. -/
+def dynamicViscosityDim : Dimension := pressureDim * timeDim
+
+/-- The dimension of a monomial `T^a L^b g^c` built from period, length,
+and acceleration.  Integer exponents are enough to capture the squared-period
+form of the elementary pendulum Π group. -/
+def pendulumMonomialDim (a b c : ℤ) : Dimension :=
+  timeDim ^ a * lengthDim ^ b * accelerationDim ^ c
+
+/-- A pendulum monomial is dimensionless exactly when its time and length
+exponents satisfy the two linear balance equations.  This is the dimensional
+matrix written as an exact theorem rather than as an informal table. -/
+theorem pendulumMonomial_dimensionless_iff (a b c : ℤ) :
+    pendulumMonomialDim a b c = dimensionless ↔
+      a - 2 * c = 0 ∧ b + c = 0 := by
+  constructor
+  · intro h
+    have ht := congrArg (fun d : Dimension => d.exponent .time) h
+    have hl := congrArg (fun d : Dimension => d.exponent .length) h
+    simp [pendulumMonomialDim, dimensionless, accelerationDim, speedDim,
+      timeDim, lengthDim, Dimension.basis] at ht hl
+    constructor <;> omega
+  · rintro ⟨ht, hl⟩
+    ext d
+    cases d <;>
+      simp [pendulumMonomialDim, dimensionless, accelerationDim, speedDim,
+        timeDim, lengthDim, Dimension.basis] <;> omega
+
+/-- The integer nullspace for `(T,L,g)` is one-dimensional: every
+integer-exponent dimensionless monomial is a power of `T² g / L`. -/
+theorem pendulum_dimensionless_iff_multiple (a b c : ℤ) :
+    pendulumMonomialDim a b c = dimensionless ↔
+      ∃ k : ℤ, a = 2 * k ∧ b = -k ∧ c = k := by
+  rw [pendulumMonomial_dimensionless_iff]
+  constructor
+  · rintro ⟨ht, hl⟩
+    refine ⟨c, ?_, ?_, rfl⟩ <;> omega
+  · rintro ⟨k, rfl, rfl, rfl⟩
+    constructor <;> ring
+
+/-- The canonical squared-period Π group `T² g / L` is dimensionless. -/
+theorem pendulumPiSquared_dimensionless :
+    pendulumMonomialDim 2 (-1) 1 = dimensionless := by
+  rw [pendulum_dimensionless_iff_multiple]
+  exact ⟨1, by norm_num, by norm_num, by norm_num⟩
+
+/-- The dimension of a monomial `ρ^a v^b L^c μ^d`. -/
+def reynoldsMonomialDim (a b c d : ℤ) : Dimension :=
+  densityDim ^ a * speedDim ^ b * lengthDim ^ c * dynamicViscosityDim ^ d
+
+/-- The Reynolds dimensional matrix: mass, time and length balance give three
+independent integer equations. -/
+theorem reynoldsMonomial_dimensionless_iff (a b c d : ℤ) :
+    reynoldsMonomialDim a b c d = dimensionless ↔
+      a + d = 0 ∧ -b - d = 0 ∧ -3 * a + b + c - d = 0 := by
+  constructor
+  · intro h
+    have hm := congrArg (fun q : Dimension => q.exponent .mass) h
+    have ht := congrArg (fun q : Dimension => q.exponent .time) h
+    have hl := congrArg (fun q : Dimension => q.exponent .length) h
+    simp [reynoldsMonomialDim, densityDim, dynamicViscosityDim,
+      dimensionless, pressureDim, forceDim, accelerationDim, speedDim,
+      areaDim, volumeDim, massDim, lengthDim, timeDim, Dimension.basis] at hm ht hl
+    constructor
+    · omega
+    · constructor <;> omega
+  · rintro ⟨hm, ht, hl⟩
+    ext q
+    cases q <;>
+      simp [reynoldsMonomialDim, densityDim, dynamicViscosityDim,
+        dimensionless, pressureDim, forceDim, accelerationDim, speedDim,
+        areaDim, volumeDim, massDim, lengthDim, timeDim, Dimension.basis] <;> omega
+
+/-- The integer nullspace for `(ρ,v,L,μ)` is one-dimensional.  Thus every
+integer-exponent dimensionless monomial is a power of the Reynolds number
+`ρ v L / μ`. -/
+theorem reynolds_dimensionless_iff_multiple (a b c d : ℤ) :
+    reynoldsMonomialDim a b c d = dimensionless ↔
+      ∃ k : ℤ, a = k ∧ b = k ∧ c = k ∧ d = -k := by
+  rw [reynoldsMonomial_dimensionless_iff]
+  constructor
+  · rintro ⟨hm, ht, hl⟩
+    refine ⟨a, rfl, ?_, ?_, ?_⟩ <;> omega
+  · rintro ⟨k, rfl, rfl, rfl, rfl⟩
+    constructor
+    · ring
+    · constructor <;> ring
+
+/-- The usual Reynolds number `ρ v L / μ` is dimensionless. -/
+theorem reynoldsNumber_dimensionless :
+    reynoldsMonomialDim 1 1 1 (-1) = dimensionless := by
+  rw [reynolds_dimensionless_iff_multiple]
+  exact ⟨1, rfl, rfl, rfl, by norm_num⟩
+
+end DimensionalAnalysis
+
+/-! ## Conversion maps form a coherent groupoid on nondegenerate units -/
+
+namespace LinearUnit
+
+/-- Converting a value from a nondegenerate unit back to itself changes
+nothing. -/
+theorem convert_self {d : Dimension} (u : LinearUnit d) (value : ℝ)
+    (hu : u.scaleToSI ≠ 0) :
+    convert u u value = value := by
+  unfold convert fromSI toSI
+  field_simp [hu]
+
+/-- Unit conversion composes transitively: an intermediate nonzero unit scale
+cancels exactly. -/
+theorem convert_trans {d : Dimension} (source middle target : LinearUnit d)
+    (value : ℝ) (hmiddle : middle.scaleToSI ≠ 0) :
+    convert middle target (convert source middle value) =
+      convert source target value := by
+  unfold convert fromSI toSI
+  rw [div_mul_cancel₀ (value * source.scaleToSI) hmiddle]
+
+/-- Conversion along two nondegenerate units is reversible. -/
+theorem convert_roundtrip {d : Dimension} (source target : LinearUnit d)
+    (value : ℝ) (hsource : source.scaleToSI ≠ 0)
+    (htarget : target.scaleToSI ≠ 0) :
+    convert target source (convert source target value) = value := by
+  rw [convert_trans source target source value htarget]
+  exact convert_self source value hsource
+
+/-- Two coordinate descriptions related by unit conversion represent the same
+SI magnitude; conversely, for a nonzero target scale this relation determines
+the converted coordinate uniquely. -/
+theorem convert_characterization {d : Dimension}
+    (source target : LinearUnit d) (x y : ℝ)
+    (htarget : target.scaleToSI ≠ 0) :
+    convert source target x = y ↔
+      source.toSI x = target.toSI y := by
+  constructor
+  · intro h
+    rw [← h]
+    exact (toSI_convert source target x htarget).symm
+  · intro h
+    unfold convert fromSI
+    rw [h]
+    unfold toSI
+    field_simp [htarget]
+
+end LinearUnit
+
 /-! ## Bridge from the PhysLean lineage to current Physlib -/
 
 open LTMCTUnitChoices
