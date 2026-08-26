@@ -15,7 +15,7 @@
     "dimension-vector": {title:"量纲是整数指数向量",body:"给每个基本量指定一个整数指数即可构造量纲。例如力是 T⁻²L¹M¹，其余四个指数为零。用 BaseDimension → ℤ 表示可避免依赖坐标顺序。",code:"structure Dimension where\n  exponent : BaseDimension → ℤ"},
     "dimension-equality": {title:"量纲相等是逐分量相等",body:"两个量纲相等，当且仅当七个基本指数全部相等。Lean 中可以用 ext 把量纲相等目标化为每个基本量上的指数相等。",code:"ext b\ncases b <;> rfl"},
     "dimension-algebra": {title:"量纲构成乘法代数",body:"物理量相乘时量纲指数相加，相除时相减，取倒数时取负，整数次幂时所有指数乘以该整数。无量纲量是零指数向量，也是乘法单位元。",code:"[xy] = [x] * [y]\n[x/y] = [x] / [y]\n[xⁿ] = [x]ⁿ"},
-    "rational-exponent": {title:"根式需要有理指数",body:"若只用整数指数，√length 不能在该量纲类型中表示。完整库常允许有理指数；若物理公式最终要求普通量纲，则需要证明根式内部的指数可相应约分。",code:"-- 整数模型：BaseDimension → ℤ\n-- Physlib：指数允许 ℚ，可表达平方根量纲"},
+    "rational-exponent": {title:"根式需要有理指数",body:"若只用整数指数，√length 不能在该量纲类型中表示。完整库常允许有理指数；若物理公式最终要求普通量纲，则需要证明根式内部的指数可相应约分。",code:"-- 整数模型：BaseDimension → ℤ\n-- 原 PhysLean、现 Physlib：指数允许 ℚ"},
     "derived-dimension": {title:"导出量纲由代数运算构造",body:"速度、力、能量等不是额外的基本量，而是七个基本量纲的乘除组合。先通过定义构造，再证明不同公式给出的构造一致。",code:"speed := length / time\nforce := mass * acceleration\nenergy := force * length"},
     "dimensionless": {title:"无量纲不等于没有物理语义",body:"比例、应变、折射率、雷诺数以及平面角都具有零指数向量，但它们不可因此任意互换。rad、sr、百分数等仍可作为表达语义的单位。",code:"[v/c] = 1\n[ΔL/L] = 1\n[angle] = 1"},
     "unit-system": {title:"单位制选择表示，不改变量纲",body:"SI、CGS 与自然单位制对同一量纲选择不同基准尺度。令 c=1 或 ℏ=1 是单位制约定，并非把有量纲常数变成纯粹无量纲数学对象。",code:"quantity = numericalValue × chosenUnit\n-- 改变 chosenUnit 时 numericalValue 反向变化"},
@@ -24,12 +24,12 @@
     "typed-quantity": {title:"让量纲成为 Quantity 的类型索引",body:"裸 ℝ 无法区分米和秒。Quantity d 把量纲 d 放进类型，使长度和时间成为不同类型；非法加法在 elaboration 阶段失败。",code:"structure Quantity (d : Dimension) where\n  value : ℝ"},
     "typed-operations": {title:"物理运算在返回类型中计算量纲",body:"加减法保持同一个 d；乘法返回 Quantity (d₁*d₂)，除法返回 Quantity (d₁/d₂)，纯数缩放保持量纲。",code:"add : Quantity d → Quantity d → Quantity d\nmul : Quantity d₁ → Quantity d₂ → Quantity (d₁*d₂)"},
     "homogeneity": {title:"量纲齐次性是公式成立的必要条件",body:"等号两侧必须同量纲，同一加法中的各项也必须同量纲；sin、exp、log 等函数的自变量通常必须无量纲。但齐次性不能确定无量纲常数和具体函数形式。",code:"[E] = [m c²]\n[T] = [√(m/k)]\n-- 必要，但通常不充分"},
-    "physlib-dimension": {title:"Physlib 的 Dimension",body:"Physlib 已实现更成熟的量纲代数，使用基本量类型 B 和有理指数，并给出交换群及有理幂结构。课程中的透明模型用于理解，研究代码应优先复用库。",code:"import Physlib.Units.Dimension\n-- Dimension B，指数取 ℚ"},
-    "physlib-withdim": {title:"Physlib 的 WithDim",body:"WithDim d M 把底层数值类型 M 与量纲 d 绑定。相同量纲可相加，乘除自动组合量纲；Dimensionful 再处理单位制选择和换算。",code:"import Physlib.Units.WithDim.Basic\n#check WithDim\n#check DimSpeed.oneKilometerPerHour_in_SI"},
+    "physlib-dimension": {title:"从 PhysLean 延续到 Physlib 的 Dimension",body:"原 PhysLean 的通用物理形式化工作现已合并进入 Physlib。当前 Physlib.Units 实现了使用有理指数的量纲代数；课程透明模型用于理解，真实代码按现行模块路径复用。",code:"import Physlib.Units.Dimension\n-- 当前包名 Physlib；历史来源为 PhysLean/HepLean"},
+    "physlib-withdim": {title:"现行 Physlib 的 WithDim",body:"源自原 PhysLean 工作的 WithDim d M 现位于 Physlib.Units：它把底层数值类型 M 与量纲 d 绑定，乘除组合量纲，Dimensionful 再处理单位制选择和换算。",code:"import Physlib.Units.WithDim.Basic\n#check WithDim\n#check DimSpeed.oneKilometerPerHour_in_SI"},
     "model-boundary": {title:"量纲检查不替代物理建模",body:"量纲齐次只能排除一类错误。x = vt 与 x = 2vt 同样齐次，但系数和适用条件不同；形式化还需定义系统、假设、定律和实验解释。",code:"dimensionally valid ≠ physically established"},
-    "euclidean-space": {title:"欧式向量先从有限坐标开始",body:"本章用 Vec3 := Fin 3 → ℝ 表示三维坐标向量，再通过 Mathlib 的 EuclideanSpace 与 Physlib 的 ReferenceFrame 连接到一般有限维内积空间。坐标模型透明，库模型更适合复用定理。",code:"abbrev Vec3 := Fin 3 → ℝ\n#check EuclideanSpace ℝ (Fin 3)"},
+    "euclidean-space": {title:"欧式向量先从有限坐标开始",body:"本章用 VecN n := Fin n → ℝ 表示一般有限维坐标，再通过 Mathlib 的 EuclideanSpace 与现行 Physlib（由原 PhysLean 合并而来）的 ReferenceFrame 接口连接到更内禀的结构。",code:"abbrev VecN n := Fin n → ℝ\n#check EuclideanSpace ℝ (Fin 3)"},
     "dot-metric": {title:"内积同时产生长度、角度与正交",body:"点积是双线性的；v·v 非负，并且等于零当且仅当 v=0。范数由 √(v·v) 得到，距离是两点位移的范数，正交则由点积为零定义。",code:"dot v w := dotProduct v w\n‖v‖² = v ⬝ᵥ v"},
-    "affine-space": {title:"点与向量不是同一类对象",body:"向量可以相加，点通常不能；两点之差是位移向量，而点加位移仍是点。初级坐标模型会记录 point.coord，高阶实现可调用 Physlib.ReferenceFrame 区分原点、基底与空间点。",code:"displacement p q := q.coord - p.coord"},
+    "affine-space": {title:"点与向量不是同一类对象",body:"向量可以相加，点通常不能；两点之差是位移向量，而点加位移仍是点。初级坐标模型记录 point.coord；更高阶实现可调用原 PhysLean、现 Physlib 的 ReferenceFrame 接口。",code:"displacement p q := q.coord - p.coord"},
     "force-vector": {title:"力需要大小方向，也需要作用点",body:"单个集中力可建模为 AppliedForce，含作用点和力向量。合力只依赖力向量之和；关于原点的力矩还依赖作用点。把两者分开能避免把自由向量与滑移向量混淆。",code:"structure AppliedForce where\n  point : Point3\n  vector : Vec3"},
     "force-system": {title:"力系用有限列表和叠加表示",body:"有限力系可以用 List AppliedForce 表示。合力是全部力向量之和，总力矩是各力矩之和；递归定义使空力系和加一项的定理可直接用 simp 与归纳证明。",code:"resultant [] = 0\nresultant (f :: S) = f.vector + resultant S"},
     "moment-cross": {title:"一般维力矩是反对称二阶张量",body:"在 ℝⁿ 中，关于 O 的力矩写成 M_O=(P−O)∧F，分量为 Mᵢⱼ=rᵢFⱼ−rⱼFᵢ，因此 Mᵢⱼ=−Mⱼᵢ。三维中 Hodge 对偶把三个独立分量识别为熟悉的轴向向量 r×F；高维中没有这种自然的向量识别。",code:"wedge r F i j := r i * F j - r j * F i\n-- n = 3: hodgeDual₃ (r ∧ F) = r × F"},
@@ -41,10 +41,10 @@
     "static-determinacy": {title:"静定性是平衡算子的唯一可解性",body:"把未知反力 r 映到平衡残差的线性映射 A 称为平衡算子。对给定载荷，若 A r + load = 0 有唯一解，则静定；若有多个解，则仅靠静力平衡不能确定全部反力。",code:"∃! r, A r + load = 0"},
     "self-stress": {title:"超静定与平衡算子的核相连",body:"非零 k 若满足 A k=0，就代表不改变外部平衡的自应力模式。已有一组反力 r₀ 时，r₀+t k 都满足同一平衡方程；还需材料刚度和变形协调条件才能选出物理解。",code:"k ∈ LinearMap.ker A\nr₀ + k is another solution"},
     "work-dot": {title:"常力功是力与位移的内积",body:"常力 F 从 P 到 Q 所做的功 W=F·(Q−P)。内积线性立即给出路径分段可加性；但变力功需要积分，本章只在势能桥接中说明而不展开一般曲线积分。",code:"work F p q := F ⬝ᵥ (q.coord - p.coord)"},
-    "conservative-potential": {title:"保守力由势能的负梯度给出",body:"在欧式空间中，势能 V 的梯度指出增长最快方向，保守力定义为 F=−∇V。Physlib 已提供梯度运算与二次型示例所需定理，可验证弹簧势能 ½k‖x‖² 对应 F=−kx。",code:"V x = (k/2) * ⟪x,x⟫\nF x = -gradient V x"},
+    "conservative-potential": {title:"保守力由势能的负梯度给出",body:"在欧式空间中，势能 V 的梯度指出增长最快方向，保守力定义为 F=−∇V。源自 PhysLean、现位于 Physlib 的梯度接口提供二次型规则，可验证 ½k‖x‖² 对应 F=−kx。",code:"V x = (k/2) * ⟪x,x⟫\nF x = -gradient V x"},
     "virtual-work": {title:"约束系统只测试许可的虚位移",body:"虚功原理不是让所有位移都可取，而是对满足线性化约束的虚运动测试外力功率。理想约束的反力在许可虚运动上不做功，从而可从方程中消去。",code:"∀ δ ∈ admissible, virtualPower δ = 0"},
     "stability-energy": {title:"局部势能极小给出保守系统的稳定判据",body:"一维二次势能 V(x)=½kx² 中，k>0 时原点严格极小，k=0 时为中性平坦，k<0 时任意邻域都有更低势能方向。一般非线性系统还需局部性、约束和保守性假设。",code:"k > 0 → V 0 < V x  (x ≠ 0)"},
-    "library-statics": {title:"Mathlib 与 Physlib 各自承担一层",body:"Mathlib 提供 EuclideanSpace、矩阵、外代数、内积、线性映射、核与三维叉积；Physlib 提供物理参考系和梯度等桥接。课程用反对称矩阵透明展示 ⋀² 的坐标，再用 Mathlib 叉积处理三维计算。",code:"MomentTensor n := Matrix (Fin n) (Fin n) ℝ\n-- 可进一步桥接 ⋀[ℝ]^2 (VecN n)"},
+    "library-statics": {title:"课程模型、Mathlib 与 Physlib 分层",body:"Mathlib 提供矩阵、外代数、内积与三维叉积；原 PhysLean、现 Physlib 提供参考系和梯度等物理接口；AppliedForce 与 MomentTensor 是本站教学模型，不应冒充上游库定义。",code:"MomentTensor n := Matrix (Fin n) (Fin n) ℝ\n-- LeanPath 定义；底层 Matrix 来自 Mathlib"},
     "statics-scope": {title:"本章的适用边界是有限维刚体",body:"课程的一般维部分覆盖集中力、合力、反对称张量力矩、移矩和平衡；三维部分继续处理虚转动、梁、力偶和叉积计算。连续介质、接触与屈曲仍需要更丰富的模型。",code:"general moment tensor + 3D mechanics ≠ continuum mechanics"}
   };
 
@@ -185,16 +185,16 @@
       {id:"h-zero",level:3,concept:"homogeneity",p:"等式 lhs = 0 是否可以忽略 lhs 的量纲？",c:"F = 0",o:["不应忽略；0 应在目标量纲中解释","可以；0 永远无量纲","只有力可以等于 0"],a:0,e:"类型化零值由上下文获得与 lhs 相同的量纲。"}
     ]),
 
-    "physlib-units": deck("用 Physlib 表达物理单位","把库中的有理量纲、带量纲值和单位制用于换算与公式检查。",24,[
-      {id:"pl-import-dim",level:1,concept:"physlib-withdim",p:"列车速度 90 km/h 换成 SI 是多少？",c:"90 × (5/18) m/s",o:["25 m/s","50 m/s","5 m/s"],a:0,e:"Physlib 的精确换算因子为 5/18，90×5/18=25。"},
+    "physlib-units": deck("从 PhysLean 连接现行 Physlib","辨认历史项目名称与当前模块路径，再用真实的有理量纲、带量纲值和单位制完成换算。",24,[
+      {id:"pl-import-dim",level:1,concept:"physlib-withdim",p:"列车速度 90 km/h 换成 SI 是多少？",c:"90 × (5/18) m/s",o:["25 m/s","50 m/s","5 m/s"],a:0,e:"现行 Physlib 中的精确换算因子为 5/18，90×5/18=25。"},
       {id:"pl-withdim",level:1,concept:"physlib-withdim",p:"使用 WithDim 表示 3 m 与 2 s 后，哪种模型错误会被量纲索引阻止？",c:"length + time",o:["把 3 m 与 2 s 直接相加","用 3 m 除以 2 s","把 3 m 乘无量纲系数"],a:0,e:"相加要求同量纲；除法会得到速度量纲。"},
       {id:"pl-check",level:1,concept:"physlib-withdim",p:"查看 `DimSpeed.oneKilometerPerHour_in_SI` 的结论后，可直接得到 1 km/h 等于？",c:"#check DimSpeed.oneKilometerPerHour_in_SI",o:["5/18 m/s","18/5 m/s","1000 m/s"],a:0,e:"这里保留一次真实 API 阅读训练，目标是复用精确物理换算结论。"},
       {id:"pl-rational",level:2,concept:"physlib-dimension",p:"弦上线性密度 μ、张力 T 给出波速 c=√(T/μ)。根号内的量纲是？",c:"[Tension]=MLT⁻², [μ]=ML⁻¹",o:["L²T⁻²","LT⁻¹","ML²T⁻²"],a:0,e:"两者相除得 L²T⁻²，Physlib 的有理指数可把它开方为速度。"},
       {id:"pl-kmh",level:2,concept:"physlib-withdim",p:"自行车以 18 km/h 骑行 10 s，在匀速模型中行程是多少？",c:"18 km/h = 5 m/s",o:["50 m","180 m","5 m"],a:0,e:"先用库定理换为 5 m/s，再乘 10 s。"},
       {id:"pl-dimensionful",level:2,concept:"unit-system",p:"两个实验组分别报告 1.2 m 与 120 cm。单位制层应把它们判定为？",c:"same length, different unit coordinates",o:["同一物理长度","不同量纲的量","数值相等但物理量不同"],a:0,e:"Dimensionful 组织尺度换算，使同量纲的不同单位表示可比较。"},
-      {id:"pl-custom-vs-lib",level:3,concept:"physlib-dimension",p:"课程自建 Dimension 与 Physlib 的关系应如何理解？",c:"transparent model / production library",o:["自建模型用于理解，项目代码优先复用库","两者必须互相删除","自建模型已覆盖 Physlib 全部功能"],a:0,e:"透明教学模型帮助掌握原理，成熟库提供更广 API 与审查。"},
+      {id:"pl-custom-vs-lib",level:3,concept:"physlib-dimension",p:"课程自建 Dimension 与原 PhysLean、现 Physlib 的关系应如何理解？",c:"LeanPath teaching model / upstream library",o:["自建模型用于理解；真实接口按当前 Physlib 路径复用","两者必须互相删除","自建模型已覆盖上游库全部功能"],a:0,e:"透明教学模型解释原理；上游库提供经审查的可复用 API。"},
       {id:"pl-exact",level:3,concept:"exact-real",p:"已复用 1 km/h=5/18 m/s 的库定理。要证明 72 km/h=20 m/s，还需完成哪一步？",c:"72 · (5/18) = 20",o:["精确的实数算术化简","浮点采样若干次","重新定义速度量纲"],a:0,e:"单位关系由库提供，剩余目标是 72×5/18=20。"},
-      {id:"pl-boundary",level:3,concept:"model-boundary",p:"Physlib 接受单位定理后还需审查什么？",c:"Lean: accepted",o:["模型定义、单位约定与应用语境","定理是否有类型","加法字符颜色"],a:0,e:"库验证演绎关系，不代替实验与领域解释。"}
+      {id:"pl-boundary",level:3,concept:"model-boundary",p:"现行 Physlib 接受单位定理后还需审查什么？",c:"Lean: accepted",o:["模型定义、单位约定与应用语境","定理是否有类型","加法字符颜色"],a:0,e:"库验证演绎关系，不代替实验与领域解释。"}
     ]),
 
     "euclidean-vectors": deck("欧式空间与坐标向量","用三维坐标计算位移、相对运动与合力，并识别坐标选择背后的几何不变量。",12,[
@@ -227,10 +227,10 @@
       {id:"ap-chain",level:1,concept:"affine-space",p:"位移的首尾相接关系是？",c:"(q-p)+(r-q)",o:["r-p","p-r","q"],a:0,e:"中间点 q 消去。"},
       {id:"ap-origin",level:2,concept:"affine-space",p:"点 p 的“位置向量”依赖什么选择？",c:"p - O",o:["参考原点 O","力的单位","时间参数"],a:0,e:"改变原点会改变坐标位置向量。"},
       {id:"ap-vector-free",level:2,concept:"affine-space",p:"同一个位移向量换原点后怎样？",c:"q-p",o:["保持不变","加上新原点","变为相反数"],a:0,e:"两点差消去了共同的原点平移。"},
-      {id:"ap-frame",level:2,concept:"library-statics",p:"Physlib ReferenceFrame 额外记录什么？",c:"reference frame",o:["原点与基底","只有单位字符串","只有力列表"],a:0,e:"参考系把仿射点转换为坐标向量。"},
+      {id:"ap-frame",level:2,concept:"library-statics",p:"原 PhysLean、现 Physlib 的 ReferenceFrame 接口额外记录什么？",c:"reference frame",o:["原点与基底","只有单位字符串","只有力列表"],a:0,e:"参考系把仿射点转换为坐标向量；当前导入前缀是 Physlib。"},
       {id:"ap-rotate",level:3,concept:"affine-space",p:"换一个正交基底时，点积为何保持？",c:"orthonormal frame",o:["正交变换保持内积","所有矩阵都保持内积","坐标完全不变"],a:0,e:"坐标变了，欧式几何量不变。"},
       {id:"ap-moment",level:3,concept:"moment-origin",p:"为什么力矩必须声明参考点？",c:"r × F",o:["位置向量 r 依赖原点","叉积没有类型","力的方向依赖质量"],a:0,e:"合力不为零时不同参考点得到不同总力矩。"},
-      {id:"ap-model",level:3,concept:"statics-scope",p:"用 Point3.coord 的教学模型牺牲了什么？",c:"coordinate model",o:["仿射不变性在类型中的显式表达","三维坐标","实数运算"],a:0,e:"最终展品用注释与 Physlib bridge 说明这层边界。"}
+      {id:"ap-model",level:3,concept:"statics-scope",p:"用 Point3.coord 的教学模型牺牲了什么？",c:"coordinate model",o:["仿射不变性在类型中的显式表达","三维坐标","实数运算"],a:0,e:"最终展品会把 LeanPath 自定义坐标模型与现行 Physlib 参考系接口分开标注。"}
     ]),
 
     "applied-force": deck("力与作用点","用作用线和等效载荷计算集中力的平动与转动效应。",16,[
@@ -377,7 +377,7 @@
       {id:"st-friction",level:3,concept:"statics-scope",p:"势能严格极小是否适用于任意摩擦耗散系统？",c:"nonconservative",o:["不直接适用","总适用","只需 k>0"],a:0,e:"非保守力需要 Lyapunov、耗散或微分包含等框架。"}
     ]),
 
-    "statics-physlib": deck("用 Mathlib 与 Physlib 承载静力学","把叉积、参考系、线性映射和梯度库结构用于具体静力模型。",24,[
+    "statics-physlib": deck("区分课程模型与上游库","把 Mathlib 数学结构、原 PhysLean/现 Physlib 接口和 LeanPath 静力学定义放在各自正确的层次。",24,[
       {id:"sp-cross",level:1,concept:"library-statics",p:"位置 r=(1,0,0) m，力 F=(0,0,−5) N。按右手系叉积，r×F 是？",c:"r ⨯₃ F",o:["(0,5,0) N·m","(0,−5,0) N·m","(−5,0,0) N·m"],a:0,e:"eₓ×e_z=−eᵧ，因此 eₓ×(−5e_z)=5eᵧ。"},
       {id:"sp-frame",level:1,concept:"library-statics",p:"参考系原点从 O 平移到 O'=O+a，同一空间点坐标怎样变化？",c:"r=P−O, r'=P−O'",o:["r'=r−a","r'=r+a","r'=r"],a:0,e:"点没动，原点平移会反向改变位置坐标；两点位移仍不变。"},
       {id:"sp-grad",level:1,concept:"library-statics",p:"二维势能 V(x,y)=1/2(kₓx²+kᵧy²) 对应的保守力是？",c:"F=−∇V",o:["(−kₓx,−kᵧy)","(kₓx,kᵧy)","(−kₓ,−kᵧ)"],a:0,e:"梯度逐方向给出势能变化率，负号使力指向降能方向。"},
@@ -401,7 +401,7 @@
       {id:"p-kinetic",level:3,concept:"homogeneity",p:"1/2 mv² 中 1/2 对量纲有什么影响？",c:"K = 1/2 m v²",o:["无影响；它是无量纲常数","把能量变成一半量纲","增加时间指数"],a:0,e:"无量纲数值系数不改变量纲。"},
       {id:"p-sqrt",level:3,concept:"rational-exponent",p:"√(m/k) 可得到时间量纲的关键是？",c:"[m/k]",o:["m/k 的量纲为 T²","m/k 无量纲","平方根删除所有指数"],a:0,e:"指数 2 除以 2 得 1。"},
       {id:"p-limit",level:3,concept:"model-boundary",p:"量纲正确能否证明公式的数值系数正确？",c:"x = C v t",o:["不能；C 是无量纲系数","能；C 必为 1","只有 SI 能"],a:0,e:"还需要动力学推导、边界条件或实验。"},
-      {id:"p-physlib",level:3,concept:"physlib-withdim",p:"用 Physlib 已知 1 km/h=5/18 m/s。108 km/h 的风速应化为？",c:"108·5/18",o:["30 m/s","60 m/s","108 m/s"],a:0,e:"精确单位定理与实数算术结合得到 30 m/s。"}
+      {id:"p-physlib",level:3,concept:"physlib-withdim",p:"用原 PhysLean 工作、现 Physlib 中的定理 1 km/h=5/18 m/s，108 km/h 应化为？",c:"108·5/18",o:["30 m/s","60 m/s","108 m/s"],a:0,e:"精确单位定理与实数算术结合得到 30 m/s。"}
     ],6),
 
     "statics-practice": deck("欧式静力学综合实验","跨越向量、力矩、平衡、静定性、虚功与势能稳定性的分层随机组卷。",35,[
@@ -454,11 +454,11 @@
   window.LEANPATH_QUESTION_SOURCES = [
     {id:"si",name:"BIPM SI Brochure",url:"https://www.bipm.org/en/publications/si-brochure",license:"BIPM publication"},
     {id:"workshop",name:"暑校 Type Theory / Inductive Type 物理量练习",license:"课程材料"},
-    {id:"physlib",name:"Physlib",url:"https://github.com/leanprover-community/Physlib",license:"Apache-2.0"},
+    {id:"physlib",name:"PhysLean（历史来源）/ Physlib（当前项目）",url:"https://github.com/leanprover-community/physlib",license:"Apache-2.0"},
     {id:"mil",name:"Mathematics in Lean",url:"https://github.com/leanprover-community/mathematics_in_lean",license:"Apache-2.0"},
     {id:"mathlib-cross",name:"Mathlib CrossProduct",url:"https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/LinearAlgebra/CrossProduct.lean",license:"Apache-2.0"},
     {id:"mathlib-exterior",name:"Mathlib Exterior Algebra",url:"https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.html",license:"Apache-2.0"},
-    {id:"physlib-frame",name:"Physlib ReferenceFrame",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/SpaceAndTime/ReferenceFrame.lean",license:"Apache-2.0"},
-    {id:"physlib-gradient",name:"Physlib Gradient",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Mathematics/Calculus/Gradient.lean",license:"Apache-2.0"}
+    {id:"physlib-frame",name:"Physlib ReferenceFrame（源自 PhysLean）",url:"https://github.com/leanprover-community/physlib/blob/master/Physlib/SpaceAndTime/ReferenceFrame.lean",license:"Apache-2.0"},
+    {id:"physlib-gradient",name:"Physlib Gradient（源自 PhysLean）",url:"https://github.com/leanprover-community/physlib/blob/master/Physlib/Mathematics/Calculus/Gradient.lean",license:"Apache-2.0"}
   ];
 }());

@@ -7,7 +7,7 @@ LeanPath 将两种能力严格分开：
 - Lean 负责 elaboration、类型检查与内核验证，并给出唯一的通过/失败结论；
 - AI 只解释 Lean 诊断、评价已通过的写法或给出一个渐进提示，不能更改判定。
 
-页面通过 `js/lean-checker.js` 使用 Language Server Protocol。默认配置连接 `wss://live.lean-lang.org/websocket/MathlibDemo`，当前环境同时可加载 Mathlib 与 Physlib，因此 GitHub Pages 上的静态站点也能提交真实物理形式化源码。生产部署若需要独立容量、固定依赖版本与稳定性，应部署自己的 [lean4web](https://github.com/leanprover-community/lean4web) 服务，并固定 Mathlib/Physlib 提交版本，然后修改 `data/runtime-config.js` 中的 `leanWebSocket`、`leanProject` 与显示标签。
+页面通过 `js/lean-checker.js` 使用 Language Server Protocol。默认配置连接 `wss://live.lean-lang.org/websocket/MathlibDemo`，当前环境同时可加载 Mathlib 与 Physlib，因此 GitHub Pages 上的静态站点也能提交真实物理形式化源码。这里的 Physlib 是由原通用物理库 PhysLean（更早名 HepLean）与 Lean-QuantumInfo 合并形成的现行项目；当前构建目标与模块前缀均为 `Physlib`。生产部署若需要独立容量、固定依赖版本与稳定性，应部署自己的 [lean4web](https://github.com/leanprover-community/lean4web) 服务，并固定 Mathlib/Physlib 提交版本，然后修改 `data/runtime-config.js` 中的 `leanWebSocket`、`leanProject` 与显示标签。
 
 Lean elaboration 可以执行代码。自建服务必须使用沙箱、网络隔离、资源限制和超时；不要直接把未隔离的 Lean 进程暴露到公网。形式验证只说明结论由当前定义与假设推出，不替代物理模型的实验验证。
 

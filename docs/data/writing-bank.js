@@ -4,7 +4,7 @@
   const opsPrelude = basePrelude + "\ndef basis (b : BaseDimension) : Dim :=\n  fun i => if i = b then 1 else 0\n\ndef dimOne : Dim := fun _ => 0\ndef dimMul (d₁ d₂ : Dim) : Dim := fun b => d₁ b + d₂ b\ndef dimInv (d : Dim) : Dim := fun b => -d b\ndef dimDiv (d₁ d₂ : Dim) : Dim := dimMul d₁ (dimInv d₂)\ndef dimPow (d : Dim) (n : Int) : Dim := fun b => n * d b\n\ndef timeDim : Dim := basis .time\ndef lengthDim : Dim := basis .length\ndef massDim : Dim := basis .mass\ndef currentDim : Dim := basis .electricCurrent\n";
 
   window.LEANPATH_WRITING_BANK = {
-    version: 5,
+    version: 6,
     tasks: [
       {
         id:"unit-write-symbol",level:1,section:"SI 基本量",title:"写出七个基本单位符号",
@@ -119,8 +119,8 @@
         template:opsPrelude + "\ndef speedDim : Dim := dimDiv lengthDim timeDim\ndef accelerationDim : Dim := dimDiv speedDim timeDim\ndef forceDim : Dim := dimMul massDim accelerationDim\ndef energyDim : Dim := dimMul forceDim lengthDim\n\ntheorem kinetic_energy_dimension :\n    dimMul massDim (dimPow speedDim 2) = energyDim :=\n  {{ANSWER}}\n"
       },
       {
-        id:"unit-write-physlib",level:3,section:"Physlib",title:"引用 Physlib 的精确换算定理",
-        prompt:"调用 Physlib 已验证定理，证明 1 km/h 在 SI 中是 5/18 m/s。",
+        id:"unit-write-physlib",level:3,section:"PhysLean → Physlib",title:"引用现行 Physlib 的精确换算定理",
+        prompt:"原 PhysLean 的单位工作现已并入 Physlib；使用当前模块路径调用定理，证明 1 km/h 在 SI 中是 5/18 m/s。",
         concept:"physlib-withdim",xp:14,starter:"by\n  ",placeholder:"使用 exact 和完整限定名",
         hint:"目标与 DimSpeed.oneKilometerPerHour_in_SI 的类型一致。",
         template:"import Physlib.Units.WithDim.Speed\n\nopen LTMCTUnitChoices\n\nexample : DimSpeed.oneKilometerPerHour SI = ⟨5 / 18⟩ :=\n  {{ANSWER}}\n"
@@ -231,9 +231,9 @@
         template:"import Mathlib\n\nabbrev Vec3 := Fin 3 → ℝ\n\ndef work (F p q : Vec3) : ℝ := dotProduct F (q - p)\n\ntheorem work_add (F p q r : Vec3) :\n    work F p r = work F p q + work F q r :=\n  {{ANSWER}}\n"
       },
       {
-        id:"statics-write-potential",part:2,unlock:"potential",level:2,section:"势能",title:"调用 Physlib 求二次势能梯度",
+        id:"statics-write-potential",part:2,unlock:"potential",level:2,section:"势能",title:"调用现行 Physlib 求二次势能梯度",
         prompt:"复用 gradient_const_mul_inner_self，证明 V(x)=½k⟪x,x⟫ 的梯度是 k•x。",
-        concept:"conservative-potential",xp:14,starter:"by\n  ",placeholder:"使用 Physlib 梯度定理并化简系数",
+        concept:"conservative-potential",xp:14,starter:"by\n  ",placeholder:"使用源自 PhysLean、现位于 Physlib 的梯度定理",
         hint:"先 change 展开 springPotential，再 rw [gradient_const_mul_inner_self]，最后用 module 化简数乘。",
         template:"import Mathlib\nimport Physlib.Mathematics.Calculus.Gradient\n\nopen InnerProductSpace\nnoncomputable section\n\nvariable {n : ℕ}\n\ndef springPotential (k : ℝ) (x : EuclideanSpace ℝ (Fin n)) : ℝ :=\n  (1 / 2 : ℝ) * k * ⟪x, x⟫_ℝ\n\ntheorem springPotential_gradient (k : ℝ)\n    (x : EuclideanSpace ℝ (Fin n)) :\n    gradient (springPotential k) x = k • x :=\n  {{ANSWER}}\n"
       },
@@ -252,8 +252,8 @@
         template:"import Mathlib\n\ndef scalarPotential (k x : ℝ) : ℝ := (1 / 2 : ℝ) * k * x^2\n\ntheorem positive_stiffness_strict_min (k x : ℝ)\n    (hk : 0 < k) (hx : x ≠ 0) :\n    scalarPotential k 0 < scalarPotential k x :=\n  {{ANSWER}}\n"
       },
       {
-        id:"statics-write-physlib",part:2,unlock:"statics-physlib",level:3,section:"Mathlib / Physlib",title:"检查静力学所需库接口",
-        prompt:"补全示例：直接引用 Mathlib 已验证的叉积自反为零定理。上方 #check 同时展示 Physlib 梯度桥。",
+        id:"statics-write-physlib",part:2,unlock:"statics-physlib",level:3,section:"Mathlib / PhysLean → Physlib",title:"检查静力学所需库接口",
+        prompt:"补全示例：引用 Mathlib 的叉积定理；上方 #check 展示源自 PhysLean、当前由 Physlib 提供的梯度接口。",
         concept:"library-statics",xp:16,starter:"by\n  ",placeholder:"exact cross_self v",
         hint:"直接引用 cross_self。",
         template:"import Mathlib.LinearAlgebra.CrossProduct\nimport Physlib.Mathematics.Calculus.Gradient\n\n#check gradient_inner_self\nabbrev Vec3 := Fin 3 → ℝ\n\nexample (v : Vec3) : crossProduct v v = 0 :=\n  {{ANSWER}}\n"

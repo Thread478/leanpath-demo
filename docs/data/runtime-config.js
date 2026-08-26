@@ -8,7 +8,7 @@
   window.LEANPATH_CONFIG = Object.assign({
     leanWebSocket: "wss://live.lean-lang.org/websocket/MathlibDemo",
     leanProject: "MathlibDemo",
-    leanServiceLabel: "Lean 4 + Mathlib + Physlib · live.lean-lang.org",
+    leanServiceLabel: "Lean 4 + Mathlib + Physlib（PhysLean 后继）",
     aiEndpoint: ""
   }, window.LEANPATH_CONFIG || {});
 }());

@@ -36,10 +36,10 @@
 1. `id` 不与任何现有题目重复，并尽量使用物理主题前缀；
 2. 三个难度层都有足够题目满足 `mix`；
 3. 主线题面优先采用真实物理情境，并要求计算、建模或判断物理后果；
-4. 除 Mathlib/Physlib 衔接关外，不把关键字、声明形式或定理名识别作为问题本身；
+4. 除 Mathlib/Physlib 接口衔接关外，不把关键字、声明形式或定理名识别作为问题本身；
 5. 三个难度层依次覆盖单步计算、多个关系联合使用、假设/极端情形/适用边界；
 6. 干扰项应对应真实的物理误区或计算错误；
-7. 代码使用 Lean 4 / Mathlib / Physlib 当前语法；
+7. 代码使用 Lean 4 / Mathlib / Physlib 当前语法；历史项目名 PhysLean 不作为现行 import 前缀；
 8. 不直接复制外部教程的长题面，应重新表述并补充来源。
 
 ## 随机组卷规则
@@ -60,12 +60,11 @@
 每张卡包含：
 
 - `part` 与 `index`：所属部分和部分内编号；
-- `title` 与 `summary`：本关的核心物理问题；
-- `points`：三个定义、推导或判断要点；
-- `pseudo`：帮助阅读结构的 Lean 风格伪代码；
+- `title` 与 `summary`：本关的核心物理问题与学习目标；
+- `sections`：三段依次推进的微型讲义，每段包含标题、完整解释，以及可选的 `code` 和特殊情形 `cases`；
 - `scope`：结论的模型假设和适用边界。
 
-伪代码用于教学，不发送到 Lean 判题服务，也不承诺可单独编译。可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一张理论卡。
+讲义按照“物理问题 → 数学推导 → Lean 结构 → 特殊情形/模型边界”组织，代码穿插在相应推导之后，而不是作为孤立词汇表。伪代码用于教学，不发送到 Lean 判题服务，也不承诺可单独编译。可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一张理论卡，每张卡恰有三段讲义，且至少包含一个代码片段。
 
 ## Lean 入门训练营
 
@@ -87,11 +86,11 @@
 
 题库并非逐题复制，而是参考暑校 Type Theory / Inductive Type 讲义中的物理量练习，以及下列开源项目的 API、知识顺序和练习类型后重新编写：
 
-- [Physlib](https://github.com/leanprover-community/Physlib) — Apache-2.0；
+- [Physlib](https://github.com/leanprover-community/physlib) — Apache-2.0；当前项目由通用物理库 PhysLean（更早名 HepLean）与 Lean-QuantumInfo 合并而成，现行 Lean 模块前缀为 `Physlib.*`；
 - [Theorem Proving in Lean 4](https://github.com/leanprover/theorem_proving_in_lean4) — Apache-2.0；
 - [Mathematics in Lean](https://github.com/leanprover-community/mathematics_in_lean) — Apache-2.0。
 
-标有 `source: "physlib-adapted"` 的题目依据 Physlib 中真实存在的定义或定理签名重新设计，但题面、选项与中文解释均为本站原创表述。
+标有 `source: "physlib-adapted"` 的题目依据现行 Physlib 中真实存在的定义或定理签名重新设计，但题面、选项与中文解释均为本站原创表述。涉及单位、参考系和梯度时，文案同时标注其 PhysLean 历史来源；可执行代码仍使用当前 `Physlib.*` 路径。
 
 ## Lean 写作题库
 
@@ -123,4 +122,4 @@
 
 [showcase-bank.js](./showcase-bank.js) 记录逐步解锁的代码展品。每个展品的 `unlock` 必须是 `course-config.js` 中存在的关卡 ID；小型展品可直接使用 `code`，完整章节使用 `file` 指向独立 Lean 文件。
 
-第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示，并保留三维 Hodge 对偶/叉积专门化。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。
+第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示，并保留三维 Hodge 对偶/叉积专门化。图鉴的 `origin` 字段必须区分 LeanPath 自定义代码、Mathlib 基础定理与原 PhysLean/现 Physlib 接口。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。
