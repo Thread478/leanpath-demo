@@ -1,12 +1,5 @@
 import Mathlib
 import Physlib.Mathematics.Calculus.Gradient
-import Physlib.SpaceAndTime.ReferenceFrame
-
-/-!
-历史说明：这些物理接口源自 PhysLean（更早名为 HepLean）。PhysLean 与
-Lean-QuantumInfo 合并后，现行项目、构建目标与模块前缀均为 `Physlib`，
-因此可执行导入保持 `Physlib.*`。
--/
 
 open InnerProductSpace
 
@@ -14,7 +7,6 @@ namespace LeanPathPhysics.EuclideanStatics
 
 /-! ## 1. 一般有限维力矩：二阶反对称张量 -/
 
-/-- `ℝⁿ` 的透明坐标模型。 -/
 abbrev VecN (n : ℕ) := Fin n → ℝ
 
 /--
@@ -113,6 +105,70 @@ theorem balanceN_origin_independent {n : ℕ}
     ext i j
     simp [wedge]
 
+
+/-! ### 1A. Bilinearity and the geometric meaning of a vanishing wedge -/
+
+/-- The moment bivector is additive in its first slot. -/
+theorem wedge_add_left {n : ℕ} (r₁ r₂ F : VecN n) :
+    wedge (r₁ + r₂) F = wedge r₁ F + wedge r₂ F := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- The moment bivector is additive in its second slot. -/
+theorem wedge_add_right {n : ℕ} (r F₁ F₂ : VecN n) :
+    wedge r (F₁ + F₂) = wedge r F₁ + wedge r F₂ := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- Scalar multiplication may be pulled out of the first slot. -/
+theorem wedge_smul_left {n : ℕ} (a : ℝ) (r F : VecN n) :
+    wedge (a • r) F = a • wedge r F := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- Scalar multiplication may be pulled out of the second slot. -/
+theorem wedge_smul_right {n : ℕ} (a : ℝ) (r F : VecN n) :
+    wedge r (a • F) = a • wedge r F := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- If `r ≠ 0`, vanishing of `r ∧ F` forces `F` to lie on the line spanned by
+`r`.  Thus the bivector really detects failure of collinearity. -/
+theorem wedge_eq_zero_implies_smul_of_ne_zero {n : ℕ}
+    (r F : VecN n) (hr : r ≠ 0) (h : wedge r F = 0) :
+    ∃ a : ℝ, F = a • r := by
+  classical
+  have hi : ∃ i, r i ≠ 0 := by
+    by_contra hnone
+    push Not at hnone
+    apply hr
+    funext i
+    exact hnone i
+  rcases hi with ⟨i, hi⟩
+  refine ⟨F i / r i, ?_⟩
+  funext j
+  have hij : r i * F j - r j * F i = 0 := by
+    have hcomp := congrArg (fun M : MomentTensor n => M i j) h
+    simpa [wedge] using hcomp
+  change F j = (F i / r i) * r j
+  rw [div_mul_eq_mul_div]
+  apply (eq_div_iff hi).2
+  nlinarith [hij]
+
+/-- For a nonzero first vector, `r ∧ F = 0` is equivalent to collinearity. -/
+theorem wedge_eq_zero_iff_smul_of_ne_zero {n : ℕ}
+    (r F : VecN n) (hr : r ≠ 0) :
+    wedge r F = 0 ↔ ∃ a : ℝ, F = a • r := by
+  constructor
+  · exact wedge_eq_zero_implies_smul_of_ne_zero r F hr
+  · rintro ⟨a, rfl⟩
+    exact wedge_smul_self a r
+
+
 /-! ## 2. 三维专门化：欧式坐标、点、位移与内积 -/
 
 /-- 透明的三维实坐标模型。Mathlib 的叉积正是作用在这个类型上。 -/
@@ -129,7 +185,6 @@ theorem hodgeDual3_wedge (r F : Vec3) :
     hodgeDual3 (wedge r F) = crossProduct r F := by
   ext i
   fin_cases i <;> simp [hodgeDual3, wedge, cross_apply]
-  all_goals (try ring_nf) <;> ring
 
 /-- 坐标点。更内禀的项目可连接原 PhysLean、现 Physlib 的 ReferenceFrame。 -/
 structure Point3 where
@@ -153,7 +208,7 @@ theorem displacement_chain (p q r : Point3) :
   simp [displacement]
 
 theorem normSq_eq_zero_iff (v : Vec3) : normSq v = 0 ↔ v = 0 := by
-  simpa [normSq, dot] using (dotProduct_self_eq_zero (v := v))
+  simp [normSq, dot]
 
 /-! ## 3. 集中力、有限力系与合力 -/
 
@@ -195,23 +250,22 @@ def totalMomentAt (o : Point3) : ForceSystem → Vec3
   | f :: S => momentAt o f + totalMomentAt o S
 
 @[simp] theorem cross_self_zero (v : Vec3) : cross v v = 0 := by
-  simpa [cross] using cross_self v
+  simp [cross]
 
 /-- 叉积与第一个因子正交。 -/
 theorem dot_left_cross_self (v w : Vec3) : dot v (cross v w) = 0 := by
-  simpa [dot, cross] using dot_self_cross v w
+  simp [dot, cross]
 
 /-- 叉积与第二个因子正交。 -/
 theorem dot_cross_right_self (v w : Vec3) : dot (cross v w) w = 0 := by
   rw [dot, dotProduct_comm]
-  simpa [dot, cross] using dot_cross_self v w
+  simp [dot, cross]
 
 /-- 单个力的移矩公式。 -/
 theorem momentAt_change_origin (o q : Point3) (f : AppliedForce) :
     momentAt q f = momentAt o f - cross (q.coord - o.coord) f.vector := by
   ext i
-  fin_cases i <;> simp [momentAt, cross, cross_apply]
-  all_goals (try ring_nf <;> ring)
+  fin_cases i <;> simp [momentAt, cross, cross_apply, sub_eq_add_neg] <;> ring
 
 /-- 有限力系的移矩公式：`M_q = M_o - (q-o) × R`。 -/
 theorem totalMomentAt_change_origin (o q : Point3) (S : ForceSystem) :
@@ -224,8 +278,7 @@ theorem totalMomentAt_change_origin (o q : Point3) (S : ForceSystem) :
           cross (q.coord - o.coord) (f.vector + resultant S)
       rw [momentAt_change_origin o q f, ih]
       ext i
-      fin_cases i <;> simp [momentAt, cross, cross_apply]
-      all_goals (try ring_nf <;> ring)
+      fin_cases i <;> simp [momentAt, cross, cross_apply] <;> ring
 
 /-- 一对相反力的合力为零。 -/
 theorem couple_resultant (p q : Point3) (F : Vec3) :
@@ -236,8 +289,9 @@ theorem couple_resultant (p q : Point3) (F : Vec3) :
 theorem couple_moment_independent (o q p₁ p₂ : Point3) (F : Vec3) :
     totalMomentAt q [⟨p₁, F⟩, ⟨p₂, -F⟩] =
       totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩] := by
-  rw [totalMomentAt_change_origin o q [⟨p₁, F⟩, ⟨p₂, -F⟩]]
-  simp [couple_resultant, cross]
+  rw [totalMomentAt_change_origin o q [⟨p₁, F⟩, ⟨p₂, -F⟩],
+      couple_resultant]
+  simp [cross]
 
 /-! ## 5. 三维静力平衡与充要条件 -/
 
@@ -282,6 +336,47 @@ theorem virtualPower_zero_iff_balance (o : Point3) (S : ForceSystem) :
     rw [hR, hM]
     simp [dot]
 
+
+/-! ### 5A. Static equivalence of force systems -/
+
+/-- Two force systems are statically equivalent at `o` when they have the same
+resultant and the same total moment there. -/
+def StaticallyEquivalentAt (o : Point3) (S T : ForceSystem) : Prop :=
+  resultant S = resultant T ∧ totalMomentAt o S = totalMomentAt o T
+
+/-- Static equivalence does not depend on the chosen reference point. -/
+theorem staticallyEquivalentAt_change_origin (o q : Point3)
+    (S T : ForceSystem) (h : StaticallyEquivalentAt o S T) :
+    StaticallyEquivalentAt q S T := by
+  constructor
+  · exact h.1
+  · rw [totalMomentAt_change_origin o q S,
+        totalMomentAt_change_origin o q T, h.1, h.2]
+
+/-- Hence equivalence checked at one point is equivalent to equivalence checked
+at any other point. -/
+theorem staticallyEquivalentAt_iff (o q : Point3) (S T : ForceSystem) :
+    StaticallyEquivalentAt o S T ↔ StaticallyEquivalentAt q S T := by
+  constructor
+  · exact staticallyEquivalentAt_change_origin o q S T
+  · exact staticallyEquivalentAt_change_origin q o S T
+
+/-- A pure couple has the explicit free moment `(p₁-p₂) × F`. -/
+theorem couple_moment_formula (o p₁ p₂ : Point3) (F : Vec3) :
+    totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩] =
+      cross (p₁.coord - p₂.coord) F := by
+  ext i
+  fin_cases i <;>
+    simp [totalMomentAt, momentAt, cross, cross_apply]
+  all_goals ring
+
+/-- The moment vector of a couple is perpendicular to either force. -/
+theorem couple_moment_orthogonal_force (o p₁ p₂ : Point3) (F : Vec3) :
+    dot (totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩]) F = 0 := by
+  rw [couple_moment_formula]
+  exact dot_cross_right_self (p₁.coord - p₂.coord) F
+
+
 /-! ## 6. 简支梁：支反力与平衡 -/
 
 /-- 跨长 `L`、距左端 `a` 处向下载荷 `P` 的左端反力。 -/
@@ -298,8 +393,8 @@ theorem simplySupported_force_balance (P a L : ℝ) (hL : L ≠ 0) :
 
 theorem simplySupported_moment_balance (P a L : ℝ) (hL : L ≠ 0) :
     rightReaction P a L * L = P * a := by
-      rw [rightReaction]
-      field_simp [hL]
+  rw [rightReaction]
+  field_simp [hL]
 
 theorem simplySupported_reactions_nonnegative (P a L : ℝ)
     (hP : 0 ≤ P) (ha0 : 0 ≤ a) (haL : a ≤ L) (hL : 0 < L) :
@@ -350,6 +445,61 @@ theorem indeterminate_of_selfStress (A : Reaction →ₗ[ℝ] Equilibrium)
   · rw [map_add, hk]
     simpa using hr₀
 
+
+/-- Once the equilibrium equations are consistent, static determinacy is
+*equivalent* to injectivity of the equilibrium operator.  This supplies the
+missing converse to `determinate_of_injective`. -/
+theorem determinate_iff_injective_of_consistent
+    (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
+    (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
+    IsStaticallyDeterminate A load ↔ Function.Injective A := by
+  constructor
+  · intro hdet x y hxy
+    rcases hdet with ⟨r, hr, hunique⟩
+    have hk : A (x - y) = 0 := by
+      rw [map_sub, hxy, sub_self]
+    have hshift : A (r₀ + (x - y)) + load = 0 := by
+      rw [map_add, hk, add_zero]
+      exact hr₀
+    have hr₀eq : r₀ = r := hunique r₀ hr₀
+    have hshifteq : r₀ + (x - y) = r := hunique (r₀ + (x - y)) hshift
+    have hsame : r₀ + (x - y) = r₀ := hshifteq.trans hr₀eq.symm
+    have hdiff : x - y = 0 := by
+      have : r₀ + (x - y) = r₀ + 0 := by simpa using hsame
+      exact add_left_cancel this
+    exact sub_eq_zero.mp hdiff
+  · intro hA
+    exact determinate_of_injective A load hA r₀ hr₀
+
+/-- The same result in the standard linear-algebra language: for a consistent
+system, determinacy means that the self-stress kernel is trivial. -/
+theorem determinate_iff_ker_eq_bot_of_consistent
+    (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
+    (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
+    IsStaticallyDeterminate A load ↔ A.ker = ⊥ := by
+  rw [determinate_iff_injective_of_consistent A load r₀ hr₀]
+  exact (LinearMap.ker_eq_bot (f := A)).symm
+
+/-- For a consistent equilibrium problem, indeterminacy is *equivalent* to the
+existence of a nonzero self-stress.  The forward direction extracts the
+difference of two solutions; the reverse direction shifts one solution along
+the kernel. -/
+theorem indeterminate_iff_exists_selfStress_of_consistent
+    (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
+    (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
+    IsStaticallyIndeterminate A load ↔
+      ∃ k : Reaction, k ≠ 0 ∧ A k = 0 := by
+  constructor
+  · rintro ⟨r₁, r₂, hne, hr₁, hr₂⟩
+    refine ⟨r₁ - r₂, sub_ne_zero.mpr hne, ?_⟩
+    rw [map_sub]
+    have hEq : A r₁ + load = A r₂ + load := hr₁.trans hr₂.symm
+    have hAeq : A r₁ = A r₂ := add_right_cancel hEq
+    rw [hAeq, sub_self]
+  · rintro ⟨k, hk0, hk⟩
+    exact indeterminate_of_selfStress A load r₀ k hr₀ hk hk0
+
+
 end Determinacy
 
 /-! ## 8. 常力功与路径分段 -/
@@ -362,7 +512,7 @@ theorem work_add (F : Vec3) (p q r : Point3) :
   have h := displacement_chain p q r
   simp only [work]
   rw [← h]
-  simp [work, dot, dotProduct_add]
+  simp [dot]
 
 theorem work_zero_of_orthogonal (F : Vec3) (p q : Point3)
     (h : dot F (displacement p q) = 0) : work F p q = 0 := h
@@ -393,6 +543,45 @@ theorem elasticForce_eq {n : ℕ} (k : ℝ)
     (x : EuclideanSpace ℝ (Fin n)) : elasticForce k x = (-k) • x := by
   rw [elasticForce, gradient_quadraticPotential]
   module
+
+
+/-- Positive stiffness gives a strict global minimum of the isotropic
+quadratic potential at the origin in every finite Euclidean dimension. -/
+theorem quadraticPotential_strict_min {n : ℕ} (k : ℝ)
+    (hk : 0 < k) (x : EuclideanSpace ℝ (Fin n)) (hx : x ≠ 0) :
+    quadraticPotential (n := n) k (0 : EuclideanSpace ℝ (Fin n)) <
+      quadraticPotential (n := n) k x := by
+  have hinner : 0 < inner ℝ x x := real_inner_self_pos.mpr hx
+  simp only [quadraticPotential, inner_zero_left]
+  nlinarith
+
+/-- For nonzero stiffness, Hooke's conservative force has a unique equilibrium
+at the origin. -/
+theorem elasticForce_eq_zero_iff {n : ℕ} (k : ℝ) (hk : k ≠ 0)
+    (x : EuclideanSpace ℝ (Fin n)) :
+    elasticForce k x = 0 ↔ x = 0 := by
+  rw [elasticForce_eq]
+  constructor
+  · intro h
+    exact (smul_eq_zero.mp h).resolve_left (neg_ne_zero.mpr hk)
+  · rintro rfl
+    simp
+
+/-- The origin is therefore simultaneously the unique force equilibrium and,
+for positive stiffness, the strict energy minimizer away from the origin. -/
+theorem hooke_equilibrium_and_strict_stability {n : ℕ} (k : ℝ)
+    (hk : 0 < k) (x : EuclideanSpace ℝ (Fin n)) (hx : x ≠ 0) :
+    elasticForce (n := n) k 0 = 0 ∧
+      elasticForce k x ≠ 0 ∧
+      quadraticPotential (n := n) k 0 < quadraticPotential (n := n) k x := by
+  have hk0 : k ≠ 0 := ne_of_gt hk
+  constructor
+  · simp [elasticForce_eq]
+  · constructor
+    · intro hzero
+      exact hx ((elasticForce_eq_zero_iff k hk0 x).mp hzero)
+    · exact quadraticPotential_strict_min k hk x hx
+
 
 end
 
