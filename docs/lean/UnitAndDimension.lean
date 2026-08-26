@@ -6,7 +6,8 @@ import Physlib.Units.WithDim.Speed
 
 This file is the complete chapter-one exhibit.  It builds a small transparent
 model of SI dimensions and dimension-indexed quantities, proves the most useful
-dimension identities, and finally connects the model to a real Physlib theorem.
+dimension identities, and finally connects the model to a theorem originating
+in PhysLean and now maintained in the merged Physlib project.
 -/
 
 namespace LeanPathPhysics
@@ -331,11 +332,14 @@ theorem thirtySix_kilometers_per_hour :
   norm_num [Quantity.scale, kilometerPerHour, meterPerSecond,
     Quantity.div, kilometer, hour, meter, second]
 
-/-! ## Bridge to Physlib -/
+/-! ## Bridge from the PhysLean lineage to current Physlib -/
 
 open LTMCTUnitChoices
 
-/-- The same conversion is available in Physlib's production unit framework. -/
+/--
+This conversion originated in the PhysLean line of work and is available under
+the current `Physlib.*` module path after the Physlib/QuantumInfo merger.
+-/
 example : DimSpeed.oneKilometerPerHour SI = ⟨5 / 18⟩ := by
   exact DimSpeed.oneKilometerPerHour_in_SI
 
