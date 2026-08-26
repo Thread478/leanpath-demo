@@ -95,7 +95,7 @@
   <script src="data/course-config.js"></script>
   <script src="data/lesson-guide-bank.js?v=3"></script>
   <script src="data/lesson-lecture-bank.js?v=3"></script>
-  <script src="data/lesson-math-markdown.js?v=1"></script>
+  <script src="data/lesson-math-markdown.js?v=2"></script>
   <script src="data/dynamics-lesson-bank.js?v=1"></script>
   <script src="data/question-bank.js?v=3"></script>
   <script src="data/dynamics-question-bank.js?v=1"></script>
@@ -651,7 +651,7 @@
       pendingLessonId = resolvedId;
       document.querySelector("#lessonGuidePart").textContent = guide.part;
       document.querySelector("#lessonGuideIndex").textContent = guide.index;
-      document.querySelector("#lessonGuideTitle").textContent = guide.title;
+      document.querySelector("#lessonGuideTitle").innerHTML = markdownInline(guide.title);
       document.querySelector("#lessonGuideSummary").innerHTML = markdownInline(guide.summary);
       const goals = guide.goals && guide.goals.length
         ? '<section class="lesson-guide-intro markdown-body"><h3>学完这一关，你应当能够</h3><ul class="lesson-guide-goals">' + guide.goals.map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ul></section>'
@@ -662,7 +662,7 @@
       const sections = (guide.sections || []).map(function(section, index){
         const code = section.code ? '<div class="lesson-guide-code"><div class="code-head"><span>Lean 结构草图</span><span>先读类型，再读证明</span></div><pre><code>' + escapeHtml(section.code) + '</code></pre></div>' : '';
         const cases = section.cases && section.cases.length ? '<div class="lesson-guide-cases markdown-body"><b>分情况理解</b><ul>' + section.cases.map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ul></div>' : '';
-        return '<section class="lesson-guide-section markdown-body"><span class="lesson-guide-section-number">' + String(index + 1).padStart(2, "0") + '</span><h3>' + escapeHtml(section.title) + '</h3>' + markdownBlock(section.text) + code + cases + '</section>';
+        return '<section class="lesson-guide-section markdown-body"><span class="lesson-guide-section-number">' + String(index + 1).padStart(2, "0") + '</span><h3>' + markdownInline(section.title) + '</h3>' + markdownBlock(section.text) + code + cases + '</section>';
       }).join("");
       const derivation = guide.derivation && guide.derivation.length
         ? '<section class="lecture-panel markdown-body"><p class="lecture-block-title">MATHEMATICAL THREAD</p><h3>把本关压成一条推导链</h3><p class="lecture-panel-lead">先看等式之间为什么相连，再看 Lean 如何保存每一步。</p>' + guide.derivation.map(function(item){return '<div class="derivation-step"><div class="derivation-formula">' + markdownBlock(item.formula) + '</div><div>' + markdownBlock(item.text) + '</div></div>';}).join('') + '</section>'
@@ -671,7 +671,7 @@
         ? '<section class="lecture-panel markdown-body"><p class="lecture-block-title">FROM PHYSICS TO LEAN</p><h3>物理对象如何落到类型中</h3><table class="lean-map"><thead><tr><th>物理对象</th><th>Lean 表达</th><th>这样设计的理由</th></tr></thead><tbody>' + guide.leanMap.map(function(item){return '<tr><td>' + markdownInline(item.physics) + '</td><td><code>' + escapeHtml(item.lean) + '</code></td><td>' + markdownInline(item.reason) + '</td></tr>';}).join('') + '</tbody></table></section>'
         : '';
       const worked = guide.worked
-        ? '<section class="lecture-panel worked-example markdown-body"><p class="lecture-block-title">WORKED EXAMPLE</p><h3>' + escapeHtml(guide.worked.title) + '</h3><div class="worked-problem">' + markdownBlock(guide.worked.problem) + '</div><ol class="worked-steps">' + (guide.worked.steps || []).map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ol><div class="worked-result"><b>结论：</b>' + markdownBlock(guide.worked.result) + '</div></section>'
+        ? '<section class="lecture-panel worked-example markdown-body"><p class="lecture-block-title">WORKED EXAMPLE</p><h3>' + markdownInline(guide.worked.title) + '</h3><div class="worked-problem">' + markdownBlock(guide.worked.problem) + '</div><ol class="worked-steps">' + (guide.worked.steps || []).map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ol><div class="worked-result"><b>结论：</b>' + markdownBlock(guide.worked.result) + '</div></section>'
         : '';
       const ending = (guide.takeaways || guide.checkpoint)
         ? '<div class="lecture-ending">' +
