@@ -121,7 +121,7 @@
       {
         id:"unit-write-physlib",level:3,section:"PhysLean → Physlib",title:"引用现行 Physlib 的精确换算定理",
         prompt:"原 PhysLean 的单位工作现已并入 Physlib；使用当前模块路径调用定理，证明 1 km/h 在 SI 中是 5/18 m/s。",
-        concept:"physlib-withdim",xp:14,starter:"by\n  ",placeholder:"使用 exact 和完整限定名",
+        concept:"physlib-withdim",xp:14,optional:true,requires:"physlib",starter:"by\n  ",placeholder:"使用 exact 和完整限定名",
         hint:"目标与 DimSpeed.oneKilometerPerHour_in_SI 的类型一致。",
         template:"import Physlib.Units.WithDim.Speed\n\nopen LTMCTUnitChoices\n\nexample : DimSpeed.oneKilometerPerHour SI = ⟨5 / 18⟩ :=\n  {{ANSWER}}\n"
       },
@@ -233,7 +233,7 @@
       {
         id:"statics-write-potential",part:2,unlock:"potential",level:2,section:"势能",title:"调用现行 Physlib 求二次势能梯度",
         prompt:"复用 gradient_const_mul_inner_self，证明 V(x)=½k⟪x,x⟫ 的梯度是 k•x。",
-        concept:"conservative-potential",xp:14,starter:"by\n  ",placeholder:"使用源自 PhysLean、现位于 Physlib 的梯度定理",
+        concept:"conservative-potential",xp:14,optional:true,requires:"physlib",starter:"by\n  ",placeholder:"使用源自 PhysLean、现位于 Physlib 的梯度定理",
         hint:"先 change 展开 springPotential，再 rw [gradient_const_mul_inner_self]，最后用 module 化简数乘。",
         template:"import Mathlib\nimport Physlib.Mathematics.Calculus.Gradient\n\nopen InnerProductSpace\nnoncomputable section\n\nvariable {n : ℕ}\n\ndef springPotential (k : ℝ) (x : EuclideanSpace ℝ (Fin n)) : ℝ :=\n  (1 / 2 : ℝ) * k * ⟪x, x⟫_ℝ\n\ntheorem springPotential_gradient (k : ℝ)\n    (x : EuclideanSpace ℝ (Fin n)) :\n    gradient (springPotential k) x = k • x :=\n  {{ANSWER}}\n"
       },
@@ -254,7 +254,7 @@
       {
         id:"statics-write-physlib",part:2,unlock:"statics-physlib",level:3,section:"Mathlib / PhysLean → Physlib",title:"检查静力学所需库接口",
         prompt:"补全示例：引用 Mathlib 的叉积定理；上方 #check 展示源自 PhysLean、当前由 Physlib 提供的梯度接口。",
-        concept:"library-statics",xp:16,starter:"by\n  ",placeholder:"exact cross_self v",
+        concept:"library-statics",xp:16,optional:true,requires:"physlib",starter:"by\n  ",placeholder:"exact cross_self v",
         hint:"直接引用 cross_self。",
         template:"import Mathlib.LinearAlgebra.CrossProduct\nimport Physlib.Mathematics.Calculus.Gradient\n\n#check gradient_inner_self\nabbrev Vec3 := Fin 3 → ℝ\n\nexample (v : Vec3) : crossProduct v v = 0 :=\n  {{ANSWER}}\n"
       }
