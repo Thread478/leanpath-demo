@@ -29,6 +29,23 @@
     @media(max-width:720px){.mobile-nav{grid-template-columns:repeat(7,1fr)}.progress-summary{grid-template-columns:1fr}.progress-body{padding:20px 16px 90px}.progress-actions{align-items:stretch;flex-direction:column}.refill{width:100%}.concept-overlay,.lesson-guide-overlay{padding:16px}.concept-modal{width:100%;height:auto;max-height:calc(100vh - 32px);overflow:auto;padding:25px 20px;border-radius:18px}.concept-actions{align-items:stretch;flex-direction:column}.concept-actions .action{width:100%}.lesson-guide-modal{width:100%;height:auto;max-height:calc(100vh - 32px);padding:23px 18px;border-radius:18px}.lesson-guide-modal h2{font-size:23px}.lesson-guide-section{padding:17px 15px}.lesson-guide-section>p{font-size:11px}.lesson-guide-actions{align-items:stretch;flex-direction:column}.lesson-guide-actions .action{width:100%}.writing-layout,.showcase-layout{height:calc(100vh - 76px);display:block;overflow:auto}.writing-side,.showcase-side{padding:10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.writing-summary,.showcase-summary{display:none}.writing-task-list,.showcase-list{display:flex}.writing-task,.showcase-entry{width:190px;min-width:190px}.writing-main,.showcase-main{overflow:visible;padding:22px 15px 100px}.writing-title-row h2,.showcase-hero h2{font-size:21px}.showcase-hero{display:block}.showcase-status{display:inline-block;margin-top:7px}.writing-toolbar{align-items:stretch;flex-direction:column}.writing-toolbar>div{display:grid;grid-template-columns:1fr 1fr}.writing-toolbar .action,.writing-toolbar .secondary-action{width:100%;min-width:0}.answer-editor{min-height:140px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
+  <style>
+    .lesson-guide-modal{width:min(1040px,100%);padding:0;background:#fffdf9}
+    .lesson-guide-head{position:sticky;z-index:2;top:0;padding:30px 42px 24px;border-bottom:1px solid #ebe5db;background:#fffdf9f2;backdrop-filter:blur(12px)}
+    .lesson-guide-head>div{max-width:860px}.lesson-guide-modal h2{font-size:32px}.lesson-guide-summary{max-width:850px;color:#52635b;font-size:14px;line-height:1.95}
+    .lesson-guide-content{max-width:850px;margin:0 auto;padding:30px 0 6px;display:block}.lesson-guide-intro{margin-bottom:30px;padding:22px 24px;border-radius:16px;background:#f3f0ff}
+    .lesson-guide-intro h3,.lecture-block-title{margin:0 0 12px;color:#51448b;font-size:12px;letter-spacing:.8px}.lesson-guide-goals{margin:0;padding-left:21px;color:#4f5f58;font-size:13px;line-height:1.85}
+    .lecture-motivation{margin:0 0 38px;padding:0 4px 0 18px;border-left:4px solid #8b75d6;color:#42534b;font-size:15px;line-height:2}.lecture-motivation b{display:block;margin-bottom:5px;color:#725ec4;font-size:10px;letter-spacing:1px}
+    .lesson-guide-section{padding:0 4px 34px 64px;border:0;border-radius:0;background:transparent}.lesson-guide-section+.lesson-guide-section{padding-top:31px;border-top:1px solid #ebe7df}.lesson-guide-section-number{top:31px;right:auto;left:5px;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#eee9ff;color:#705bc2;font-size:11px}.lecture-motivation + .lesson-guide-section .lesson-guide-section-number{top:0}.lesson-guide-section h3{margin:0 0 12px;font-size:20px}.lesson-guide-section>p{color:#52635b;font-size:14px;line-height:2}.lesson-guide-section>p+p{margin-top:12px}
+    .inline-formula{display:inline-block;padding:0 5px;border-radius:5px;background:#f4f1e9;color:#5f4b31;font:600 12px/1.65 Georgia,"Times New Roman",serif}.inline-lean{padding:1px 5px;border-radius:5px;background:#edf3ef;color:#267a5c;font:12px ui-monospace,SFMono-Regular,Consolas,monospace}
+    .lesson-guide-code{margin-top:19px}.lesson-guide-code pre{max-height:none;padding:20px 22px;font-size:12px}.lesson-guide-cases{padding:16px 18px}.lesson-guide-cases b{font-size:10px}.lesson-guide-cases ul{font-size:12px;line-height:1.75}
+    .lecture-panel{margin:34px 0;padding:26px 28px;border:1px solid #e6e1d7;border-radius:17px;background:#fff}.lecture-panel h3{margin:0 0 7px;font-size:20px}.lecture-panel-lead{margin:0 0 20px;color:#718079;font-size:12px}.derivation-step{display:grid;grid-template-columns:minmax(190px,.75fr) 1.25fr;gap:22px;padding:15px 0;border-top:1px solid #eeeae3}.derivation-step code{color:#634fae;font:600 13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace}.derivation-step p{margin:0;color:#52635b;font-size:13px;line-height:1.8}
+    .lean-map{width:100%;border-collapse:collapse}.lean-map th,.lean-map td{padding:12px 10px;border-top:1px solid #eeeae3;text-align:left;vertical-align:top;font-size:12px}.lean-map th{color:#857d76;font-size:9px;letter-spacing:.6px}.lean-map code{color:#267a5c}.lean-map td:last-child{color:#65746d}
+    .worked-example{border-color:#d9eadf;background:#f8fcfa}.worked-problem{margin:13px 0 18px;color:#42534b;font-size:14px;line-height:1.9}.worked-steps{margin:0;padding:0;list-style:none;counter-reset:worked}.worked-steps li{position:relative;padding:12px 12px 12px 47px;border-top:1px solid #dfece5;color:#52635b;font-size:13px;line-height:1.8;counter-increment:worked}.worked-steps li:before{content:counter(worked);position:absolute;top:13px;left:8px;width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#dff3e9;color:#237a5b;font-size:10px;font-weight:900}.worked-result{margin:17px 0 0;padding:14px 16px;border-radius:10px;background:#e8f7f0;color:#28654f;font-size:12px;line-height:1.75}
+    .lecture-ending{max-width:850px;margin:18px auto 0;padding:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.lecture-takeaways,.lecture-checkpoint{padding:21px 22px;border-radius:15px}.lecture-takeaways{background:#f3f0ff}.lecture-takeaways ul{margin:9px 0 0;padding-left:18px;color:#5f5877;font-size:12px;line-height:1.8}.lecture-checkpoint{background:#f4f7f5}.lecture-checkpoint p{margin:8px 0 0;color:#4f5f58;font-size:12px;line-height:1.8}.lecture-checkpoint details{margin-top:12px}.lecture-checkpoint summary{color:#267a5c;font-size:11px;font-weight:800;cursor:pointer}.lecture-checkpoint details p{padding:10px 12px;border-radius:9px;background:#fff}
+    .lesson-guide-scope{max-width:850px;margin:20px auto 0;font-size:11px;line-height:1.8}.lesson-guide-actions{position:sticky;z-index:2;bottom:0;margin:24px 0 0;padding:17px 42px;border-top:1px solid #ebe5db;background:#fffdf9f2;backdrop-filter:blur(12px)}
+    @media(max-width:720px){.lesson-guide-head{padding:23px 19px 18px}.lesson-guide-modal h2{font-size:25px}.lesson-guide-summary{font-size:12px}.lesson-guide-content{padding:22px 17px 4px}.lesson-guide-section{padding:0 0 28px 45px}.lesson-guide-section+.lesson-guide-section{padding-top:26px}.lesson-guide-section-number{left:0;width:30px;height:30px}.lesson-guide-section+.lesson-guide-section .lesson-guide-section-number{top:26px}.lesson-guide-section h3{font-size:17px}.lesson-guide-section>p{font-size:12px}.lecture-panel{padding:20px 16px}.derivation-step{grid-template-columns:1fr;gap:5px}.lean-map th:first-child,.lean-map td:first-child{display:none}.lecture-ending{margin:14px 17px 0;grid-template-columns:1fr}.lesson-guide-scope{margin:18px 17px 0}.lesson-guide-actions{padding:14px 18px}}
+  </style>
 </head>
 <body>
   <aside class="side">
@@ -72,7 +89,8 @@
 
   <script src="data/runtime-config.js"></script>
   <script src="data/course-config.js"></script>
-  <script src="data/lesson-guide-bank.js"></script>
+  <script src="data/lesson-guide-bank.js?v=3"></script>
+  <script src="data/lesson-lecture-bank.js?v=3"></script>
   <script src="data/question-bank.js"></script>
   <script src="data/writing-bank.js"></script>
   <script src="data/showcase-bank.js"></script>
@@ -450,6 +468,18 @@
       return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 
+    function lectureText(value) {
+      return escapeHtml(value || "")
+        .replace(/\$([^$]+)\$/g, '<span class="inline-formula">$1</span>')
+        .replace(/`([^`]+)`/g, '<code class="inline-lean">$1</code>');
+    }
+
+    function lectureParagraphs(value) {
+      return String(value || "").split(/\n\s*\n/).filter(Boolean).map(function(paragraph){
+        return "<p>" + lectureText(paragraph) + "</p>";
+      }).join("");
+    }
+
     function renderRef() {
       const topic = refs.find(function(item){return item.id === activeRef;});
       document.querySelector("#tabs").innerHTML = refs.map(function(item){
@@ -571,11 +601,33 @@
       document.querySelector("#lessonGuideIndex").textContent = guide.index;
       document.querySelector("#lessonGuideTitle").textContent = guide.title;
       document.querySelector("#lessonGuideSummary").textContent = guide.summary;
-      document.querySelector("#lessonGuideContent").innerHTML = (guide.sections || []).map(function(section, index){
-        const code = section.code ? '<div class="lesson-guide-code"><div class="code-head"><span>Lean 风格伪代码</span><span>连接本段推导</span></div><pre><code>' + escapeHtml(section.code) + '</code></pre></div>' : '';
-        const cases = section.cases && section.cases.length ? '<div class="lesson-guide-cases"><b>分情况理解</b><ul>' + section.cases.map(function(item){return '<li>' + escapeHtml(item) + '</li>';}).join('') + '</ul></div>' : '';
-        return '<section class="lesson-guide-section"><span class="lesson-guide-section-number">0' + (index + 1) + '</span><h3>' + escapeHtml(section.title) + '</h3><p>' + escapeHtml(section.text) + '</p>' + code + cases + '</section>';
+      const goals = guide.goals && guide.goals.length
+        ? '<section class="lesson-guide-intro"><h3>学完这一关，你应当能够</h3><ul class="lesson-guide-goals">' + guide.goals.map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></section>'
+        : '';
+      const motivation = guide.motivation
+        ? '<div class="lecture-motivation"><b>为什么现在学习它</b>' + lectureText(guide.motivation) + '</div>'
+        : '';
+      const sections = (guide.sections || []).map(function(section, index){
+        const code = section.code ? '<div class="lesson-guide-code"><div class="code-head"><span>Lean 结构草图</span><span>先读类型，再读证明</span></div><pre><code>' + escapeHtml(section.code) + '</code></pre></div>' : '';
+        const cases = section.cases && section.cases.length ? '<div class="lesson-guide-cases"><b>分情况理解</b><ul>' + section.cases.map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></div>' : '';
+        return '<section class="lesson-guide-section"><span class="lesson-guide-section-number">' + String(index + 1).padStart(2, "0") + '</span><h3>' + escapeHtml(section.title) + '</h3>' + lectureParagraphs(section.text) + code + cases + '</section>';
       }).join("");
+      const derivation = guide.derivation && guide.derivation.length
+        ? '<section class="lecture-panel"><p class="lecture-block-title">MATHEMATICAL THREAD</p><h3>把本关压成一条推导链</h3><p class="lecture-panel-lead">先看等式之间为什么相连，再看 Lean 如何保存每一步。</p>' + guide.derivation.map(function(item){return '<div class="derivation-step"><code>' + escapeHtml(item.formula) + '</code><p>' + lectureText(item.text) + '</p></div>';}).join('') + '</section>'
+        : '';
+      const leanMap = guide.leanMap && guide.leanMap.length
+        ? '<section class="lecture-panel"><p class="lecture-block-title">FROM PHYSICS TO LEAN</p><h3>物理对象如何落到类型中</h3><table class="lean-map"><thead><tr><th>物理对象</th><th>Lean 表达</th><th>这样设计的理由</th></tr></thead><tbody>' + guide.leanMap.map(function(item){return '<tr><td>' + lectureText(item.physics) + '</td><td><code>' + escapeHtml(item.lean) + '</code></td><td>' + lectureText(item.reason) + '</td></tr>';}).join('') + '</tbody></table></section>'
+        : '';
+      const worked = guide.worked
+        ? '<section class="lecture-panel worked-example"><p class="lecture-block-title">WORKED EXAMPLE</p><h3>' + escapeHtml(guide.worked.title) + '</h3><p class="worked-problem">' + lectureText(guide.worked.problem) + '</p><ol class="worked-steps">' + (guide.worked.steps || []).map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ol><p class="worked-result"><b>结论：</b>' + lectureText(guide.worked.result) + '</p></section>'
+        : '';
+      const ending = (guide.takeaways || guide.checkpoint)
+        ? '<div class="lecture-ending">' +
+            '<section class="lecture-takeaways"><p class="lecture-block-title">本关小结</p><ul>' + (guide.takeaways || []).map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></section>' +
+            '<section class="lecture-checkpoint"><p class="lecture-block-title">离开前自检</p><p>' + lectureText((guide.checkpoint && guide.checkpoint.question) || '') + '</p><details><summary>展开参考答案</summary><p>' + lectureText((guide.checkpoint && guide.checkpoint.answer) || '') + '</p></details></section>' +
+          '</div>'
+        : '';
+      document.querySelector("#lessonGuideContent").innerHTML = goals + motivation + sections + derivation + leanMap + worked + ending;
       document.querySelector("#lessonGuideScope").textContent = "模型边界：" + guide.scope;
       document.querySelector("#lessonGuideOverlay").classList.remove("hidden");
       document.body.style.overflow = "hidden";
