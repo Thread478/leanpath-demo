@@ -81,6 +81,8 @@
 - Lean 代码块继续保留 `ℝ`、`∧`、`∑` 等 Lean 4 Unicode 语法，不应替换成 LaTeX；
 - `markdownInline` 与 `markdownBlock` 会先转义 HTML，再应用本站允许的 Markdown 子集；不要把外部未经审查的 HTML 直接写入讲义。
 
+`lesson-math-markdown.js` 还包含第一、二单元旧正文的审校式迁移规则。它只处理已经人工确认的数学片段，并跳过 `code`、`lean`、`part`、`index` 字段；新增正文应直接使用 Markdown/LaTeX，不应继续增加裸 Unicode 公式。维护时可递归扫描讲义对象：排除代码字段后，第一至第三单元的上标、希腊字母、内积、求和与不等式 Unicode 公式残留数应为 0。
+
 ## Lean 入门训练营
 
 `daily` 保留原有 ID、每日奖励与独立入口，但不再复习主线物理知识，而是承担可选的教学前置功能。其 24 道题全部服务于以下三层目标：
@@ -138,3 +140,5 @@
 [showcase-bank.js](./showcase-bank.js) 记录逐步解锁的代码展品。每个展品的 `unlock` 必须是 `course-config.js` 中存在的关卡 ID；小型展品可直接使用 `code`，完整章节使用 `file` 指向独立 Lean 文件。
 
 三个最终展品分别是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)、[../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean) 和 [../lean/EuclideanDynamics.lean](../lean/EuclideanDynamics.lean)，在领取各单元宝箱后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示；第三部分沿用这一一般维角动量模型，并增加运动学、守恒律、线性振动、刚体和开普勒圆锥的代数核心。图鉴的 `origin` 字段必须区分 LeanPath 自定义代码、Mathlib 基础定理与 PhysLean/Physlib 接口。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入与全部定理。
+
+第三部分成果代码尤其要区分两层：模型定义或物理输入假设，以及由这些假设真正证明的数学结论。当前证明层包括零力推出零加速度、内冲量保持总动量、碰撞速度唯一性、楔积双线性与角动量原点无关性、能量与阻尼符号、正常模态分解与正交性、刚度能非负、一般维质点惯性矩阵对称性、自由欧拉方程的两个不变量、有限维达朗贝尔充要条件、谐振子能量率以及开普勒第三定律的代数推导。不得把 ODE 存在唯一性、碰撞排除或经验模型有效性冒充为已经证明的结论。
