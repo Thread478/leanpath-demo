@@ -1,6 +1,6 @@
 # LeanPath 题库维护说明
 
-课程主题与路线位于 [course-config.js](./course-config.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。四者均与页面运行逻辑分离。
+课程主题与路线位于 [course-config.js](./course-config.js)，每关理论卡位于 [lesson-guide-bank.js](./lesson-guide-bank.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。五者均与页面运行逻辑分离。
 
 当前主题为 **LeanPath Physics**，完整路线分成五部分：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学 → 黎曼流形的构造 → 拉格朗日力学。第一、二部分已经实现，后三部分在地图中作为后续路线展示。
 
@@ -53,6 +53,20 @@
 
 因此随机性不会破坏学习曲线。第一部分和第二部分共 28 个知识关卡，每关各有 9 题、每次抽取 6 题；两次综合实验各有 12 题；Lean 前置训练含 24 题，每次按 `[4,4,4]` 抽取 12 题。总计仍为 300 道选择题。
 
+## 每关理论导学卡
+
+`LEANPATH_LESSON_GUIDES.guides` 为第一、二部分当前 30 个可答题主线关卡逐一提供理论卡；宝箱与可选的 `daily` Lean 入门训练不使用主线物理卡。用户每次进入关卡都会先看到理论卡，再主动开始随机练习。
+
+每张卡包含：
+
+- `part` 与 `index`：所属部分和部分内编号；
+- `title` 与 `summary`：本关的核心物理问题；
+- `points`：三个定义、推导或判断要点；
+- `pseudo`：帮助阅读结构的 Lean 风格伪代码；
+- `scope`：结论的模型假设和适用边界。
+
+伪代码用于教学，不发送到 Lean 判题服务，也不承诺可单独编译。可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一张理论卡。
+
 ## Lean 入门训练营
 
 `daily` 保留原有 ID、每日奖励与独立入口，但不再复习主线物理知识，而是承担可选的教学前置功能。其 24 道题全部服务于以下三层目标：
@@ -100,7 +114,7 @@
 2. 题目陈述与测试位于不可编辑模板中；
 3. 为题目准备至少一个通过答案与一个明确失败的答案，并进行真实 Lean 测试；
 4. 不把完整答案写进 `starter` 或默认提示；
-5. 在各部分内部保持渐进顺序；第二部分从欧式向量逐步进入力矩、平衡、静定性、虚功与能量稳定性；
+5. 在各部分内部保持渐进顺序；第二部分从欧式向量逐步进入一般维反对称张量力矩、三维叉积专门化、平衡、静定性、虚功与能量稳定性；
 6. 同时说明模型假设与现实适用范围，避免把 Lean 的演绎验证表述成经验验证。
 
 判题与 AI 运行时配置见 [../INTEGRATION.md](../INTEGRATION.md)。
@@ -109,4 +123,4 @@
 
 [showcase-bank.js](./showcase-bank.js) 记录逐步解锁的代码展品。每个展品的 `unlock` 必须是 `course-config.js` 中存在的关卡 ID；小型展品可直接使用 `code`，完整章节使用 `file` 指向独立 Lean 文件。
 
-第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。
+第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示，并保留三维 Hodge 对偶/叉积专门化。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。

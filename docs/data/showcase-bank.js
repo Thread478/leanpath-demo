@@ -1,7 +1,7 @@
 /* Progressive code exhibits unlocked by course completion. */
 (function () {
   window.LEANPATH_SHOWCASE = {
-    version: 2,
+    version: 3,
     entries: [
       {
         id:"showcase-si-seven",
@@ -65,18 +65,18 @@
         unlock:"inner-metric",
         part:2,
         title:"欧式向量与内积",
-        summary:"以 Fin 3 → ℝ 构造透明三维坐标，并直接复用 Mathlib 点积正定性，为平衡充要条件准备数学基础。",
+        summary:"以 Fin n → ℝ 构造透明的一般有限维坐标，再把 Vec3 作为专门化；直接复用 Mathlib 点积正定性，为平衡充要条件准备数学基础。",
         filename:"EuclideanVectors.lean",
-        code:"import Mathlib\n\nabbrev Vec3 := Fin 3 → ℝ\n\ndef dot (v w : Vec3) : ℝ := dotProduct v w\ndef normSq (v : Vec3) : ℝ := dot v v\n\ntheorem normSq_eq_zero_iff (v : Vec3) :\n    normSq v = 0 ↔ v = 0 := by\n  simpa [normSq, dot] using\n    (dotProduct_self_eq_zero (v := v))\n"
+        code:"import Mathlib\n\nabbrev VecN (n : ℕ) := Fin n → ℝ\nabbrev Vec3 := VecN 3\n\ndef dot {n : ℕ} (v w : VecN n) : ℝ := dotProduct v w\ndef normSq {n : ℕ} (v : VecN n) : ℝ := dot v v\n\ntheorem normSq_eq_zero_iff {n : ℕ} (v : VecN n) :\n    normSq v = 0 ↔ v = 0 := by\n  simpa [normSq, dot] using\n    (dotProduct_self_eq_zero (v := v))\n"
       },
       {
         id:"showcase-force-moment",
         unlock:"moment-shift",
         part:2,
-        title:"力系、力矩与移矩",
-        summary:"集中力同时记录作用点和向量；合力与总力矩递归叠加，并证明换参考点时的修正项。",
+        title:"一般维力矩与三维叉积",
+        summary:"用反对称矩阵透明实现 ℝⁿ 中的二阶张量力矩，证明反对称性与一般维移矩公式；三维叉积作为 Hodge 对偶专门化保留。",
         filename:"ForceAndMoment.lean",
-        code:"import Mathlib.LinearAlgebra.CrossProduct\n\nabbrev Vec3 := Fin 3 → ℝ\nstructure Point3 where coord : Vec3\nstructure AppliedForce where\n  point : Point3\n  vector : Vec3\n\ndef resultant : List AppliedForce → Vec3\n  | [] => 0\n  | f :: S => f.vector + resultant S\n\ndef momentAt (o : Point3) (f : AppliedForce) : Vec3 :=\n  crossProduct (f.point.coord - o.coord) f.vector\n\ndef totalMomentAt (o : Point3) : List AppliedForce → Vec3\n  | [] => 0\n  | f :: S => momentAt o f + totalMomentAt o S\n\n-- M_q = M_o - (q-o) × resultant\n"
+        code:"import Mathlib\nimport Mathlib.LinearAlgebra.CrossProduct\n\nabbrev VecN (n : ℕ) := Fin n → ℝ\nabbrev MomentTensor (n : ℕ) := Matrix (Fin n) (Fin n) ℝ\n\ndef wedge {n : ℕ} (r F : VecN n) : MomentTensor n :=\n  fun i j => r i * F j - r j * F i\n\ntheorem wedge_skew {n : ℕ} (r F : VecN n) (i j : Fin n) :\n    wedge r F i j = -wedge r F j i := by\n  simp [wedge]\n  ring\n\nstructure PointN (n : ℕ) where coord : VecN n\nstructure AppliedForceN (n : ℕ) where\n  point : PointN n\n  vector : VecN n\n\ndef momentTensorAt {n : ℕ} (o : PointN n)\n    (f : AppliedForceN n) : MomentTensor n :=\n  wedge (f.point.coord - o.coord) f.vector\n\n-- M_q = M_o - (q-o) ∧ resultant\n-- n = 3 时，Hodge 对偶恢复 crossProduct。\n"
       },
       {
         id:"showcase-equilibrium",
@@ -101,15 +101,18 @@
         unlock:"statics-chest",
         part:2,
         title:"第二部分完整成果 · 欧式空间静力学",
-        summary:"完整章节成果：欧式向量与仿射点、集中力与力系、叉积力矩、移矩和力偶、平衡充要条件、简支梁反力、线性静定性、自应力、功、虚功及二次势能稳定性。",
+        summary:"完整章节成果：一般维反对称张量力矩及其三维叉积专门化、欧式向量与仿射点、力系、移矩和平衡、简支梁反力、静定性、功、虚功及二次势能稳定性。",
         filename:"EuclideanStatics.lean",
         file:"lean/EuclideanStatics.lean",
         completion:true,
         milestones:[
+          "一般 ℝⁿ 坐标、反对称二阶力矩张量与楔积",
+          "力矩反对称性、对角元为零及平行力零力矩",
+          "一般维单力/力系移矩与平衡的原点无关性",
+          "三维 Hodge 对偶与 Mathlib 叉积专门化",
           "三维欧式坐标、点积正定性与仿射位移",
           "集中力、有限力系、合力与总力矩",
           "Mathlib 叉积的反交换与正交性",
-          "单力及有限力系的移矩定理",
           "力偶合力为零及力偶矩参考点不变",
           "刚体平衡等价于所有自由虚运动功率为零",
           "简支梁两个反力公式及平衡验证",

@@ -32,10 +32,10 @@
     "affine-space": {title:"点与向量不是同一类对象",body:"向量可以相加，点通常不能；两点之差是位移向量，而点加位移仍是点。初级坐标模型会记录 point.coord，高阶实现可调用 Physlib.ReferenceFrame 区分原点、基底与空间点。",code:"displacement p q := q.coord - p.coord"},
     "force-vector": {title:"力需要大小方向，也需要作用点",body:"单个集中力可建模为 AppliedForce，含作用点和力向量。合力只依赖力向量之和；关于原点的力矩还依赖作用点。把两者分开能避免把自由向量与滑移向量混淆。",code:"structure AppliedForce where\n  point : Point3\n  vector : Vec3"},
     "force-system": {title:"力系用有限列表和叠加表示",body:"有限力系可以用 List AppliedForce 表示。合力是全部力向量之和，总力矩是各力矩之和；递归定义使空力系和加一项的定理可直接用 simp 与归纳证明。",code:"resultant [] = 0\nresultant (f :: S) = f.vector + resultant S"},
-    "moment-cross": {title:"三维力矩由叉积定义",body:"关于 O 的力矩 M_O = (P−O)×F。Mathlib 的 crossProduct 是 Fin 3 坐标上的线性映射，并提供叉积反交换、与两个因子正交、混合积等定理。",code:"momentAt o f := (f.point.coord - o.coord) ⨯₃ f.vector"},
-    "moment-origin": {title:"移矩定理追踪参考点变化",body:"把参考点从 O 改到 Q 时，总力矩满足 M_Q = M_O − (Q−O)×R，其中 R 是合力。因此平衡力系的总力矩与参考点无关；一般力系则不能忽略原点。",code:"M q S = M o S - (q-o) × resultant S"},
+    "moment-cross": {title:"一般维力矩是反对称二阶张量",body:"在 ℝⁿ 中，关于 O 的力矩写成 M_O=(P−O)∧F，分量为 Mᵢⱼ=rᵢFⱼ−rⱼFᵢ，因此 Mᵢⱼ=−Mⱼᵢ。三维中 Hodge 对偶把三个独立分量识别为熟悉的轴向向量 r×F；高维中没有这种自然的向量识别。",code:"wedge r F i j := r i * F j - r j * F i\n-- n = 3: hodgeDual₃ (r ∧ F) = r × F"},
+    "moment-origin": {title:"一般维移矩定理追踪参考点变化",body:"把参考点从 O 改到 Q 时，总力矩张量满足 M_Q=M_O−(Q−O)∧R，其中 R 是合力。因此平衡力系的总力矩与参考点无关；三维 Hodge 对偶后就是熟悉的叉积移矩公式。",code:"M q S = M o S - wedge (q-o) (resultant S)"},
     "couple": {title:"力偶的合力为零而力矩不为零",body:"一对大小相等、方向相反、作用线不重合的力构成力偶。它的合力为零，所以力偶矩不随参考点改变；这也是仅用合力无法完整描述刚体效应的原因。",code:"F + (-F) = 0\nM_q = M_o"},
-    "equilibrium-balance": {title:"刚体静力平衡包含两个向量方程",body:"有限刚体力系关于 O 平衡，定义为合力 R=0 且总力矩 M_O=0。第一项排除平动趋势，第二项排除转动趋势；在 R=0 时，选哪个参考点检查 M 都等价。",code:"IsBalancedAt o S := resultant S = 0 ∧ totalMomentAt o S = 0"},
+    "equilibrium-balance": {title:"刚体静力平衡包含平动与转动两类方程",body:"有限刚体力系关于 O 平衡，定义为合力 R=0 且总力矩 M_O=0。一般 ℝⁿ 中 M_O 是反对称二阶张量；三维时可等价表示成三个分量的力矩向量。在 R=0 时，选哪个参考点检查 M 都等价。",code:"IsBalancedAtN o S := resultantN S = 0 ∧ totalMomentTensorAt o S = 0"},
     "rigid-virtual-motion": {title:"刚体虚运动由平动与转动组成",body:"三维无穷小刚体运动可用一对 (v,ω) 表示。外力在该虚运动上的功率为 R·v + M·ω。它对所有 v、ω 都为零，当且仅当 R 与 M 都为零。",code:"virtualPower v ω := R ⬝ᵥ v + M ⬝ᵥ ω"},
     "reactions": {title:"支反力是与约束相容的未知量",body:"静力题把支座提供的未知反力加入外力系，再求解平衡方程。简支梁在竖直集中载荷下给出两个未知反力，可由一个竖直合力方程和一个力矩方程唯一确定。",code:"R_A + R_B = P\nR_B L = P a"},
     "static-determinacy": {title:"静定性是平衡算子的唯一可解性",body:"把未知反力 r 映到平衡残差的线性映射 A 称为平衡算子。对给定载荷，若 A r + load = 0 有唯一解，则静定；若有多个解，则仅靠静力平衡不能确定全部反力。",code:"∃! r, A r + load = 0"},
@@ -44,8 +44,8 @@
     "conservative-potential": {title:"保守力由势能的负梯度给出",body:"在欧式空间中，势能 V 的梯度指出增长最快方向，保守力定义为 F=−∇V。Physlib 已提供梯度运算与二次型示例所需定理，可验证弹簧势能 ½k‖x‖² 对应 F=−kx。",code:"V x = (k/2) * ⟪x,x⟫\nF x = -gradient V x"},
     "virtual-work": {title:"约束系统只测试许可的虚位移",body:"虚功原理不是让所有位移都可取，而是对满足线性化约束的虚运动测试外力功率。理想约束的反力在许可虚运动上不做功，从而可从方程中消去。",code:"∀ δ ∈ admissible, virtualPower δ = 0"},
     "stability-energy": {title:"局部势能极小给出保守系统的稳定判据",body:"一维二次势能 V(x)=½kx² 中，k>0 时原点严格极小，k=0 时为中性平坦，k<0 时任意邻域都有更低势能方向。一般非线性系统还需局部性、约束和保守性假设。",code:"k > 0 → V 0 < V x  (x ≠ 0)"},
-    "library-statics": {title:"Mathlib 与 Physlib 各自承担一层",body:"Mathlib 提供 EuclideanSpace、内积、线性映射、核与三维叉积；Physlib 提供物理参考系和梯度等桥接。当前 Physlib 尚无覆盖整章静力学的统一 API，因此课程定义轻量 AppliedForce 与 ForceSystem，并把底层数学交给库。",code:"import Mathlib.LinearAlgebra.CrossProduct\nimport Physlib.Mathematics.Calculus.Gradient"},
-    "statics-scope": {title:"本章的适用边界是有限维刚体",body:"课程形式化有限个集中力、线性支反力、刚体虚运动和二次势能。连续介质弱形式、摩擦接触互补、随动力、屈曲和一般非线性稳定性留给后续专题，避免用一个过强的势能口号覆盖不同物理机制。",code:"finite rigid system ≠ continuum mechanics"}
+    "library-statics": {title:"Mathlib 与 Physlib 各自承担一层",body:"Mathlib 提供 EuclideanSpace、矩阵、外代数、内积、线性映射、核与三维叉积；Physlib 提供物理参考系和梯度等桥接。课程用反对称矩阵透明展示 ⋀² 的坐标，再用 Mathlib 叉积处理三维计算。",code:"MomentTensor n := Matrix (Fin n) (Fin n) ℝ\n-- 可进一步桥接 ⋀[ℝ]^2 (VecN n)"},
+    "statics-scope": {title:"本章的适用边界是有限维刚体",body:"课程的一般维部分覆盖集中力、合力、反对称张量力矩、移矩和平衡；三维部分继续处理虚转动、梁、力偶和叉积计算。连续介质、接触与屈曲仍需要更丰富的模型。",code:"general moment tensor + 3D mechanics ≠ continuum mechanics"}
   };
 
   function deck(label, desc, xp, questions, draw, mix) {
@@ -257,23 +257,23 @@
       {id:"fs-induction",level:3,concept:"force-system",p:"一个力系分成三个子系统，合力依次为 R₁、R₂、R₃。先合并哪两个会影响最终合力吗？",c:"(R₁+R₂)+R₃ = R₁+(R₂+R₃)",o:["不影响；向量加法结合","影响；力必须按时间排序","只在三个合力共线时不影响"],a:0,e:"有限叠加的分组不改变结果，这使复杂装配可模块化求合力。"}
     ]),
 
-    moment: deck("力矩与叉积","调用 Mathlib 三维叉积，掌握方向、正交性和量纲。",18,[
-      {id:"mo-def",level:1,concept:"moment-cross",p:"关于 O 的集中力矩公式是？",c:"P @ F",o:["(P-O)×F","P·F","F×F"],a:0,e:"力臂位移叉乘力。"},
-      {id:"mo-order",level:1,concept:"moment-cross",p:"交换叉积顺序会怎样？",c:"F × r",o:["得到原力矩的相反数","不变","得到点积"],a:0,e:"叉积反交换。"},
-      {id:"mo-unit",level:1,concept:"moment-cross",p:"力矩的量纲是？",c:"r×F",o:["ML²T⁻²","MLT⁻²","ML²T⁻¹"],a:0,e:"长度乘力。数值单位常写 N·m。"},
-      {id:"mo-perp-r",level:2,concept:"moment-cross",p:"r×F 与 r 的点积是多少？",c:"r·(r×F)",o:["0","‖r‖²","r·F"],a:0,e:"叉积垂直于两个因子。"},
-      {id:"mo-parallel",level:2,concept:"moment-cross",p:"若 r 与 F 平行，力矩如何？",c:"r × F",o:["0","r·F","无定义"],a:0,e:"平行向量夹角为零，叉积为零。"},
-      {id:"mo-lever",level:2,concept:"moment-cross",p:"力矩大小可写成？",c:"‖r×F‖",o:["‖r‖‖F‖sinθ","‖r‖+‖F‖","‖r‖‖F‖cosθ"],a:0,e:"等于力乘垂直力臂。"},
-      {id:"mo-mathlib",level:3,concept:"library-statics",p:"Mathlib 三维叉积的类型为何是线性映射？",c:"crossProduct v",o:["固定第一个向量后对第二个向量线性","叉积对两个变量一起线性","因为返回标量"],a:0,e:"它也对第一变量线性，但不是把二元对整体当一元线性映射。"},
-      {id:"mo-energy",level:3,concept:"model-boundary",p:"力矩与能量同为 N·m，能直接作为同一物理类型吗？",c:"torque vs energy",o:["不应；同量纲但语义与变换性质不同","可以且总相等","只有数值非零时可以"],a:0,e:"本章用 Vec3 表示力矩、用 ℝ 表示功来保留差异。"},
-      {id:"mo-2d",level:3,concept:"statics-scope",p:"平面静力学中力矩常写成标量，三维模型中对应什么？",c:"planar moment",o:["垂直平面的轴向分量","合力大小","势能"],a:0,e:"三维叉积能统一平面与空间问题。"}
+    moment: deck("一般维力矩与三维叉积","从 r∧F 的反对称张量定义出发，再恢复三维叉积和力臂公式。",18,[
+      {id:"mo-def",level:1,concept:"moment-cross",p:"在一般 ℝⁿ 中，关于 O 的集中力矩最自然写成什么？",c:"r = P - O",o:["M_O = r∧F，且 Mᵢⱼ=rᵢFⱼ-rⱼFᵢ","M_O = r·F，是一个标量","M_O = r+F，是一个向量"],a:0,e:"楔积给出反对称二阶张量，不依赖三维特有的叉积。"},
+      {id:"mo-order",level:1,concept:"moment-cross",p:"交换力臂 r 与力 F 后，力矩张量怎样变化？",c:"F ∧ r",o:["F∧r = -(r∧F)","F∧r = r∧F","F∧r = r·F"],a:0,e:"楔积反交换，这正对应力矩张量的反对称性。"},
+      {id:"mo-unit",level:1,concept:"moment-cross",p:"无论使用张量 r∧F 还是三维向量 r×F，力矩量纲都是？",c:"[r][F]",o:["ML²T⁻²","MLT⁻²","ML²T⁻¹"],a:0,e:"长度乘力，常用单位 N·m。"},
+      {id:"mo-perp-r",level:2,concept:"moment-cross",p:"三维中把 r∧F 经 Hodge 对偶写成 r×F 后，r·(r×F) 等于？",c:"n = 3",o:["0","‖r‖²","r·F"],a:0,e:"这是三维轴向向量表示的正交性质。"},
+      {id:"mo-parallel",level:2,concept:"moment-cross",p:"在任意维数中，若 F=a r 与 r 平行，r∧F 怎样？",c:"Mᵢⱼ = rᵢ(a rⱼ) - rⱼ(a rᵢ)",o:["所有分量都为 0","等于 a‖r‖²","只在三维才为 0"],a:0,e:"两个乘积逐分量相消；平行力的力臂面积为零。"},
+      {id:"mo-lever",level:2,concept:"moment-cross",p:"三维 20 N 的力与 0.30 m 力臂垂直，力矩大小是多少？",c:"‖r×F‖ = ‖r‖‖F‖ sin 90°",o:["6 N·m","66.7 N·m","0 N·m"],a:0,e:"0.30×20=6；这是一般楔积面积在三维中的大小。"},
+      {id:"mo-mathlib",level:3,concept:"library-statics",p:"反对称 n×n 力矩张量有多少个独立分量？",c:"Mᵢⱼ = -Mⱼᵢ,  Mᵢᵢ=0",o:["n(n−1)/2","n²","n"],a:0,e:"只需选择 i<j 的分量；三维恰好有 3 个。"},
+      {id:"mo-energy",level:3,concept:"model-boundary",p:"力矩与能量同为 N·m，为何不能直接作为同一物理对象？",c:"torque ∈ Λ²(ℝⁿ), energy ∈ ℝ",o:["力矩有方向/反对称张量结构，能量是标量","它们的单位其实不同","只有力矩可以相加"],a:0,e:"量纲相同不决定几何类型与物理语义。"},
+      {id:"mo-2d",level:3,concept:"statics-scope",p:"一般力矩张量在 n=2、n=3 与 n≥4 时分别怎样理解？",c:"dim Λ²(ℝⁿ)=n(n−1)/2",o:["二维为一个独立标量；三维可对偶成向量；高维通常保留二形式","所有维数都天然是 n 维向量","只有三维才能定义力矩"],a:0,e:"叉积是三维特例，楔积才是统一的一般维对象。"}
     ]),
 
     "moment-shift": deck("移矩定理与力偶","证明换参考点公式，并识别力偶矩的不变性。",20,[
-      {id:"ms-formula",level:1,concept:"moment-origin",p:"从 O 换到 Q 的总力矩公式是？",c:"M_Q",o:["M_O − (Q−O)×R","M_O + R","M_O"],a:0,e:"展开 P−Q=(P−O)−(Q−O)。"},
+      {id:"ms-formula",level:1,concept:"moment-origin",p:"一般 ℝⁿ 中从 O 换到 Q 的总力矩张量公式是？",c:"M_Q",o:["M_O − (Q−O)∧R","M_O + R","M_O"],a:0,e:"展开 P−Q=(P−O)−(Q−O)，再利用楔积线性。"},
       {id:"ms-balanced",level:1,concept:"moment-origin",p:"若 R=0，M_Q 与 M_O 的关系是？",c:"zero resultant",o:["相等","互为相反数","都必须非零"],a:0,e:"参考点修正项消失。"},
       {id:"ms-couple",level:1,concept:"couple",p:"力偶为何能作为自由力矩移动？",c:"couple",o:["它的合力为零，所以力矩与参考点无关","两个力作用点相同","叉积恒为零"],a:0,e:"力偶矩仍可能非零。"},
-      {id:"ms-sign",level:2,concept:"moment-origin",p:"若误写 M_Q=M_O+(Q−O)×R，主要错误是什么？",c:"origin shift",o:["位移分解的符号反了","量纲不齐次","叉积应换成点积"],a:0,e:"P−Q=(P−O)−(Q−O)。"},
+      {id:"ms-sign",level:2,concept:"moment-origin",p:"若误写 M_Q=M_O+(Q−O)∧R，主要错误是什么？",c:"origin shift",o:["位移分解的符号反了","量纲不齐次","楔积应换成点积"],a:0,e:"P−Q=(P−O)−(Q−O)。"},
       {id:"ms-proof",level:2,concept:"moment-origin",p:"已知 R=(0,10,0) N、M_O=(0,0,30) N·m，且 Q−O=(2,0,0) m。M_Q 是？",c:"M_Q = M_O − (Q−O)×R",o:["(0,0,10) N·m","(0,0,50) N·m","(0,20,30) N·m"],a:0,e:"(Q−O)×R=(0,0,20)，故 M_Q=(0,0,10)。"},
       {id:"ms-axis",level:2,concept:"couple",p:"一对 ±F 相距 d 的力偶矩可写成？",c:"couple moment",o:["d×F","d·F","2F"],a:0,e:"d 是两条作用线之间的位移向量。"},
       {id:"ms-equivalence",level:3,concept:"moment-origin",p:"两力系在 O 有相同 R 和 M_O，换到 Q 后是否仍静力等效？",c:"same wrench",o:["是，移矩公式给出相同 M_Q","不一定","仅当 Q=O"],a:0,e:"两者使用相同的参考点修正项。"},
@@ -282,10 +282,10 @@
     ]),
 
     equilibrium: deck("静力平衡","把平动与转动平衡写成一个可复用的 Lean 命题。",20,[
-      {id:"eq-def",level:1,concept:"equilibrium-balance",p:"刚体关于 O 平衡的定义是？",c:"IsBalancedAt O S",o:["R=0 ∧ M_O=0","R=M_O","R·M_O=0"],a:0,e:"需要两个三分量向量方程。"},
+      {id:"eq-def",level:1,concept:"equilibrium-balance",p:"刚体关于 O 平衡的定义是？",c:"IsBalancedAtN O S",o:["R=0 ∧ M_O=0","R=M_O","R·M_O=0"],a:0,e:"一般维中分别令合力向量与力矩反对称张量为零。"},
       {id:"eq-trans",level:1,concept:"equilibrium-balance",p:"平动平衡对应哪个条件？",c:"translation",o:["ΣF=0","ΣM=0","ΣW=0"],a:0,e:"合力为零。"},
       {id:"eq-rot",level:1,concept:"equilibrium-balance",p:"转动平衡对应哪个条件？",c:"rotation",o:["ΣM_O=0","ΣF=0","V=0"],a:0,e:"关于一点的总力矩为零。"},
-      {id:"eq-components",level:2,concept:"equilibrium-balance",p:"三维刚体平衡通常提供多少个标量方程？",c:"R,M ∈ ℝ³",o:["最多 6 个","3 个","9 个"],a:0,e:"合力三分量、合力矩三分量。独立性仍由几何决定。"},
+      {id:"eq-components",level:2,concept:"equilibrium-balance",p:"一般 n 维刚体平衡的合力与反对称力矩合计有多少个标量分量？",c:"n + n(n−1)/2",o:["n(n+1)/2","2n","n²+n"],a:0,e:"平动有 n 个分量，转动有 n(n−1)/2 个；n=3 时得到 6。"},
       {id:"eq-particle",level:2,concept:"equilibrium-balance",p:"质点模型为何常只写 ΣF=0？",c:"particle",o:["质点没有需独立追踪的取向与力偶","力矩恒为能量","质点没有位置"],a:0,e:"刚体模型则必须检查转动效应。"},
       {id:"eq-origin",level:2,concept:"moment-origin",p:"已知关于 O 平衡，关于 Q 的总力矩怎样证明为零？",c:"M_Q = M_O-(Q-O)×R",o:["代入 M_O=0 与 R=0","只代入 Q=O","使用单位换算"],a:0,e:"因此平衡与参考点选择无关。"},
       {id:"eq-sufficient",level:3,concept:"equilibrium-balance",p:"R=0 与 M=0 对本章的有限刚体静力模型是什么？",c:"balance",o:["定义上的充要条件","仅必要不充分","实验定律的完整证明"],a:0,e:"它刻画外力对任意无穷小刚体运动的功率为零。"},
@@ -408,7 +408,7 @@
       {id:"stp-vec",level:1,concept:"euclidean-space",p:"物体依次位移 (1,2,0) m 与 (2,−2,0) m，总位移是？",c:"Δr₁+Δr₂",o:["(3,0,0) m","(3,4,0) m","(1,−4,0) m"],a:0,e:"位移向量逐坐标相加。"},
       {id:"stp-dot",level:1,concept:"dot-metric",p:"v·v=0 在欧式空间中推出？",c:"positive definite",o:["v=0","v=1","Σvᵢ=0"],a:0,e:"内积正定。"},
       {id:"stp-force",level:1,concept:"force-system",p:"有限力系的合力是？",c:"S",o:["各力向量之和","各作用点之和","各力矩叉积"],a:0,e:"作用点只影响力矩。"},
-      {id:"stp-moment",level:1,concept:"moment-cross",p:"M_O 的公式是？",c:"force at P",o:["(P-O)×F","(P-O)·F","P+F"],a:0,e:"叉积给出轴向力矩。"},
+      {id:"stp-moment",level:1,concept:"moment-cross",p:"一般 ℝⁿ 中 M_O 的统一公式是？",c:"force F applied at P",o:["(P-O)∧F","(P-O)·F","P+F"],a:0,e:"楔积给出反对称力矩张量；三维可再对偶成叉积向量。"},
       {id:"stp-shift",level:2,concept:"moment-origin",p:"合力为零时换参考点，总力矩怎样？",c:"R=0",o:["不变","反号","总为零"],a:0,e:"力偶矩可能非零但参考点无关。"},
       {id:"stp-balance",level:2,concept:"equilibrium-balance",p:"三维刚体平衡需要？",c:"static",o:["R=0 且 M=0","R=0 即可","R·M=0"],a:0,e:"分别排除平动和转动。"},
       {id:"stp-reaction",level:2,concept:"reactions",p:"简支梁 R_A+R_B=P 且 R_BL=Pa，R_B 是？",c:"L≠0",o:["Pa/L","P(L-a)/L","PL/a"],a:0,e:"由力矩方程直接解得。"},
@@ -457,6 +457,7 @@
     {id:"physlib",name:"Physlib",url:"https://github.com/leanprover-community/Physlib",license:"Apache-2.0"},
     {id:"mil",name:"Mathematics in Lean",url:"https://github.com/leanprover-community/mathematics_in_lean",license:"Apache-2.0"},
     {id:"mathlib-cross",name:"Mathlib CrossProduct",url:"https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/LinearAlgebra/CrossProduct.lean",license:"Apache-2.0"},
+    {id:"mathlib-exterior",name:"Mathlib Exterior Algebra",url:"https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.html",license:"Apache-2.0"},
     {id:"physlib-frame",name:"Physlib ReferenceFrame",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/SpaceAndTime/ReferenceFrame.lean",license:"Apache-2.0"},
     {id:"physlib-gradient",name:"Physlib Gradient",url:"https://github.com/leanprover-community/Physlib/blob/master/Physlib/Mathematics/Calculus/Gradient.lean",license:"Apache-2.0"}
   ];
