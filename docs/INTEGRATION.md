@@ -166,8 +166,8 @@ physlibServiceLabel: "Lean 4 + Mathlib + Physlib · 在线判题"
 {
   "locale": "zh-CN",
   "task": {
-    "id": "unit-write-kinetic-dimension",
-    "title": "验证动能量纲",
+    "id": "unit-v2-kinetic-dimension",
+    "title": "动能的量纲推导",
     "prompt": "练习说明",
     "hint": "本地渐进提示"
   },
