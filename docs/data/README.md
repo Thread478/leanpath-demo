@@ -1,10 +1,10 @@
 # LeanPath 题库维护说明
 
-课程主题与路线位于 [course-config.js](./course-config.js)，每关基础正文位于 [lesson-guide-bank.js](./lesson-guide-bank.js)，讲义推导、例题与自检位于 [lesson-lecture-bank.js](./lesson-lecture-bank.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。这些数据均与页面运行逻辑分离。
+课程主题与路线位于 [course-config.js](./course-config.js)。第一、二单元的基础正文与扩展讲义位于 [lesson-guide-bank.js](./lesson-guide-bank.js) 和 [lesson-lecture-bank.js](./lesson-lecture-bank.js)，旧讲义的展示公式由 [lesson-math-markdown.js](./lesson-math-markdown.js) 迁移为 Markdown/LaTeX；第三单元完整讲义位于 [dynamics-lesson-bank.js](./dynamics-lesson-bank.js)。选择题、真实 Lean 写作题和成果图鉴分别以基础文件加 `dynamics-*` 扩展文件的方式维护。这些数据均与页面运行逻辑分离。
 
-当前主题为 **LeanPath Physics**，完整路线分成五部分：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学 → 黎曼流形的构造 → 拉格朗日力学。第一、二部分已经实现，后三部分在地图中作为后续路线展示。
+当前主题为 **LeanPath Physics**，完整路线收束为三个单元：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学。原规划中的“黎曼流形的构造”和独立“拉格朗日力学”单元已经删除；欧式约束系统的拉格朗日方程作为动力学内部的一关保留。三个单元均已实现。
 
-主线读者是**已经较熟悉 Lean、希望系统学习物理的用户**。因此五单元选择题不承担 Lean 语法入门任务；Lean 是表达和检查模型的语言，学习目标是物理量之间的关系、模型假设、计算、平衡或稳定判据以及结论的适用边界。侧栏的“Lean 入门”是独立、可选的前置栏目，为零基础用户补足进入主线所需的基本读写能力。
+主线读者是**已经较熟悉 Lean、希望系统学习物理的用户**。因此三单元选择题不承担 Lean 语法入门任务；Lean 是表达和检查模型的语言，学习目标是物理量之间的关系、模型假设、计算、平衡或稳定判据以及结论的适用边界。侧栏的“Lean 入门”是独立、可选的前置栏目，为零基础用户补足进入主线所需的基本读写能力。
 
 ## 题库结构
 
@@ -51,11 +51,11 @@
 3. 题目仍按 1 → 2 → 3 的难度顺序呈现；
 4. 每题的答案位置再次随机打乱。
 
-因此随机性不会破坏学习曲线。第一部分和第二部分共 28 个知识关卡，每关各有 9 题、每次抽取 6 题；两次综合实验各有 12 题；Lean 前置训练含 24 题，每次按 `[4,4,4]` 抽取 12 题。总计仍为 300 道选择题。
+因此随机性不会破坏学习曲线。第一、二单元共 28 个知识关卡，每关各有 9 题、每次抽取 6 题；第三单元包含 13 个知识关卡，每关各有 8 题、每次抽取 6 题。三个综合实验各有 12 题；Lean 前置训练含 24 题，每次按 `[4,4,4]` 抽取 12 题。全站共 416 道选择题。
 
 ## 每关关前讲义
 
-`LEANPATH_LESSON_GUIDES.guides` 为第一、二部分当前 30 个可答题主线关卡逐一提供关前讲义；宝箱与可选的 `daily` Lean 入门训练不使用主线物理讲义。用户每次进入关卡都会先阅读讲义，再主动开始随机练习。基础正文与扩展讲义拆成两个文件，是为了让课程维护者可以分别校对概念叙述和完整例题。
+`LEANPATH_LESSON_GUIDES.guides` 为三个单元共 44 个可答题主线关卡逐一提供关前讲义；宝箱与可选的 `daily` Lean 入门训练不使用主线物理讲义。用户每次进入关卡都会先阅读讲义，再主动开始随机练习。第一、二单元沿用“基础正文 + 扩展讲义 + 数学公式迁移层”，第三单元把完整讲义集中在 `dynamics-lesson-bank.js`，便于单独校对高难度推导。
 
 每份讲义包含：
 
@@ -70,6 +70,16 @@
 - `scope`：结论的模型假设和适用边界。
 
 讲义按照“学习目标 → 物理动机 → 连续正文与代码 → 数学推导链 → Lean 类型映射 → 完整例题 → 小结与自检 → 模型边界”组织。代码必须紧跟它所表达的物理推导，不能退化为孤立词汇表。结构草图用于教学，不发送到 Lean 判题服务，也不承诺可单独编译；可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一份讲义；每份讲义至少有三个目标、三段正文、四步推导、三项 Lean 映射和四步例题，并包含模型边界。
+
+### Markdown 与数学公式
+
+理论卡正文由一个受限 Markdown 渲染器处理，数学公式再交给 KaTeX。维护讲义时：
+
+- 行内公式写成 `$E=T+V$`；独立公式写成 `$$\dot{L}=\tau_{\mathrm{ext}}$$`；
+- 加粗、斜体、列表、引用、标题、行内代码与围栏代码可直接使用常规 Markdown；
+- 在 JavaScript 中书写含反斜杠的 LaTeX 时，优先使用 ``String.raw`...` ``，避免 `\tau`、`\frac` 被字符串转义吞掉；
+- Lean 代码块继续保留 `ℝ`、`∧`、`∑` 等 Lean 4 Unicode 语法，不应替换成 LaTeX；
+- `markdownInline` 与 `markdownBlock` 会先转义 HTML，再应用本站允许的 Markdown 子集；不要把外部未经审查的 HTML 直接写入讲义。
 
 ## Lean 入门训练营
 
@@ -118,7 +128,7 @@
 2. 题目陈述与测试位于不可编辑模板中；
 3. 为题目准备至少一个通过答案与一个明确失败的答案，并进行真实 Lean 测试；
 4. 不把完整答案写进 `starter` 或默认提示；
-5. 在各部分内部保持渐进顺序；第二部分从欧式向量逐步进入一般维反对称张量力矩、三维叉积专门化、平衡、静定性、虚功与能量稳定性；
+5. 在各部分内部保持渐进顺序；第二部分从欧式向量逐步进入一般维反对称张量力矩、平衡、静定性、虚功与能量稳定性；第三部分从运动学和牛顿方程进入守恒律、线性振动、刚体动力学、变分原理与开普勒轨道；
 6. 同时说明模型假设与现实适用范围，避免把 Lean 的演绎验证表述成经验验证。
 
 判题与 AI 运行时配置见 [../INTEGRATION.md](../INTEGRATION.md)。
@@ -127,4 +137,4 @@
 
 [showcase-bank.js](./showcase-bank.js) 记录逐步解锁的代码展品。每个展品的 `unlock` 必须是 `course-config.js` 中存在的关卡 ID；小型展品可直接使用 `code`，完整章节使用 `file` 指向独立 Lean 文件。
 
-第一部分的最终展品是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)，第二部分的最终展品是 [../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean)，分别在领取 `chest` 与 `statics-chest` 后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示，并保留三维 Hodge 对偶/叉积专门化。图鉴的 `origin` 字段必须区分 LeanPath 自定义代码、Mathlib 基础定理与原 PhysLean/现 Physlib 接口。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入、全部定理及 Mathlib/Physlib 调用。
+三个最终展品分别是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)、[../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean) 和 [../lean/EuclideanDynamics.lean](../lean/EuclideanDynamics.lean)，在领取各单元宝箱后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示；第三部分沿用这一一般维角动量模型，并增加运动学、守恒律、线性振动、刚体和开普勒圆锥的代数核心。图鉴的 `origin` 字段必须区分 LeanPath 自定义代码、Mathlib 基础定理与 PhysLean/Physlib 接口。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入与全部定理。

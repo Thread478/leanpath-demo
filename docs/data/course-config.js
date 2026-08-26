@@ -1,27 +1,28 @@
-/* LeanPath Physics theme and five-part course route. */
+/* LeanPath Physics theme and three-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 7,
+    version: 8,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
       brand: "LeanPath Physics",
       documentTitle: "LeanPath Physics — 用 Lean 学习形式化物理",
-      description: "提供可选的 Lean 4 零基础前置训练，并以可检查的模型学习单位与量纲、欧式静力学与动力学、黎曼流形和拉格朗日力学。",
-      eyebrow: "面向 LEAN 用户 · 五单元物理学习路径",
+      description: "提供可选的 Lean 4 零基础前置训练，并以可检查的模型依次学习单位与量纲、欧式静力学和欧式动力学。",
+      eyebrow: "面向 LEAN 用户 · 三单元物理学习路径",
       heroTitle: "让 Lean 成为学习物理的语言。",
-      heroSubtitle: "从真实物理情境出发：单位与量纲 → 欧式静力学 → 欧式动力学 → 黎曼流形 → 拉格朗日力学",
+      heroSubtitle: "从真实物理情境出发：单位与量纲 → 欧式静力学 → 欧式动力学",
       powered: "物理定义公开，数学推导可检查",
       handbookTitle: "Lean 4 物理形式化手册",
       writingTitle: "物理学形式化 · Lean 写作实验室",
       showcaseTitle: "形式化成果图鉴",
       tipTitle: "今日形式化物理小知识",
-      tipText: "在 ℝⁿ 中，力矩是 r∧F 形成的反对称二阶张量；三维叉积是它的 Hodge 对偶。",
-      tipCode: "Mᵢⱼ = rᵢFⱼ − rⱼFᵢ,  Mᵢⱼ = −Mⱼᵢ"
+      tipText: "在欧式空间中，角动量本质上是位置与动量的外积；三维角动量向量是它的 Hodge 对偶。",
+      tipCode: "L_{ij}=r_i p_j-r_j p_i, \\quad \\dot L=\\tau"
     },
     completionRewards: {
       chest: {xp:80, message:"第一部分完成：+80 XP，完整《单位与量纲》Lean 作品已收入成果图鉴。", repeat:"第一部分成果已经领取，可在成果图鉴中查看。"},
-      "statics-chest": {xp:100, message:"第二部分完成：+100 XP，完整《欧式空间静力学》Lean 作品已收入成果图鉴。", repeat:"第二部分成果已经领取，可在成果图鉴中查看。"}
+      "statics-chest": {xp:100, message:"第二部分完成：+100 XP，完整《欧式空间静力学》Lean 作品已收入成果图鉴。", repeat:"第二部分成果已经领取，可在成果图鉴中查看。"},
+      "dynamics-chest": {xp:140, message:"第三部分完成：+140 XP，《欧式空间动力学》形式化成果已收入图鉴。", repeat:"第三部分成果已经领取，可在成果图鉴中查看。"}
     },
     courseOrder: [
       "quantity", "si-base", "dimension-model", "dimension-ops",
@@ -32,7 +33,12 @@
       "force-system", "moment", "moment-shift", "equilibrium",
       "equilibrium-iff", "support-reactions", "determinacy", "work",
       "potential", "virtual-work", "stability", "statics-physlib",
-      "statics-practice", "statics-chest"
+      "statics-practice", "statics-chest",
+      "trajectory-kinematics", "newton-laws", "momentum-dynamics",
+      "angular-momentum", "energy-dynamics", "mass-stiffness",
+      "modal-eigen", "inertia-tensor", "euler-equations",
+      "dalembert", "lagrange-equations", "central-force",
+      "kepler-orbits", "dynamics-practice", "dynamics-chest"
     ],
     prerequisites: {
       quantity: null,
@@ -66,7 +72,22 @@
       stability: "virtual-work",
       "statics-physlib": "stability",
       "statics-practice": "statics-physlib",
-      "statics-chest": "statics-practice"
+      "statics-chest": "statics-practice",
+      "trajectory-kinematics": "statics-chest",
+      "newton-laws": "trajectory-kinematics",
+      "momentum-dynamics": "newton-laws",
+      "angular-momentum": "momentum-dynamics",
+      "energy-dynamics": "angular-momentum",
+      "mass-stiffness": "energy-dynamics",
+      "modal-eigen": "mass-stiffness",
+      "inertia-tensor": "modal-eigen",
+      "euler-equations": "inertia-tensor",
+      dalembert: "euler-equations",
+      "lagrange-equations": "dalembert",
+      "central-force": "lagrange-equations",
+      "kepler-orbits": "central-force",
+      "dynamics-practice": "kepler-orbits",
+      "dynamics-chest": "dynamics-practice"
     },
     units: [
       {
@@ -118,40 +139,23 @@
       {
         n: 3,
         t: "欧式空间中的动力学",
-        d: "后续部分：轨迹、导数、牛顿方程与守恒律",
+        d: "从轨迹与牛顿定律，经守恒律、刚体与振动，最终到达开普勒轨道",
         lessons: [
-          {icon:"x(t)", title:"轨迹与运动学", sub:"速度 · 加速度 · 正则性"},
-          {icon:"ma", title:"牛顿第二定律", sub:"质量 · 力 · 二阶方程"},
-          {icon:"p", title:"动量与冲量", sub:"系统边界 · 守恒"},
-          {icon:"E", title:"功与能量", sub:"功率 · 势能 · 功能定理"},
-          {icon:"↻", title:"振动与轨道", sub:"振子 · 中心力"},
-          {icon:"ODE", title:"初值问题", sub:"存在唯一性 · 数值比较"}
-        ]
-      },
-      {
-        n: 4,
-        t: "黎曼流形的构造",
-        d: "后续部分：从局部坐标到度量、联络和测地线",
-        lessons: [
-          {icon:"M", title:"光滑流形", sub:"图册 · 坐标变换"},
-          {icon:"Tₚ", title:"切空间与向量场", sub:"导子 · 切丛"},
-          {icon:"g", title:"黎曼度量", sub:"正定对称双线性型"},
-          {icon:"∇", title:"Levi-Civita 联络", sub:"无挠 · 度量相容"},
-          {icon:"γ", title:"测地线", sub:"能量泛函 · 局部最短"},
-          {icon:"R", title:"曲率", sub:"截面曲率 · 特殊情形"}
-        ]
-      },
-      {
-        n: 5,
-        t: "拉格朗日力学",
-        d: "后续部分：构型空间、作用量、变分与对称性",
-        lessons: [
-          {icon:"Q", title:"构型空间", sub:"约束系统 · 切丛状态"},
-          {icon:"L", title:"拉格朗日量", sub:"动能 − 势能"},
-          {icon:"S", title:"作用量与变分", sub:"固定端点变分"},
-          {icon:"EL", title:"Euler–Lagrange 方程", sub:"局部坐标 · 内禀形式"},
-          {icon:"N", title:"Noether 定理", sub:"连续对称 · 守恒量"},
-          {icon:"λ", title:"约束与乘子", sub:"完整约束 · 退化情形"}
+          {id:"trajectory-kinematics", icon:"r(t)", title:"轨迹、速度与加速度", sub:"导数 · 初值 · 参考系"},
+          {id:"newton-laws", icon:"F=ma", title:"牛顿定律的数学表述", sub:"惯性系 · 二阶运动方程"},
+          {id:"momentum-dynamics", icon:"p", title:"动量定理与动量守恒", sub:"冲量 · 质心 · 系统边界"},
+          {id:"angular-momentum", icon:"r∧p", title:"角动量定理与守恒", sub:"一般维二形式 · 中心力"},
+          {id:"energy-dynamics", icon:"T+V", title:"动能定理与机械能守恒", sub:"功率 · 保守力 · 耗散"},
+          {id:"mass-stiffness", icon:"M,K", title:"质量矩阵与刚度矩阵", sub:"小振动 · 正定性 · 零模"},
+          {id:"modal-eigen", icon:"Kφ=λMφ", title:"广义特征值与模态", sub:"固有频率 · M-正交"},
+          {id:"inertia-tensor", icon:"I", title:"惯性张量", sub:"质点系 · 主轴 · 平行轴"},
+          {id:"euler-equations", icon:"ω", title:"欧拉刚体动力学方程", sub:"主轴分量 · 自由转动"},
+          {id:"dalembert", icon:"δW", title:"达朗贝尔原理", sub:"惯性力 · 许可虚位移"},
+          {id:"lagrange-equations", icon:"EL", title:"欧式约束下的拉格朗日方程", sub:"广义坐标 · T−V"},
+          {id:"central-force", icon:"1/r²", title:"中心力与有效势", sub:"平面性 · 面积速度 · 轨道方程"},
+          {id:"kepler-orbits", icon:"⊙", title:"开普勒定理与圆锥轨道", sub:"椭圆 · 抛物线 · 双曲线"},
+          {id:"dynamics-practice", icon:"⌁", title:"欧式动力学综合实验", sub:"守恒量 · 振动 · 轨道 · +45 XP"},
+          {id:"dynamics-chest", icon:"◆", title:"第三部分通关成果", sub:"解锁动力学形式化作品 · +140 XP"}
         ]
       }
     ]
