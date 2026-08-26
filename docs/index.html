@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="像闯关一样学习 Lean 4 物理学形式化：从单位与量纲出发，进入静力学、动力学、黎曼几何与拉格朗日力学。">
-  <title>LeanPath Physics — 五部分物理学形式化路线</title>
+  <meta name="description" content="像闯关一样学习 Lean 4 物理学形式化：从单位与量纲出发，依次学习欧式静力学与欧式动力学。">
+  <title>LeanPath Physics — 三单元物理学形式化路线</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.css" integrity="sha384-u1zONI5gPXUx0UKI62c75/zww972y0v2rSK5ZYlVdS6xEuWDeZWUI66v6t1gvlXJ" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/katex.min.js" integrity="sha384-ykMNcWQhhTUb0YV9SPpPUFURHZ+tWmubkakGBP+OgNK/UXdO2gtzglWx0Rj9hnO3" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.4/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
   <style>
     :root{--ink:#26352f;--muted:#718079;--line:#e3eae6;--mint:#56c9a2;--deep:#26936d;--pale:#e9f9f3;--paper:#fafcfb}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button,a{font:inherit;color:inherit}button{cursor:pointer}a{text-decoration:none}
@@ -44,6 +47,7 @@
     .worked-example{border-color:#d9eadf;background:#f8fcfa}.worked-problem{margin:13px 0 18px;color:#42534b;font-size:14px;line-height:1.9}.worked-steps{margin:0;padding:0;list-style:none;counter-reset:worked}.worked-steps li{position:relative;padding:12px 12px 12px 47px;border-top:1px solid #dfece5;color:#52635b;font-size:13px;line-height:1.8;counter-increment:worked}.worked-steps li:before{content:counter(worked);position:absolute;top:13px;left:8px;width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#dff3e9;color:#237a5b;font-size:10px;font-weight:900}.worked-result{margin:17px 0 0;padding:14px 16px;border-radius:10px;background:#e8f7f0;color:#28654f;font-size:12px;line-height:1.75}
     .lecture-ending{max-width:850px;margin:18px auto 0;padding:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.lecture-takeaways,.lecture-checkpoint{padding:21px 22px;border-radius:15px}.lecture-takeaways{background:#f3f0ff}.lecture-takeaways ul{margin:9px 0 0;padding-left:18px;color:#5f5877;font-size:12px;line-height:1.8}.lecture-checkpoint{background:#f4f7f5}.lecture-checkpoint p{margin:8px 0 0;color:#4f5f58;font-size:12px;line-height:1.8}.lecture-checkpoint details{margin-top:12px}.lecture-checkpoint summary{color:#267a5c;font-size:11px;font-weight:800;cursor:pointer}.lecture-checkpoint details p{padding:10px 12px;border-radius:9px;background:#fff}
     .lesson-guide-scope{max-width:850px;margin:20px auto 0;font-size:11px;line-height:1.8}.lesson-guide-actions{position:sticky;z-index:2;bottom:0;margin:24px 0 0;padding:17px 42px;border-top:1px solid #ebe5db;background:#fffdf9f2;backdrop-filter:blur(12px)}
+    .lesson-guide-modal .katex-display{margin:13px 0;overflow-x:auto;overflow-y:hidden}.lesson-guide-modal .katex{font-size:1.08em}.markdown-body h4{margin:18px 0 8px;font-size:14px}.markdown-body ul,.markdown-body ol{padding-left:22px}.markdown-body blockquote{margin:14px 0;padding:9px 14px;border-left:3px solid #8b75d6;background:#f7f4ff;color:#62577e}.derivation-formula{align-self:start;color:#5b479e;font-size:13px}.markdown-body a{color:#267a5c;text-decoration:underline}.markdown-body strong{color:#33473e}.markdown-body em{color:#62577e}
     @media(max-width:720px){.lesson-guide-head{padding:23px 19px 18px}.lesson-guide-modal h2{font-size:25px}.lesson-guide-summary{font-size:12px}.lesson-guide-content{padding:22px 17px 4px}.lesson-guide-section{padding:0 0 28px 45px}.lesson-guide-section+.lesson-guide-section{padding-top:26px}.lesson-guide-section-number{left:0;width:30px;height:30px}.lesson-guide-section+.lesson-guide-section .lesson-guide-section-number{top:26px}.lesson-guide-section h3{font-size:17px}.lesson-guide-section>p{font-size:12px}.lecture-panel{padding:20px 16px}.derivation-step{grid-template-columns:1fr;gap:5px}.lean-map th:first-child,.lean-map td:first-child{display:none}.lecture-ending{margin:14px 17px 0;grid-template-columns:1fr}.lesson-guide-scope{margin:18px 17px 0}.lesson-guide-actions{padding:14px 18px}}
   </style>
 </head>
@@ -55,7 +59,7 @@
   </aside>
   <header class="mobile-top" id="top"><a class="brand" href="#top"><span class="logo">λ</span><span data-course-brand>LeanPath Physics</span></a><b>♥ <span data-hearts>5</span>　◆ <span data-xp>120</span></b></header>
   <main class="main" id="learn">
-    <section class="hero"><p class="eyebrow" id="heroEyebrow">LEAN 4 · 五部分物理学形式化路径</p><h1 id="heroTitle">先让每一个物理式，量纲正确。</h1><p id="heroSubtitle">从物理推导进入 Lean，并连接原 PhysLean、现 Physlib 的真实接口。</p></section>
+    <section class="hero"><p class="eyebrow" id="heroEyebrow">LEAN 4 · 三单元物理学形式化路径</p><h1 id="heroTitle">让 Lean 成为学习物理的语言。</h1><p id="heroSubtitle">单位与量纲 → 欧式静力学 → 欧式动力学</p></section>
     <div class="path" id="map"></div>
   </main>
   <aside class="rail" id="progress"><div class="stats">🔥 5　◆ <span data-xp>120</span>　<span style="color:#dc6670">♥ <span data-hearts>5</span></span></div><section class="card"><h3>🔥　连续学习 5 天</h3><p>每天推进一点，让定义、量纲与证明逐渐连成一条线。</p><div class="week"><span class="done"><i>✓</i>一</span><span class="done"><i>✓</i>二</span><span class="done"><i>✓</i>三</span><span class="done"><i>✓</i>四</span><span class="done"><i>✓</i>五</span><span><i></i>六</span><span><i></i>日</span></div></section><section class="card"><h3>今日目标　<small style="float:right;color:var(--deep)"><span data-daily-xp>0</span> / <span data-daily-goal>20</span> XP</small></h3><div class="bar"><i data-goal-bar></i></div><p data-goal-text>再获得 20 XP 就能达成！</p></section><section class="card tip"><h3 id="tipTitle">💡　今日量纲小知识</h3><p id="tipText">量纲可以进入类型：速度与时间相乘得到长度，而不是靠注释提醒。</p><code id="tipCode">Quantity speedDim → Quantity timeDim → Quantity lengthDim</code></section></aside>
@@ -91,9 +95,14 @@
   <script src="data/course-config.js"></script>
   <script src="data/lesson-guide-bank.js?v=3"></script>
   <script src="data/lesson-lecture-bank.js?v=3"></script>
-  <script src="data/question-bank.js"></script>
-  <script src="data/writing-bank.js"></script>
-  <script src="data/showcase-bank.js"></script>
+  <script src="data/lesson-math-markdown.js?v=1"></script>
+  <script src="data/dynamics-lesson-bank.js?v=1"></script>
+  <script src="data/question-bank.js?v=3"></script>
+  <script src="data/dynamics-question-bank.js?v=1"></script>
+  <script src="data/writing-bank.js?v=3"></script>
+  <script src="data/dynamics-writing-bank.js?v=1"></script>
+  <script src="data/showcase-bank.js?v=3"></script>
+  <script src="data/dynamics-showcase-bank.js?v=1"></script>
   <script src="js/lean-checker.js"></script>
   <script src="js/ai-feedback.js"></script>
   <script>
@@ -468,16 +477,59 @@
       return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 
-    function lectureText(value) {
-      return escapeHtml(value || "")
-        .replace(/\$([^$]+)\$/g, '<span class="inline-formula">$1</span>')
-        .replace(/`([^`]+)`/g, '<code class="inline-lean">$1</code>');
+    function markdownInline(value) {
+      const code = [];
+      let source = String(value || "").replace(/`([^`]+)`/g, function(_, body){
+        const token = "\u0000CODE" + code.length + "\u0000";
+        code.push('<code class="inline-lean">' + escapeHtml(body) + '</code>');
+        return token;
+      });
+      source = escapeHtml(source)
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+        .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+        .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
+        .replace(/\u0000CODE(\d+)\u0000/g, function(_, index){return code[Number(index)] || "";});
+      return source;
     }
 
-    function lectureParagraphs(value) {
-      return String(value || "").split(/\n\s*\n/).filter(Boolean).map(function(paragraph){
-        return "<p>" + lectureText(paragraph) + "</p>";
+    function markdownBlock(value) {
+      const blocks = String(value || "").trim().split(/\n\s*\n/).filter(Boolean);
+      return blocks.map(function(block){
+        const lines = block.split("\n");
+        if (/^```/.test(lines[0])) {
+          const body = lines.slice(1, lines[lines.length - 1].startsWith("```") ? -1 : undefined).join("\n");
+          return '<pre><code>' + escapeHtml(body) + '</code></pre>';
+        }
+        if (lines.every(function(line){return /^[-*]\s+/.test(line);})) {
+          return "<ul>" + lines.map(function(line){return "<li>" + markdownInline(line.replace(/^[-*]\s+/, "")) + "</li>";}).join("") + "</ul>";
+        }
+        if (lines.every(function(line){return /^\d+\.\s+/.test(line);})) {
+          return "<ol>" + lines.map(function(line){return "<li>" + markdownInline(line.replace(/^\d+\.\s+/, "")) + "</li>";}).join("") + "</ol>";
+        }
+        if (lines.every(function(line){return /^>\s?/.test(line);})) {
+          return "<blockquote>" + lines.map(function(line){return markdownInline(line.replace(/^>\s?/, ""));}).join("<br>") + "</blockquote>";
+        }
+        const heading = lines[0].match(/^(#{1,4})\s+(.+)$/);
+        if (heading && lines.length === 1) {
+          const level = Math.min(4, heading[1].length + 2);
+          return "<h" + level + ">" + markdownInline(heading[2]) + "</h" + level + ">";
+        }
+        return "<p>" + lines.map(markdownInline).join("<br>") + "</p>";
       }).join("");
+    }
+
+    function renderLectureMath(element) {
+      if (typeof window.renderMathInElement !== "function") return;
+      window.renderMathInElement(element, {
+        delimiters: [
+          {left:"$$", right:"$$", display:true},
+          {left:"$", right:"$", display:false},
+          {left:"\\[", right:"\\]", display:true},
+          {left:"\\(", right:"\\)", display:false}
+        ],
+        throwOnError: false,
+        strict: "ignore"
+      });
     }
 
     function renderRef() {
@@ -600,35 +652,37 @@
       document.querySelector("#lessonGuidePart").textContent = guide.part;
       document.querySelector("#lessonGuideIndex").textContent = guide.index;
       document.querySelector("#lessonGuideTitle").textContent = guide.title;
-      document.querySelector("#lessonGuideSummary").textContent = guide.summary;
+      document.querySelector("#lessonGuideSummary").innerHTML = markdownInline(guide.summary);
       const goals = guide.goals && guide.goals.length
-        ? '<section class="lesson-guide-intro"><h3>学完这一关，你应当能够</h3><ul class="lesson-guide-goals">' + guide.goals.map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></section>'
+        ? '<section class="lesson-guide-intro markdown-body"><h3>学完这一关，你应当能够</h3><ul class="lesson-guide-goals">' + guide.goals.map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ul></section>'
         : '';
       const motivation = guide.motivation
-        ? '<div class="lecture-motivation"><b>为什么现在学习它</b>' + lectureText(guide.motivation) + '</div>'
+        ? '<div class="lecture-motivation markdown-body"><b>为什么现在学习它</b>' + markdownBlock(guide.motivation) + '</div>'
         : '';
       const sections = (guide.sections || []).map(function(section, index){
         const code = section.code ? '<div class="lesson-guide-code"><div class="code-head"><span>Lean 结构草图</span><span>先读类型，再读证明</span></div><pre><code>' + escapeHtml(section.code) + '</code></pre></div>' : '';
-        const cases = section.cases && section.cases.length ? '<div class="lesson-guide-cases"><b>分情况理解</b><ul>' + section.cases.map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></div>' : '';
-        return '<section class="lesson-guide-section"><span class="lesson-guide-section-number">' + String(index + 1).padStart(2, "0") + '</span><h3>' + escapeHtml(section.title) + '</h3>' + lectureParagraphs(section.text) + code + cases + '</section>';
+        const cases = section.cases && section.cases.length ? '<div class="lesson-guide-cases markdown-body"><b>分情况理解</b><ul>' + section.cases.map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ul></div>' : '';
+        return '<section class="lesson-guide-section markdown-body"><span class="lesson-guide-section-number">' + String(index + 1).padStart(2, "0") + '</span><h3>' + escapeHtml(section.title) + '</h3>' + markdownBlock(section.text) + code + cases + '</section>';
       }).join("");
       const derivation = guide.derivation && guide.derivation.length
-        ? '<section class="lecture-panel"><p class="lecture-block-title">MATHEMATICAL THREAD</p><h3>把本关压成一条推导链</h3><p class="lecture-panel-lead">先看等式之间为什么相连，再看 Lean 如何保存每一步。</p>' + guide.derivation.map(function(item){return '<div class="derivation-step"><code>' + escapeHtml(item.formula) + '</code><p>' + lectureText(item.text) + '</p></div>';}).join('') + '</section>'
+        ? '<section class="lecture-panel markdown-body"><p class="lecture-block-title">MATHEMATICAL THREAD</p><h3>把本关压成一条推导链</h3><p class="lecture-panel-lead">先看等式之间为什么相连，再看 Lean 如何保存每一步。</p>' + guide.derivation.map(function(item){return '<div class="derivation-step"><div class="derivation-formula">' + markdownBlock(item.formula) + '</div><div>' + markdownBlock(item.text) + '</div></div>';}).join('') + '</section>'
         : '';
       const leanMap = guide.leanMap && guide.leanMap.length
-        ? '<section class="lecture-panel"><p class="lecture-block-title">FROM PHYSICS TO LEAN</p><h3>物理对象如何落到类型中</h3><table class="lean-map"><thead><tr><th>物理对象</th><th>Lean 表达</th><th>这样设计的理由</th></tr></thead><tbody>' + guide.leanMap.map(function(item){return '<tr><td>' + lectureText(item.physics) + '</td><td><code>' + escapeHtml(item.lean) + '</code></td><td>' + lectureText(item.reason) + '</td></tr>';}).join('') + '</tbody></table></section>'
+        ? '<section class="lecture-panel markdown-body"><p class="lecture-block-title">FROM PHYSICS TO LEAN</p><h3>物理对象如何落到类型中</h3><table class="lean-map"><thead><tr><th>物理对象</th><th>Lean 表达</th><th>这样设计的理由</th></tr></thead><tbody>' + guide.leanMap.map(function(item){return '<tr><td>' + markdownInline(item.physics) + '</td><td><code>' + escapeHtml(item.lean) + '</code></td><td>' + markdownInline(item.reason) + '</td></tr>';}).join('') + '</tbody></table></section>'
         : '';
       const worked = guide.worked
-        ? '<section class="lecture-panel worked-example"><p class="lecture-block-title">WORKED EXAMPLE</p><h3>' + escapeHtml(guide.worked.title) + '</h3><p class="worked-problem">' + lectureText(guide.worked.problem) + '</p><ol class="worked-steps">' + (guide.worked.steps || []).map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ol><p class="worked-result"><b>结论：</b>' + lectureText(guide.worked.result) + '</p></section>'
+        ? '<section class="lecture-panel worked-example markdown-body"><p class="lecture-block-title">WORKED EXAMPLE</p><h3>' + escapeHtml(guide.worked.title) + '</h3><div class="worked-problem">' + markdownBlock(guide.worked.problem) + '</div><ol class="worked-steps">' + (guide.worked.steps || []).map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ol><div class="worked-result"><b>结论：</b>' + markdownBlock(guide.worked.result) + '</div></section>'
         : '';
       const ending = (guide.takeaways || guide.checkpoint)
         ? '<div class="lecture-ending">' +
-            '<section class="lecture-takeaways"><p class="lecture-block-title">本关小结</p><ul>' + (guide.takeaways || []).map(function(item){return '<li>' + lectureText(item) + '</li>';}).join('') + '</ul></section>' +
-            '<section class="lecture-checkpoint"><p class="lecture-block-title">离开前自检</p><p>' + lectureText((guide.checkpoint && guide.checkpoint.question) || '') + '</p><details><summary>展开参考答案</summary><p>' + lectureText((guide.checkpoint && guide.checkpoint.answer) || '') + '</p></details></section>' +
+            '<section class="lecture-takeaways markdown-body"><p class="lecture-block-title">本关小结</p><ul>' + (guide.takeaways || []).map(function(item){return '<li>' + markdownInline(item) + '</li>';}).join('') + '</ul></section>' +
+            '<section class="lecture-checkpoint markdown-body"><p class="lecture-block-title">离开前自检</p>' + markdownBlock((guide.checkpoint && guide.checkpoint.question) || '') + '<details><summary>展开参考答案</summary>' + markdownBlock((guide.checkpoint && guide.checkpoint.answer) || '') + '</details></section>' +
           '</div>'
         : '';
-      document.querySelector("#lessonGuideContent").innerHTML = goals + motivation + sections + derivation + leanMap + worked + ending;
-      document.querySelector("#lessonGuideScope").textContent = "模型边界：" + guide.scope;
+      const content = document.querySelector("#lessonGuideContent");
+      content.innerHTML = goals + motivation + sections + derivation + leanMap + worked + ending;
+      document.querySelector("#lessonGuideScope").innerHTML = "<b>模型边界：</b>" + markdownInline(guide.scope);
+      renderLectureMath(document.querySelector("#lessonGuideModal") || document.querySelector("#lessonGuideOverlay"));
       document.querySelector("#lessonGuideOverlay").classList.remove("hidden");
       document.body.style.overflow = "hidden";
     }
