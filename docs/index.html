@@ -103,7 +103,7 @@
   <script src="data/dynamics-writing-bank.js?v=2"></script>
   <script src="data/showcase-bank.js?v=4"></script>
   <script src="data/dynamics-showcase-bank.js?v=2"></script>
-  <script src="js/lean-checker.js"></script>
+  <script src="js/lean-checker.js?v=2"></script>
   <script src="js/ai-feedback.js"></script>
   <script>
     const course = window.LEANPATH_COURSE || {};
@@ -801,10 +801,13 @@
     }
 
     const leanRuntimeConfig = window.LEANPATH_CONFIG || {};
-    const leanChecker = window.LeanPathLean.createChecker();
+    const leanChecker = window.LeanPathLean.createChecker({
+      onStatus:function(message){setLeanStatus("checking", message);}
+    });
     const physlibChecker = window.LeanPathLean.createChecker({
       leanWebSocket: leanRuntimeConfig.physlibWebSocket || "",
-      leanProject: leanRuntimeConfig.physlibProject || "LeanPath"
+      leanProject: leanRuntimeConfig.physlibProject || "LeanPath",
+      onStatus:function(message){setLeanStatus("checking", message);}
     });
     let activeWritingId = WRITING_ORDER[0] || "";
     let lastWritingResult = null;
