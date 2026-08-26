@@ -14,22 +14,59 @@
   window.LEANPATH_LESSON_GUIDES = {
     version: 2,
     guides: {
-      quantity: guide(U1,"01 / 13","物理量不只是一个数",
-        "本关的目标不是背诵术语，而是学会把一次物理陈述拆成 Lean 可以区分的对象：我们测了什么、采用什么单位、它属于什么量纲，以及结论依赖哪个理想化模型。",[
-          section("从一次测速开始","仪表显示 72 km/h 时，72 只是相对于 km/h 这把标尺的坐标。换成 m/s 后数值变成 20，但道路上汽车的运动状态没有改变，速度量纲 LT⁻¹ 也没有改变。因此“物理量 = 裸实数”会丢掉决定公式是否合法的信息。",`structure QuantityRecord where
+      quantity: guide(
+  id: "U1",
+  progress: "01 / 13",
+  title: "物理量不只是一个裸实数 (Physical Quantities are not Bare Reals)",
+  intro: "本关的目标不是背诵物理术语，而是学会以**形式化（Formalization）**的视角，将一次物理陈述拆解为 Lean 可以进行类型检查与推理的对象。你需要掌握：我们测量了什么数据？采用了什么单位和量纲？结论依赖于哪一种理想化模型？",
+  sections: [
+    section(
+      title: "从一次测速开始：数值、单位与量纲",
+      content: "当汽车仪表盘显示 $72 \\text{ km/h}$ 时，数值 $72$ 仅仅是相对于基底（单位） $\\text{km/h}$ 的坐标。如果我们换用国际单位制 $\\text{m/s}$ 作为基底，数值将变为 $20$。尽管数值和单位改变了，但汽车真实的运动状态没有改变，其**速度量纲（Dimension）**始终为 $\\mathsf{L}\\mathsf{T}^{-1}$。\n\n如果在代码中仅仅定义“物理量 = 裸实数（Bare Reals）”，我们就会丢失掉决定物理公式是否合法的关键信息，导致系统无法识别 $1 \\text{ m} + 1 \\text{ s}$ 这种毫无物理意义的拼凑。",
+      code: 
+`-- 在 Lean 中，我们可以用结构体将数值、单位与量纲绑定
+structure QuantityRecord where
   value : ℝ
   unit : Unit
-  dimension : Dimension`),
-          section("形式化时还要记录模型地位","把重力加速度写成 9.8 m/s² 后，Lean 能严格推出这个参数在模型中的后果，却不能说明它就是某地某时刻的实测值。测量值还可能带不确定度，理想化常数则可能被精确设定。证明的精确性与模型对现实的贴合程度是两件事。",`structure Measurement where
+  dimension : Dimension
+
+-- 甚至在更严格的设计中，量纲会被提升到类型（Type）层面
+-- 以便在编译期进行检查`
+    ),
+
+    section(
+      title: "形式化物理的认识论：记录模型地位",
+      content: "当我们在纸上写下重力加速度 $g = 9.8 \\text{ m/s}^2$ 时，Lean 能极其严格地推导出一个参数在数学模型中的后果，但它无法证明这个参数是否100%贴合现实（现实中重力加速度随纬度和海拔变化）。因此，形式化物理不仅要记录数值，还要区分数据的**认识论地位**。\n\n证明的绝对严谨性，与模型对现实的拟合程度，在形式化系统中是两件完全独立的事。",
+      code: 
+`-- 实验物理：测量值必须包含中心值与不确定度（甚至置信区间）
+structure Measurement where
   centralValue : ℝ
   uncertainty : ℝ
 
-def freeFallModel (g : Acceleration) := ...`,["精确常数：例如单位定义中的换算因子。","实验输入：应同时保存误差、环境和仪器条件。","理想参数：可精确推导，但结论只在假设下成立。"]),
-          section("零值也有物理类型","小球到最高点时速度数值为零，但 0 m/s 仍是速度，不能与 0 s 或 0 N 任意替换。Lean 中可以让不同的零分别属于 Quantity speedDim、Quantity timeDim 和 Quantity forceDim，从类型层阻止这种混淆。",`zeroSpeed : Quantity speedDim := ⟨0⟩
-zeroTime  : Quantity timeDim  := ⟨0⟩
+-- 理论物理：理想化模型中的常数作为假设（Hypothesis）引入
+def freeFallModel (g : Acceleration) (assumeVacuum : Prop) := ...`,
+      bulletPoints: [
+        "**精确常数（Exact Constants）**：如光速 $c = 299,792,458 \\text{ m/s}$，它是定义出来的换算因子，绝对精确，没有误差。",
+        "**测量输入（Experimental Data）**：来自仪器的实测值，必须同时妥善保存其误差范围、环境温度和仪器条件（如 $x = 20.0 \\pm 0.1 \\text{ m}$）。",
+        "**理想参数（Idealized Parameters）**：特定物理模型（如质点、绝对真空）下的参数。定理的结论是绝对成立的，但前提是只在假设 (`Prop`) 为 `True` 的世界里。"
+      ]
+    ),
 
--- 数值相同，不代表类型相同。`)
-        ],"本关只建立数值—单位—量纲—模型四层区分；误差传播与统计推断留到实验数据专题。"),
+    section(
+      title: "零值也有物理类型（Type Safety of Zero）",
+      content: "当抛体到达最高点时，其速度数值为零（$v = 0 \\text{ m/s}$），但这个 $0$ 依然携带着“速度”的灵魂。在物理意义上，我们绝不能将 $0 \\text{ m/s}$ 与 $0 \\text{ s}$ 或 $0 \\text{ N}$ 划等号或相加。\n\n利用 Lean 强大的依赖类型或参数化类型（Parameterized Types），我们可以让不同的“零”栖身于不同的类型空间中。通过将量纲签名编码进类型系统，我们能在类型检查阶段（Type-checking）直接拦截跨量纲的非法运算。",
+      code: 
+`-- 假设 Quantity 接收一个量纲参数作为其类型的一部分
+def zeroSpeed : Quantity speedDim := ⟨0⟩
+def zeroTime  : Quantity timeDim  := ⟨0⟩
+
+-- 数值相同，但它们属于不同的 Type。
+-- 下面的代码在 Lean 中会导致类型不匹配报错（Type Mismatch）
+-- #check zeroSpeed + zeroTime `
+    )
+  ],
+  outro: "🏁 **通关提示**：本关仅建立最基础的【数值—单位—量纲—模型】四层概念区分；关于复杂实验中的误差传播（Error Propagation）与统计推断，将留到《实验数据专题》中深入探讨。"
+)
 
       "si-base": guide(U1,"02 / 13","SI 基本量是一组生成基底",
         "七个 SI 基本量不是七个必须死记的符号，而是一组用于生成常用量纲的独立坐标方向。理解“基底”后，导出单位就成为组合，而不是新的例外清单。",[
