@@ -1,18 +1,4 @@
-/-!
-# LeanPath Physics · 第二部分：欧式空间中的静力学
-
-本文件是通关后可下载的完整作品。它有意选择一个可被低年级学生完整读完、
-又足以承载真实静力学推理的边界：一般有限维坐标中的反对称张量力矩，
-以及它在三维中的叉积专门化、有限个集中力、刚体平衡、线性支反力、
-有限维虚功和二次势能稳定性。
-
-连续介质弱形式、分布载荷积分、摩擦接触互补、随动力、屈曲和一般非线性
-稳定性不被悄悄塞进这个模型；它们应在后续专题中引入相应的函数空间、积分、
-不等式或微分方程结构。
--/
-
 import Mathlib
-import Mathlib.LinearAlgebra.CrossProduct
 import Physlib.Mathematics.Calculus.Gradient
 import Physlib.SpaceAndTime.ReferenceFrame
 
@@ -51,7 +37,6 @@ theorem wedge_swap {n : ℕ} (r F : VecN n) : wedge r F = -wedge F r := by
 theorem wedge_skew {n : ℕ} (r F : VecN n) (i j : Fin n) :
     wedge r F i j = -wedge r F j i := by
   simp [wedge]
-  ring
 
 /-- 反对称力矩张量的对角元全部为零。 -/
 @[simp] theorem wedge_diag {n : ℕ} (r F : VecN n) (i : Fin n) :
@@ -106,13 +91,13 @@ theorem totalMomentTensorAt_change_origin {n : ℕ}
     totalMomentTensorAt q S =
       totalMomentTensorAt o S - wedge (q.coord - o.coord) (resultantN S) := by
   induction S with
-  | nil => simp [totalMomentTensorAt, resultantN, wedge]
+  | nil =>
+      ext i j
+      simp [totalMomentTensorAt, resultantN, wedge]
   | cons f S ih =>
       rw [totalMomentTensorAt, totalMomentTensorAt, resultantN,
         momentTensorAt_change_origin, ih]
-      ext i j
-      simp [wedge]
-      ring
+      ext i j; (simp [momentTensorAt, wedge] <;> ring)
 
 /-- 一般维刚体的平衡：合力为零且反对称力矩张量为零。 -/
 def IsBalancedAtN {n : ℕ} (o : PointN n) (S : ForceSystemN n) : Prop :=
@@ -125,6 +110,7 @@ theorem balanceN_origin_independent {n : ℕ}
   constructor
   · exact h.1
   · rw [totalMomentTensorAt_change_origin, h.1, h.2]
+    ext i j
     simp [wedge]
 
 /-! ## 2. 三维专门化：欧式坐标、点、位移与内积 -/
@@ -143,7 +129,7 @@ theorem hodgeDual3_wedge (r F : Vec3) :
     hodgeDual3 (wedge r F) = crossProduct r F := by
   ext i
   fin_cases i <;> simp [hodgeDual3, wedge, cross_apply]
-  all_goals ring
+  all_goals (try ring_nf) <;> ring
 
 /-- 坐标点。更内禀的项目可连接原 PhysLean、现 Physlib 的 ReferenceFrame。 -/
 structure Point3 where
@@ -165,7 +151,6 @@ theorem displacement_chain (p q r : Point3) :
     displacement p q + displacement q r = displacement p r := by
   ext i
   simp [displacement]
-  ring
 
 theorem normSq_eq_zero_iff (v : Vec3) : normSq v = 0 ↔ v = 0 := by
   simpa [normSq, dot] using (dotProduct_self_eq_zero (v := v))
@@ -226,7 +211,7 @@ theorem momentAt_change_origin (o q : Point3) (f : AppliedForce) :
     momentAt q f = momentAt o f - cross (q.coord - o.coord) f.vector := by
   ext i
   fin_cases i <;> simp [momentAt, cross, cross_apply]
-  all_goals ring
+  all_goals (try ring_nf <;> ring)
 
 /-- 有限力系的移矩公式：`M_q = M_o - (q-o) × R`。 -/
 theorem totalMomentAt_change_origin (o q : Point3) (S : ForceSystem) :
@@ -234,10 +219,13 @@ theorem totalMomentAt_change_origin (o q : Point3) (S : ForceSystem) :
   induction S with
   | nil => simp [totalMomentAt, resultant, cross]
   | cons f S ih =>
-      rw [totalMomentAt, totalMomentAt, resultant, momentAt_change_origin, ih]
+      change momentAt q f + totalMomentAt q S =
+        momentAt o f + totalMomentAt o S -
+          cross (q.coord - o.coord) (f.vector + resultant S)
+      rw [momentAt_change_origin o q f, ih]
       ext i
-      fin_cases i <;> simp [cross, cross_apply]
-      all_goals ring
+      fin_cases i <;> simp [momentAt, cross, cross_apply]
+      all_goals (try ring_nf <;> ring)
 
 /-- 一对相反力的合力为零。 -/
 theorem couple_resultant (p q : Point3) (F : Vec3) :
@@ -248,7 +236,7 @@ theorem couple_resultant (p q : Point3) (F : Vec3) :
 theorem couple_moment_independent (o q p₁ p₂ : Point3) (F : Vec3) :
     totalMomentAt q [⟨p₁, F⟩, ⟨p₂, -F⟩] =
       totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩] := by
-  rw [totalMomentAt_change_origin]
+  rw [totalMomentAt_change_origin o q [⟨p₁, F⟩, ⟨p₂, -F⟩]]
   simp [couple_resultant, cross]
 
 /-! ## 5. 三维静力平衡与充要条件 -/
@@ -290,25 +278,28 @@ theorem virtualPower_zero_iff_balance (o : Point3) (S : ForceSystem) :
     · apply (dotProduct_self_eq_zero (v := totalMomentAt o S)).mp
       simpa [rigidVirtualPowerAt, dot] using h 0 (totalMomentAt o S)
   · rintro ⟨hR, hM⟩ v ω
-    simp [rigidVirtualPowerAt, dot, TranslationalBalance, RotationalBalanceAt,
-      hR, hM]
+    simp only [rigidVirtualPowerAt]
+    rw [hR, hM]
+    simp [dot]
 
 /-! ## 6. 简支梁：支反力与平衡 -/
 
 /-- 跨长 `L`、距左端 `a` 处向下载荷 `P` 的左端反力。 -/
-def leftReaction (P a L : ℝ) : ℝ := P * (L - a) / L
+noncomputable def leftReaction (P a L : ℝ) : ℝ := P * (L - a) / L
 
 /-- 同一简支梁的右端反力。 -/
-def rightReaction (P a L : ℝ) : ℝ := P * a / L
+noncomputable def rightReaction (P a L : ℝ) : ℝ := P * a / L
 
 theorem simplySupported_force_balance (P a L : ℝ) (hL : L ≠ 0) :
     leftReaction P a L + rightReaction P a L = P := by
-  field_simp [leftReaction, rightReaction, hL]
+  rw [leftReaction, rightReaction, ← add_div]
+  apply (div_eq_iff hL).2
   ring
 
 theorem simplySupported_moment_balance (P a L : ℝ) (hL : L ≠ 0) :
     rightReaction P a L * L = P * a := by
-  field_simp [rightReaction, hL]
+      rw [rightReaction]
+      field_simp [hL]
 
 theorem simplySupported_reactions_nonnegative (P a L : ℝ)
     (hP : 0 ≤ P) (ha0 : 0 ≤ a) (haL : a ≤ L) (hL : 0 < L) :
@@ -369,6 +360,7 @@ def work (F : Vec3) (p q : Point3) : ℝ := dot F (displacement p q)
 theorem work_add (F : Vec3) (p q r : Point3) :
     work F p r = work F p q + work F q r := by
   have h := displacement_chain p q r
+  simp only [work]
   rw [← h]
   simp [work, dot, dotProduct_add]
 
@@ -425,7 +417,7 @@ theorem free_virtual_work_iff_balance (o : Point3) (S : ForceSystem) :
     exact (virtualPower_zero_iff_balance o S).mpr h motion.1 motion.2
 
 /-- 一维二次势能是稳定性三分类的最小严谨模型。 -/
-def scalarPotential (k x : ℝ) : ℝ := (1 / 2 : ℝ) * k * x^2
+noncomputable def scalarPotential (k x : ℝ) : ℝ := (1 / 2 : ℝ) * k * x^2
 
 theorem positive_stiffness_strict_min (k x : ℝ)
     (hk : 0 < k) (hx : x ≠ 0) :
