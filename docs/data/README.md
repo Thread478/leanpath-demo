@@ -1,6 +1,6 @@
 # LeanPath 题库维护说明
 
-课程主题与路线位于 [course-config.js](./course-config.js)，每关理论卡位于 [lesson-guide-bank.js](./lesson-guide-bank.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。五者均与页面运行逻辑分离。
+课程主题与路线位于 [course-config.js](./course-config.js)，每关基础正文位于 [lesson-guide-bank.js](./lesson-guide-bank.js)，讲义推导、例题与自检位于 [lesson-lecture-bank.js](./lesson-lecture-bank.js)，选择题位于 [question-bank.js](./question-bank.js)，真实 Lean 写作题位于 [writing-bank.js](./writing-bank.js)，成果展品清单位于 [showcase-bank.js](./showcase-bank.js)。这些数据均与页面运行逻辑分离。
 
 当前主题为 **LeanPath Physics**，完整路线分成五部分：单位与量纲 → 欧式空间中的静力学 → 欧式空间中的动力学 → 黎曼流形的构造 → 拉格朗日力学。第一、二部分已经实现，后三部分在地图中作为后续路线展示。
 
@@ -53,18 +53,23 @@
 
 因此随机性不会破坏学习曲线。第一部分和第二部分共 28 个知识关卡，每关各有 9 题、每次抽取 6 题；两次综合实验各有 12 题；Lean 前置训练含 24 题，每次按 `[4,4,4]` 抽取 12 题。总计仍为 300 道选择题。
 
-## 每关理论导学卡
+## 每关关前讲义
 
-`LEANPATH_LESSON_GUIDES.guides` 为第一、二部分当前 30 个可答题主线关卡逐一提供理论卡；宝箱与可选的 `daily` Lean 入门训练不使用主线物理卡。用户每次进入关卡都会先看到理论卡，再主动开始随机练习。
+`LEANPATH_LESSON_GUIDES.guides` 为第一、二部分当前 30 个可答题主线关卡逐一提供关前讲义；宝箱与可选的 `daily` Lean 入门训练不使用主线物理讲义。用户每次进入关卡都会先阅读讲义，再主动开始随机练习。基础正文与扩展讲义拆成两个文件，是为了让课程维护者可以分别校对概念叙述和完整例题。
 
-每张卡包含：
+每份讲义包含：
 
 - `part` 与 `index`：所属部分和部分内编号；
-- `title` 与 `summary`：本关的核心物理问题与学习目标；
-- `sections`：三段依次推进的微型讲义，每段包含标题、完整解释，以及可选的 `code` 和特殊情形 `cases`；
+- `title` 与 `summary`：本关的核心物理问题与内容总览；
+- `goals` 与 `motivation`：可检查的学习目标和引入该概念的物理动机；
+- `sections`：至少三段连续正文，每段包含解释、穿插的 Lean 结构草图，以及可选的特殊情形 `cases`；
+- `derivation`：不少于四步的数学推导链，每一步同时说明公式和物理理由；
+- `leanMap`：物理对象、Lean 表达与类型设计理由之间的对应表；
+- `worked`：一项完整例题，包含问题、逐步解答和结论；
+- `takeaways` 与 `checkpoint`：本关小结和带折叠答案的离开前自检；
 - `scope`：结论的模型假设和适用边界。
 
-讲义按照“物理问题 → 数学推导 → Lean 结构 → 特殊情形/模型边界”组织，代码穿插在相应推导之后，而不是作为孤立词汇表。伪代码用于教学，不发送到 Lean 判题服务，也不承诺可单独编译。可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一张理论卡，每张卡恰有三段讲义，且至少包含一个代码片段。
+讲义按照“学习目标 → 物理动机 → 连续正文与代码 → 数学推导链 → Lean 类型映射 → 完整例题 → 小结与自检 → 模型边界”组织。代码必须紧跟它所表达的物理推导，不能退化为孤立词汇表。结构草图用于教学，不发送到 Lean 判题服务，也不承诺可单独编译；可执行、可核验的代码仍放在写作题模板和成果图鉴的 `.lean` 文件中。维护时应验证：`courseOrder` 中除宝箱外的每个主线题库 ID 都恰有一份讲义；每份讲义至少有三个目标、三段正文、四步推导、三项 Lean 映射和四步例题，并包含模型边界。
 
 ## Lean 入门训练营
 
