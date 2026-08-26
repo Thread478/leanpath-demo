@@ -16,6 +16,12 @@ import Mathlib.LinearAlgebra.CrossProduct
 import Physlib.Mathematics.Calculus.Gradient
 import Physlib.SpaceAndTime.ReferenceFrame
 
+/-!
+历史说明：这些物理接口源自 PhysLean（更早名为 HepLean）。PhysLean 与
+Lean-QuantumInfo 合并后，现行项目、构建目标与模块前缀均为 `Physlib`，
+因此可执行导入保持 `Physlib.*`。
+-/
+
 open InnerProductSpace
 
 namespace LeanPathPhysics.EuclideanStatics
@@ -139,7 +145,7 @@ theorem hodgeDual3_wedge (r F : Vec3) :
   fin_cases i <;> simp [hodgeDual3, wedge, cross_apply]
   all_goals ring
 
-/-- 坐标点。更内禀的项目可以把它替换为 Physlib ReferenceFrame 的空间点。 -/
+/-- 坐标点。更内禀的项目可连接原 PhysLean、现 Physlib 的 ReferenceFrame。 -/
 structure Point3 where
   coord : Vec3
 
@@ -369,7 +375,7 @@ theorem work_add (F : Vec3) (p q r : Point3) :
 theorem work_zero_of_orthogonal (F : Vec3) (p q : Point3)
     (h : dot F (displacement p q) = 0) : work F p q = 0 := h
 
-/-! ## 9. 势能、Physlib 梯度与弹簧力 -/
+/-! ## 9. 势能与梯度：从 PhysLean 来源到现行 Physlib 接口 -/
 
 noncomputable section
 
@@ -382,7 +388,7 @@ def elasticForce {n : ℕ} (k : ℝ) (x : EuclideanSpace ℝ (Fin n)) :
     EuclideanSpace ℝ (Fin n) :=
   -gradient (quadraticPotential k) x
 
-/-- 复用 Physlib 的 `gradient_const_mul_inner_self` 得到 Hooke 定律。 -/
+/-- 复用源自 PhysLean、现由 Physlib 提供的梯度定理得到 Hooke 定律。 -/
 theorem gradient_quadraticPotential {n : ℕ} (k : ℝ)
     (x : EuclideanSpace ℝ (Fin n)) :
     gradient (quadraticPotential k) x = k • x := by
