@@ -1,7 +1,7 @@
 /* LeanPath Physics theme and five-part course route. */
 (function () {
   window.LEANPATH_COURSE = {
-    version: 5,
+    version: 6,
     storageKey: "leanpath-progress-v2",
     dailyGoal: 20,
     theme: {
@@ -16,8 +16,8 @@
       writingTitle: "物理学形式化 · Lean 写作实验室",
       showcaseTitle: "形式化成果图鉴",
       tipTitle: "今日形式化物理小知识",
-      tipText: "刚体平衡不仅要求合力为零，还要求关于任一点的合力矩为零。",
-      tipCode: "ΣF = 0  ∧  Σ(r × F) = 0"
+      tipText: "在 ℝⁿ 中，力矩是 r∧F 形成的反对称二阶张量；三维叉积是它的 Hodge 对偶。",
+      tipCode: "Mᵢⱼ = rᵢFⱼ − rⱼFᵢ,  Mᵢⱼ = −Mⱼᵢ"
     },
     completionRewards: {
       chest: {xp:80, message:"第一部分完成：+80 XP，完整《单位与量纲》Lean 作品已收入成果图鉴。", repeat:"第一部分成果已经领取，可在成果图鉴中查看。"},
@@ -93,15 +93,15 @@
       {
         n: 2,
         t: "欧式空间中的静力学",
-        d: "有限维欧式空间中的向量、力系、刚体平衡、虚功与能量稳定性",
+        d: "有限维欧式空间中的向量、反对称张量力矩、刚体平衡、虚功与能量稳定性",
         lessons: [
-          {id:"euclidean-vectors", icon:"ℝ³", title:"欧式空间与坐标向量", sub:"位移 · 相对速度 · 合力"},
+          {id:"euclidean-vectors", icon:"ℝⁿ", title:"欧式空间与坐标向量", sub:"一般有限维 · 三维专门化"},
           {id:"inner-metric", icon:"⟪·,·⟫", title:"内积、范数与距离", sub:"功 · 距离 · 动能"},
           {id:"affine-points", icon:"P→Q", title:"点、位移与参考原点", sub:"仿射点 · 位置向量 · ReferenceFrame"},
           {id:"applied-force", icon:"F@P", title:"力与作用点", sub:"滑移向量 · 作用线 · AppliedForce"},
           {id:"force-system", icon:"ΣF", title:"力系与合力", sub:"多力叠加 · 力偶 · 等效"},
-          {id:"moment", icon:"r×F", title:"力矩与叉积", sub:"力臂 · 右手系 · 正交性"},
-          {id:"moment-shift", icon:"M↦", title:"移矩定理与力偶", sub:"换参考点 · 力偶矩不变"},
+          {id:"moment", icon:"r∧F", title:"一般维力矩与三维叉积", sub:"反对称张量 · Hodge 对偶"},
+          {id:"moment-shift", icon:"M↦", title:"一般维移矩与力偶", sub:"换参考点 · 三维专门化"},
           {id:"equilibrium", icon:"0⃗", title:"静力平衡", sub:"平动平衡 ∧ 转动平衡"},
           {id:"equilibrium-iff", icon:"⇔", title:"平衡充要条件", sub:"任意刚体虚速度功率为零"},
           {id:"support-reactions", icon:"△", title:"约束与支反力", sub:"简支梁 · 平衡方程 · 反力"},
