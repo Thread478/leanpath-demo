@@ -118,7 +118,7 @@ def basis (b : BaseDimension) : Dimension :=
 end Dimension
 
 open BaseDimension
-open Dimension
+open _root_.LeanPathPhysics.Dimension
 
 /-! ## SI base dimensions -/
 
@@ -179,7 +179,6 @@ theorem pressure_mul_volume : pressureDim * volumeDim = energyDim := by
 /-- `Quantity d` contains a real magnitude whose dimension is fixed by its type. -/
 structure Quantity (d : Dimension) where
   value : ℝ
-  deriving Repr
 
 namespace Quantity
 
@@ -240,13 +239,13 @@ noncomputable def fromSI {d : Dimension} (u : LinearUnit d) (value : ℝ) : ℝ 
   value / u.scaleToSI
 
 /-- Convert between two units of the same dimension. -/
-noncomputable def convert {d : Dimension} (from to : LinearUnit d)
+noncomputable def convert {d : Dimension} (source target : LinearUnit d)
     (value : ℝ) : ℝ :=
-  to.fromSI (from.toSI value)
+  target.fromSI (source.toSI value)
 
-theorem toSI_convert {d : Dimension} (from to : LinearUnit d)
-    (value : ℝ) (hto : to.scaleToSI ≠ 0) :
-    to.toSI (convert from to value) = from.toSI value := by
+theorem toSI_convert {d : Dimension} (source target : LinearUnit d)
+    (value : ℝ) (hto : target.scaleToSI ≠ 0) :
+    target.toSI (convert source target value) = source.toSI value := by
   simp [convert, fromSI, toSI, hto]
 
 end LinearUnit
@@ -294,11 +293,11 @@ def candela : Quantity luminousIntensityDim := ⟨1⟩
 
 def metreUnit : LinearUnit lengthDim := ⟨"m", 1⟩
 def kilometreUnit : LinearUnit lengthDim := ⟨"km", 1000⟩
-def centimetreUnit : LinearUnit lengthDim := ⟨"cm", 1 / 100⟩
+noncomputable def centimetreUnit : LinearUnit lengthDim := ⟨"cm", 1 / 100⟩
 def secondUnit : LinearUnit timeDim := ⟨"s", 1⟩
 def hourUnit : LinearUnit timeDim := ⟨"h", 3600⟩
 def metrePerSecondUnit : LinearUnit speedDim := ⟨"m/s", 1⟩
-def kilometrePerHourUnit : LinearUnit speedDim := ⟨"km/h", 5 / 18⟩
+noncomputable def kilometrePerHourUnit : LinearUnit speedDim := ⟨"km/h", 5 / 18⟩
 
 /-- Absolute degrees Celsius form an affine scale relative to kelvin. -/
 def degreeCelsius : AffineUnit temperatureDim := ⟨"°C", 1, 273.15⟩
