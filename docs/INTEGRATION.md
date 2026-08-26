@@ -28,6 +28,17 @@ leanProject: "MathlibDemo"
 
 这个服务用于主线在线写作题。LeanPath **不假设**官方 `MathlibDemo` 同时包含 Physlib，因此公共站点的服务标签只写作“Lean 4 + Mathlib · 官方在线判题”。
 
+公共服务可能因冷启动或排队出现短时延迟。判题器把连接与编译分开处理：WebSocket 建连默认等待 20 秒，并只对网络中断自动重连一次；连接成功后，LSP 初始化和完整源码编译各自最多等待 120 秒。页面会显示当前处于连接、初始化还是编译阶段，任何服务故障都不会扣除红心。需要调整时可在 `runtime-config.js` 中覆盖：
+
+```js
+leanConnectTimeout: 20000,
+leanCompileTimeout: 120000,
+leanRetryCount: 1,
+leanRetryDelay: 900
+```
+
+自动重连只针对 WebSocket 建连失败或提前关闭，不会对一份正在超时编译的源码重复提交，以免在公共服务拥堵时进一步增加负载。
+
 直接 `import Physlib...` 的题目带有：
 
 ```js
