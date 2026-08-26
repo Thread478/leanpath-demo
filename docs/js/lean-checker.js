@@ -73,12 +73,12 @@
 
         function timeoutError() {
           if (phase === "connecting") {
-            return checkerError("connection_timeout", "连接 Lean 服务超时；已自动重试，仍无法建立 WebSocket。请稍后再试或检查网络是否允许 WSS 连接。");
+            return checkerError("connection_timeout", "连接 Lean 服务超时，无法建立 WebSocket。请稍后再试或检查网络是否允许 WSS 连接。");
           }
           if (phase === "initializing") {
             return checkerError("initialization_timeout", "Lean 服务已连接，但语言服务器启动超时。公共服务可能正在排队，请稍后重试。");
           }
-          return checkerError("compilation_timeout", "Lean 已连接，但本题在 120 秒内尚未完成编译。公共服务可能拥堵；本次不扣红心，请稍后重试。");
+          return checkerError("compilation_timeout", "Lean 已连接，但本题在 " + Math.ceil(compileTimeout / 1000) + " 秒内尚未完成编译。公共服务可能拥堵；本次不扣红心，请稍后重试。");
         }
 
         function resetTimer(milliseconds) {
@@ -129,6 +129,11 @@
 
           if (message.method && message.id !== undefined) {
             send({id:message.id,result:null});
+          }
+
+          if (message.id === 1 && message.error && !initialized) {
+            finish(checkerError("initialization_error", "Lean 语言服务器初始化失败：" + messageText(message.error.message || message.error)));
+            return;
           }
 
           if (message.id === 1 && message.result && !initialized) {
