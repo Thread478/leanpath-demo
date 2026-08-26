@@ -2,8 +2,9 @@
 # LeanPath Physics · 第二部分：欧式空间中的静力学
 
 本文件是通关后可下载的完整作品。它有意选择一个可被低年级学生完整读完、
-又足以承载真实静力学推理的边界：三维欧式坐标、有限个集中力、刚体平衡、
-线性支反力、有限维虚功和二次势能稳定性。
+又足以承载真实静力学推理的边界：一般有限维坐标中的反对称张量力矩，
+以及它在三维中的叉积专门化、有限个集中力、刚体平衡、线性支反力、
+有限维虚功和二次势能稳定性。
 
 连续介质弱形式、分布载荷积分、摩擦接触互补、随动力、屈曲和一般非线性
 稳定性不被悄悄塞进这个模型；它们应在后续专题中引入相应的函数空间、积分、
@@ -19,10 +20,124 @@ open InnerProductSpace
 
 namespace LeanPathPhysics.EuclideanStatics
 
-/-! ## 1. 欧式坐标、点、位移与内积 -/
+/-! ## 1. 一般有限维力矩：二阶反对称张量 -/
+
+/-- `ℝⁿ` 的透明坐标模型。 -/
+abbrev VecN (n : ℕ) := Fin n → ℝ
+
+/--
+力矩二阶张量的坐标模型。它是外幂 `⋀[ℝ]^2 (VecN n)` 的反对称矩阵表示；
+课程先使用这个透明表示，让学习者可以直接看到每个分量。
+-/
+abbrev MomentTensor (n : ℕ) := Matrix (Fin n) (Fin n) ℝ
+
+/-- 两个向量的楔积：`(r ∧ F)ᵢⱼ = rᵢFⱼ - rⱼFᵢ`。 -/
+def wedge {n : ℕ} (r F : VecN n) : MomentTensor n :=
+  fun i j => r i * F j - r j * F i
+
+/-- 楔积交换两个因子时变号。 -/
+theorem wedge_swap {n : ℕ} (r F : VecN n) : wedge r F = -wedge F r := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- 力矩张量确实反对称。 -/
+theorem wedge_skew {n : ℕ} (r F : VecN n) (i j : Fin n) :
+    wedge r F i j = -wedge r F j i := by
+  simp [wedge]
+  ring
+
+/-- 反对称力矩张量的对角元全部为零。 -/
+@[simp] theorem wedge_diag {n : ℕ} (r F : VecN n) (i : Fin n) :
+    wedge r F i i = 0 := by
+  simp [wedge]
+
+/-- 平行力的力矩为零；这里用 `F = a • r` 表示平行。 -/
+theorem wedge_smul_self {n : ℕ} (a : ℝ) (r : VecN n) :
+    wedge r (a • r) = 0 := by
+  ext i j
+  simp [wedge]
+  ring
+
+/-- 一般维坐标点。 -/
+structure PointN (n : ℕ) where
+  coord : VecN n
+
+/-- 一般维集中力，同时记录作用点和力向量。 -/
+structure AppliedForceN (n : ℕ) where
+  point : PointN n
+  vector : VecN n
+
+abbrev ForceSystemN (n : ℕ) := List (AppliedForceN n)
+
+/-- 一般维有限力系的合力。 -/
+def resultantN {n : ℕ} : ForceSystemN n → VecN n
+  | [] => 0
+  | f :: S => f.vector + resultantN S
+
+/-- 关于 `o` 的一般维力矩。 -/
+def momentTensorAt {n : ℕ} (o : PointN n) (f : AppliedForceN n) :
+    MomentTensor n :=
+  wedge (f.point.coord - o.coord) f.vector
+
+/-- 一般维有限力系的总力矩张量。 -/
+def totalMomentTensorAt {n : ℕ} (o : PointN n) :
+    ForceSystemN n → MomentTensor n
+  | [] => 0
+  | f :: S => momentTensorAt o f + totalMomentTensorAt o S
+
+/-- 一般维单力移矩公式：`M_q = M_o - (q-o) ∧ F`。 -/
+theorem momentTensorAt_change_origin {n : ℕ}
+    (o q : PointN n) (f : AppliedForceN n) :
+    momentTensorAt q f = momentTensorAt o f - wedge (q.coord - o.coord) f.vector := by
+  ext i j
+  simp [momentTensorAt, wedge]
+  ring
+
+/-- 一般维有限力系移矩公式：`M_q = M_o - (q-o) ∧ R`。 -/
+theorem totalMomentTensorAt_change_origin {n : ℕ}
+    (o q : PointN n) (S : ForceSystemN n) :
+    totalMomentTensorAt q S =
+      totalMomentTensorAt o S - wedge (q.coord - o.coord) (resultantN S) := by
+  induction S with
+  | nil => simp [totalMomentTensorAt, resultantN, wedge]
+  | cons f S ih =>
+      rw [totalMomentTensorAt, totalMomentTensorAt, resultantN,
+        momentTensorAt_change_origin, ih]
+      ext i j
+      simp [wedge]
+      ring
+
+/-- 一般维刚体的平衡：合力为零且反对称力矩张量为零。 -/
+def IsBalancedAtN {n : ℕ} (o : PointN n) (S : ForceSystemN n) : Prop :=
+  resultantN S = 0 ∧ totalMomentTensorAt o S = 0
+
+/-- 合力为零后，一般维转动平衡同样与参考点无关。 -/
+theorem balanceN_origin_independent {n : ℕ}
+    (o q : PointN n) (S : ForceSystemN n)
+    (h : IsBalancedAtN o S) : IsBalancedAtN q S := by
+  constructor
+  · exact h.1
+  · rw [totalMomentTensorAt_change_origin, h.1, h.2]
+    simp [wedge]
+
+/-! ## 2. 三维专门化：欧式坐标、点、位移与内积 -/
 
 /-- 透明的三维实坐标模型。Mathlib 的叉积正是作用在这个类型上。 -/
 abbrev Vec3 := Fin 3 → ℝ
+
+/--
+三维中，Hodge 对偶把反对称二阶张量的三个独立分量识别成轴向向量。
+这个坐标约定正好恢复 Mathlib 的叉积。
+-/
+def hodgeDual3 (M : MomentTensor 3) : Vec3 :=
+  ![M 1 2, M 2 0, M 0 1]
+
+theorem hodgeDual3_wedge (r F : Vec3) :
+    hodgeDual3 (wedge r F) = crossProduct r F := by
+  ext i
+  fin_cases i <;> simp [hodgeDual3, wedge, cross_apply]
+  all_goals ring
 
 /-- 坐标点。更内禀的项目可以把它替换为 Physlib ReferenceFrame 的空间点。 -/
 structure Point3 where
@@ -49,7 +164,7 @@ theorem displacement_chain (p q r : Point3) :
 theorem normSq_eq_zero_iff (v : Vec3) : normSq v = 0 ↔ v = 0 := by
   simpa [normSq, dot] using (dotProduct_self_eq_zero (v := v))
 
-/-! ## 2. 集中力、有限力系与合力 -/
+/-! ## 3. 集中力、有限力系与合力 -/
 
 /-- 集中力必须同时记录作用点和力向量。 -/
 structure AppliedForce where
@@ -74,7 +189,7 @@ theorem resultant_append (S T : ForceSystem) :
   | nil => simp
   | cons f S ih => simp [ih, add_assoc]
 
-/-! ## 3. 叉积、力矩、移矩与力偶 -/
+/-! ## 4. 三维叉积力矩、移矩与力偶 -/
 
 /-- `cross v w` 是 Mathlib 的三维叉积。 -/
 def cross (v w : Vec3) : Vec3 := crossProduct v w
@@ -130,7 +245,7 @@ theorem couple_moment_independent (o q p₁ p₂ : Point3) (F : Vec3) :
   rw [totalMomentAt_change_origin]
   simp [couple_resultant, cross]
 
-/-! ## 4. 静力平衡与充要条件 -/
+/-! ## 5. 三维静力平衡与充要条件 -/
 
 /-- 平动平衡。 -/
 def TranslationalBalance (S : ForceSystem) : Prop := resultant S = 0
@@ -172,7 +287,7 @@ theorem virtualPower_zero_iff_balance (o : Point3) (S : ForceSystem) :
     simp [rigidVirtualPowerAt, dot, TranslationalBalance, RotationalBalanceAt,
       hR, hM]
 
-/-! ## 5. 简支梁：支反力与平衡 -/
+/-! ## 6. 简支梁：支反力与平衡 -/
 
 /-- 跨长 `L`、距左端 `a` 处向下载荷 `P` 的左端反力。 -/
 def leftReaction (P a L : ℝ) : ℝ := P * (L - a) / L
@@ -198,7 +313,7 @@ theorem simplySupported_reactions_nonnegative (P a L : ℝ)
   · simp only [rightReaction]
     positivity
 
-/-! ## 6. 静定、超静定与自应力 -/
+/-! ## 7. 静定、超静定与自应力 -/
 
 section Determinacy
 
@@ -240,7 +355,7 @@ theorem indeterminate_of_selfStress (A : Reaction →ₗ[ℝ] Equilibrium)
 
 end Determinacy
 
-/-! ## 7. 常力功与路径分段 -/
+/-! ## 8. 常力功与路径分段 -/
 
 /-- 常力 `F` 从 `p` 到 `q` 所做的功。 -/
 def work (F : Vec3) (p q : Point3) : ℝ := dot F (displacement p q)
@@ -254,7 +369,7 @@ theorem work_add (F : Vec3) (p q r : Point3) :
 theorem work_zero_of_orthogonal (F : Vec3) (p q : Point3)
     (h : dot F (displacement p q) = 0) : work F p q = 0 := h
 
-/-! ## 8. 势能、Physlib 梯度与弹簧力 -/
+/-! ## 9. 势能、Physlib 梯度与弹簧力 -/
 
 noncomputable section
 
@@ -283,7 +398,7 @@ theorem elasticForce_eq {n : ℕ} (k : ℝ)
 
 end
 
-/-! ## 9. 有限维虚功与势能稳定性 -/
+/-! ## 10. 有限维虚功与势能稳定性 -/
 
 /-- 许可的刚体虚运动集合；复杂约束可把它进一步升级为线性子空间。 -/
 abbrev AdmissibleMotions := Set (Vec3 × Vec3)
