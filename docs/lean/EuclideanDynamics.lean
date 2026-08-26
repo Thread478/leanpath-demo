@@ -6,6 +6,121 @@ namespace LeanPath.Dynamics
 
 abbrev VecN (n : ℕ) := Fin n → ℝ
 abbrev TwoForm (n : ℕ) := Matrix (Fin n) (Fin n) ℝ
+abbrev EVecN (n : ℕ) := EuclideanSpace ℝ (Fin n)
+
+
+/-! ### 0A. Metric-native Euclidean differential geometry
+
+Unlike the coordinate helper `VecN`, `EVecN` is Mathlib's genuine
+`EuclideanSpace`: its norm and inner product belong to the same metric
+structure.  These two lemmas are therefore geometric statements about curves
+on a Euclidean sphere.
+-/
+
+/-- The velocity of a differentiable curve on a Euclidean sphere is tangent
+to the sphere, hence orthogonal to the radius vector. -/
+theorem euclideanSphere_velocity_orthogonal {n : ℕ}
+    {r : ℝ → EVecN n} {v : EVecN n} {t R : ℝ}
+    (hr : HasDerivAt r v t)
+    (hSphere : ∀ s, ‖r s‖ ^ 2 = R ^ 2) :
+    inner ℝ (r t) v = 0 := by
+  have hnorm := hr.norm_sq
+  have hzero : HasDerivAt (fun s => ‖r s‖ ^ 2) 0 t := by
+    have hfun : (fun s : ℝ => ‖r s‖ ^ 2) = (fun _ : ℝ => R ^ 2) := by
+      funext s
+      exact hSphere s
+    rw [hfun]
+    exact hasDerivAt_const t (R ^ 2)
+  have huniq := hnorm.unique hzero
+  linarith
+
+/-- If `r' = v` and `v' = a` for a curve on a Euclidean sphere, then
+`⟪r,a⟫ = -⟪v,v⟫`.  This is the geometric normal-acceleration identity in the
+ambient Euclidean space. -/
+theorem euclideanSphere_acceleration_normal_identity {n : ℕ}
+    {r v : ℝ → EVecN n} {a : EVecN n} {t R : ℝ}
+    (hr : ∀ s, HasDerivAt r (v s) s)
+    (hv : HasDerivAt v a t)
+    (hSphere : ∀ s, ‖r s‖ ^ 2 = R ^ 2) :
+    inner ℝ (r t) a = -inner ℝ (v t) (v t) := by
+  have hOrth : ∀ s, inner ℝ (r s) (v s) = 0 := by
+    intro s
+    exact euclideanSphere_velocity_orthogonal (R := R) (hr s) hSphere
+  have hprod := HasDerivAt.inner ℝ (hr t) hv
+  have hzero : HasDerivAt (fun s => inner ℝ (r s) (v s)) 0 t := by
+    have hfun :
+        (fun s : ℝ => inner ℝ (r s) (v s)) = (fun _ : ℝ => 0) := by
+      funext s
+      exact hOrth s
+    rw [hfun]
+    exact hasDerivAt_const t 0
+  have huniq := hprod.unique hzero
+  linarith
+
+/-! ## 0. Differential calculus for Euclidean curves
+
+`VecN n = Fin n → ℝ` is a finite-dimensional real normed space.  The
+following lemma is the product rule for its standard coordinate dot product.
+It is the calculus engine used by the geometric and mechanical conservation
+laws below.
+-/
+
+theorem dotProduct_hasDerivAt {n : ℕ}
+    {u v : ℝ → VecN n} {u' v' : VecN n} {t : ℝ}
+    (hu : HasDerivAt u u' t) (hv : HasDerivAt v v' t) :
+    HasDerivAt (fun s => dotProduct (u s) (v s))
+      (dotProduct u' (v t) + dotProduct (u t) v') t := by
+  have hu' := hasDerivAt_pi.mp hu
+  have hv' := hasDerivAt_pi.mp hv
+  have hsum :
+      HasDerivAt (fun s => ∑ i, u s i * v s i)
+        (∑ i, (u' i * v t i + u t i * v' i)) t := by
+    apply HasDerivAt.fun_sum
+    intro i hi
+    exact (hu' i).mul (hv' i)
+  simpa [dotProduct, Finset.sum_add_distrib] using hsum
+
+/-- A differentiable curve constrained to a sphere has tangent velocity. -/
+theorem sphereCurve_velocity_orthogonal {n : ℕ}
+    {r : ℝ → VecN n} {v : VecN n} {t R : ℝ}
+    (hr : HasDerivAt r v t)
+    (hSphere : ∀ s, dotProduct (r s) (r s) = R ^ 2) :
+    dotProduct (r t) v = 0 := by
+  have hnorm := dotProduct_hasDerivAt hr hr
+  have hzero :
+      HasDerivAt (fun s => dotProduct (r s) (r s)) 0 t := by
+    have hfun :
+        (fun s : ℝ => dotProduct (r s) (r s)) = (fun _ : ℝ => R ^ 2) := by
+      funext s
+      exact hSphere s
+    rw [hfun]
+    exact hasDerivAt_const t (R ^ 2)
+  have huniq := hnorm.unique hzero
+  rw [dotProduct_comm v (r t)] at huniq
+  linarith
+
+/-- For a twice differentiable spherical curve, `r · a = -v · v`.
+This is the normal-acceleration identity behind circular and spherical motion. -/
+theorem sphereCurve_acceleration_normal_identity {n : ℕ}
+    {r v : ℝ → VecN n} {a : VecN n} {t R : ℝ}
+    (hr : ∀ s, HasDerivAt r (v s) s)
+    (hv : HasDerivAt v a t)
+    (hSphere : ∀ s, dotProduct (r s) (r s) = R ^ 2) :
+    dotProduct (r t) a = -dotProduct (v t) (v t) := by
+  have hOrth : ∀ s, dotProduct (r s) (v s) = 0 := by
+    intro s
+    exact sphereCurve_velocity_orthogonal (R := R) (hr s) hSphere
+  have hprod := dotProduct_hasDerivAt (hr t) hv
+  have hzero :
+      HasDerivAt (fun s => dotProduct (r s) (v s)) 0 t := by
+    have hfun :
+        (fun s : ℝ => dotProduct (r s) (v s)) = (fun _ : ℝ => 0) := by
+      funext s
+      exact hOrth s
+    rw [hfun]
+    exact hasDerivAt_const t 0
+  have huniq := hprod.unique hzero
+  linarith
 
 /-! ## 1. Kinematics and Newton's equation -/
 
@@ -23,6 +138,15 @@ def newtonResidual {n : ℕ} (force : VecN n) (m : ℝ)
 def SatisfiesNewton {n : ℕ} (force : VecN n) (m : ℝ)
     (state : ParticleState n) : Prop :=
   force = m • state.acceleration
+
+
+/-- A genuine Newtonian trajectory: position differentiates to velocity,
+velocity differentiates to acceleration, and the force law holds pointwise. -/
+def SolvesNewtonCurve {n : ℕ} (force : ℝ → VecN n) (m : ℝ)
+    (r v a : ℝ → VecN n) : Prop :=
+  ∀ t, HasDerivAt r (v t) t ∧
+    HasDerivAt v (a t) t ∧
+    force t = m • a t
 
 theorem newtonResidual_eq_zero {n : ℕ} (force acceleration : VecN n)
     (m : ℝ) (h : force = m • acceleration) :
@@ -56,6 +180,105 @@ def constantAccelerationTrajectory
 theorem constantAccelerationTrajectory_zero (r₀ v₀ a : ℝ) :
     constantAccelerationTrajectory r₀ v₀ a 0 = r₀ := by
   simp [constantAccelerationTrajectory]
+
+
+/-! ### 1A. Genuine differential kinematics
+
+The scalar trajectory above is retained for elementary exercises.  These
+vector-valued versions make velocity and acceleration genuine derivatives.
+-/
+
+def constantAccelerationTrajectoryVec {n : ℕ}
+    (r₀ v₀ a : VecN n) (t : ℝ) : VecN n :=
+  r₀ + t • v₀ + ((1 / 2 : ℝ) * t ^ 2) • a
+
+def constantAccelerationVelocityVec {n : ℕ}
+    (v₀ a : VecN n) (t : ℝ) : VecN n :=
+  v₀ + t • a
+
+theorem constantAccelerationVelocityVec_hasDerivAt {n : ℕ}
+    (v₀ a : VecN n) (t : ℝ) :
+    HasDerivAt (constantAccelerationVelocityVec v₀ a) a t := by
+  apply hasDerivAt_pi.mpr
+  intro i
+  change HasDerivAt (fun s : ℝ => v₀ i + s * a i) (a i) t
+  have h := ((hasDerivAt_id t).mul_const (a i)).const_add (v₀ i)
+  have hderiv : 1 * a i = a i := by ring
+  rw [hderiv] at h
+  exact h
+
+theorem constantAccelerationTrajectoryVec_hasDerivAt {n : ℕ}
+    (r₀ v₀ a : VecN n) (t : ℝ) :
+    HasDerivAt (constantAccelerationTrajectoryVec r₀ v₀ a)
+      (constantAccelerationVelocityVec v₀ a t) t := by
+  have hlin : HasDerivAt (fun s : ℝ => s • v₀) v₀ t := by
+    simpa using (hasDerivAt_id t).smul_const v₀
+  have hquadScalar :
+      HasDerivAt (fun s : ℝ => (1 / 2 : ℝ) * s ^ 2) t t := by
+    have hscaled := HasDerivAt.const_mul (1 / 2 : ℝ)
+      ((hasDerivAt_id t).mul (hasDerivAt_id t))
+    simp only [Pi.mul_apply, id_eq] at hscaled
+    have hderiv :
+        (1 / 2 : ℝ) * (1 * t + t * 1) = t := by ring
+    rw [hderiv] at hscaled
+    simpa only [Pi.mul_apply, id_eq, pow_two] using hscaled
+  have hquad :
+      HasDerivAt (fun s : ℝ => ((1 / 2 : ℝ) * s ^ 2) • a) (t • a) t := by
+    simpa using hquadScalar.smul_const a
+  apply hasDerivAt_pi.mpr
+  intro i
+  change HasDerivAt
+    (fun s : ℝ =>
+      r₀ i + s * v₀ i + ((1 / 2 : ℝ) * s ^ 2) * a i)
+    (v₀ i + t * a i) t
+  have hsum :=
+    ((hasDerivAt_const t (r₀ i)).add
+      ((hasDerivAt_id t).mul_const (v₀ i))).add
+      (hquadScalar.mul_const (a i))
+  have hderiv :
+      (0 + 1 * v₀ i) + t * a i = v₀ i + t * a i := by ring
+  rw [hderiv] at hsum
+  exact hsum
+
+theorem constantAccelerationTrajectoryVec_solves_newton {n : ℕ}
+    (r₀ v₀ a force : VecN n) (m t : ℝ)
+    (hNewton : force = m • a) :
+    HasDerivAt (constantAccelerationTrajectoryVec r₀ v₀ a)
+        (constantAccelerationVelocityVec v₀ a t) t ∧
+      HasDerivAt (constantAccelerationVelocityVec v₀ a) a t ∧
+      force = m • a := by
+  exact ⟨constantAccelerationTrajectoryVec_hasDerivAt r₀ v₀ a t,
+    constantAccelerationVelocityVec_hasDerivAt v₀ a t, hNewton⟩
+
+
+/-- The polynomial trajectory is a global solution of Newton's equation for
+the constant force `F = m a`. -/
+theorem constantAccelerationTrajectoryVec_solvesNewtonCurve {n : ℕ}
+    (r₀ v₀ a : VecN n) (m : ℝ) :
+    SolvesNewtonCurve (fun _ => m • a) m
+      (constantAccelerationTrajectoryVec r₀ v₀ a)
+      (constantAccelerationVelocityVec v₀ a)
+      (fun _ => a) := by
+  intro t
+  exact ⟨constantAccelerationTrajectoryVec_hasDerivAt r₀ v₀ a t,
+    constantAccelerationVelocityVec_hasDerivAt v₀ a t, rfl⟩
+
+theorem momentum_hasDerivAt {n : ℕ} (m : ℝ)
+    {v : ℝ → VecN n} {a : VecN n} {t : ℝ}
+    (hv : HasDerivAt v a t) :
+    HasDerivAt (fun s => momentum m (v s)) (momentum m a) t := by
+  apply hasDerivAt_pi.mpr
+  intro i
+  change HasDerivAt (fun s : ℝ => m * v s i) (m * a i) t
+  simpa using (hasDerivAt_pi.mp hv i).const_mul m
+
+/-- Differential form of the momentum theorem: `p' = F`. -/
+theorem momentum_theorem {n : ℕ} (m : ℝ)
+    {v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
+    (hv : HasDerivAt v a t) (hNewton : force = m • a) :
+    HasDerivAt (fun s => momentum m (v s)) force t := by
+  rw [hNewton]
+  simpa [momentum] using momentum_hasDerivAt m hv
 
 /-! ## 2. Momentum and impulse -/
 
@@ -117,6 +340,107 @@ theorem central_force_zero_torque {n : ℕ} (c : ℝ) (r : VecN n) :
   simp [wedge]
   ring
 
+
+/-! ### 3A. Differential angular-momentum theorem
+
+This is the Leibniz rule for `r ∧ p`, followed by the physical identities
+`r' = v`, `p = m v`, and `p' = F`.
+-/
+
+theorem wedge_hasDerivAt {n : ℕ}
+    {r p : ℝ → VecN n} {v f : VecN n} {t : ℝ}
+    (hr : HasDerivAt r v t) (hp : HasDerivAt p f t) :
+    HasDerivAt (fun s => wedge (r s) (p s))
+      (wedge v (p t) + wedge (r t) f) t := by
+  apply hasDerivAt_pi.mpr
+  intro i
+  apply hasDerivAt_pi.mpr
+  intro j
+  have hri := (hasDerivAt_pi.mp hr) i
+  have hrj := (hasDerivAt_pi.mp hr) j
+  have hpi := (hasDerivAt_pi.mp hp) i
+  have hpj := (hasDerivAt_pi.mp hp) j
+  convert (hri.mul hpj).sub (hrj.mul hpi) using 1
+  · funext s
+    rfl
+  · simp [wedge]
+    ring
+
+/-- The torque theorem `d(r ∧ p)/dt = r ∧ F`. -/
+theorem angularMomentum_torque_theorem {n : ℕ} (m : ℝ)
+    {r v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
+    (hr : HasDerivAt r (v t) t)
+    (hv : HasDerivAt v a t)
+    (hNewton : force = m • a) :
+    HasDerivAt (fun s => angularMomentum (r s) m (v s))
+      (wedge (r t) force) t := by
+  have hp :
+      HasDerivAt (fun s => momentum m (v s)) (momentum m a) t :=
+    momentum_hasDerivAt m hv
+  have hL := wedge_hasDerivAt hr hp
+  have hparallel : wedge (v t) (momentum m (v t)) = 0 := by
+    simpa [momentum] using central_force_zero_torque m (v t)
+  rw [hparallel, zero_add] at hL
+  rw [hNewton]
+  simpa [angularMomentum, momentum] using hL
+
+/-- Central force implies vanishing derivative of angular momentum. -/
+theorem central_force_angularMomentum_hasDerivAt_zero {n : ℕ} (m c : ℝ)
+    {r v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
+    (hr : HasDerivAt r (v t) t)
+    (hv : HasDerivAt v a t)
+    (hNewton : force = m • a)
+    (hCentral : force = c • r t) :
+    HasDerivAt (fun s => angularMomentum (r s) m (v s)) 0 t := by
+  have hL := angularMomentum_torque_theorem m hr hv hNewton
+  have hTorque : wedge (r t) force = 0 := by
+    rw [hCentral]
+    exact central_force_zero_torque c (r t)
+  rw [hTorque] at hL
+  exact hL
+
+
+/-- Global angular-momentum conservation for a differentiable central-force
+trajectory.  The conclusion is equality at arbitrary times, not merely a
+zero derivative at one time. -/
+theorem central_force_angularMomentum_conserved {n : ℕ} (m : ℝ)
+    {r v a force : ℝ → VecN n}
+    (hr : ∀ t, HasDerivAt r (v t) t)
+    (hv : ∀ t, HasDerivAt v (a t) t)
+    (hNewton : ∀ t, force t = m • a t)
+    (hCentral : ∀ t, ∃ c : ℝ, force t = c • r t)
+    (t₁ t₂ : ℝ) :
+    angularMomentum (r t₁) m (v t₁) =
+      angularMomentum (r t₂) m (v t₂) := by
+  let L : ℝ → TwoForm n := fun t => angularMomentum (r t) m (v t)
+  have hL : ∀ t, HasDerivAt L 0 t := by
+    intro t
+    obtain ⟨c, hc⟩ := hCentral t
+    exact central_force_angularMomentum_hasDerivAt_zero
+      m c (hr t) (hv t) (hNewton t) hc
+  have hdiff : Differentiable ℝ L := by
+    intro t
+    apply differentiableAt_pi.mpr
+    intro i
+    apply differentiableAt_pi.mpr
+    intro j
+    have hij : HasDerivAt (fun s => L s i j) ((0 : TwoForm n) i j) t :=
+      (hasDerivAt_pi.mp (hasDerivAt_pi.mp (hL t) i) j)
+    exact hij.differentiableAt
+  ext i j
+  change L t₁ i j = L t₂ i j
+  have hconst : (fun t => L t i j) t₁ = (fun t => L t i j) t₂ :=
+    is_const_of_deriv_eq_zero
+      (f := fun t => L t i j)
+      (by
+        intro t
+        exact (hasDerivAt_pi.mp (hasDerivAt_pi.mp (hL t) i) j).differentiableAt)
+      (by
+        intro t
+        simpa using (hasDerivAt_pi.mp (hasDerivAt_pi.mp (hL t) i) j).deriv)
+      t₁ t₂
+  exact hconst
+
 theorem wedge_add_right {n : ℕ} (r p q : VecN n) :
     wedge r (p + q) = wedge r p + wedge r q := by
   ext i j
@@ -154,6 +478,38 @@ theorem twoBodyAngularMomentum_origin_independent {n : ℕ}
 
 def kineticEnergy (m speed : ℝ) : ℝ :=
   (1 / 2 : ℝ) * m * speed ^ 2
+
+
+/-! ### 4A. Differential work--energy theorem -/
+
+def kineticEnergyVec {n : ℕ} (m : ℝ) (v : VecN n) : ℝ :=
+  (1 / 2 : ℝ) * m * dotProduct v v
+
+theorem kineticEnergyVec_hasDerivAt {n : ℕ} (m : ℝ)
+    {v : ℝ → VecN n} {a : VecN n} {t : ℝ}
+    (hv : HasDerivAt v a t) :
+    HasDerivAt (fun s => kineticEnergyVec m (v s))
+      (m * dotProduct (v t) a) t := by
+  have hdot := dotProduct_hasDerivAt hv hv
+  have hscaled := HasDerivAt.const_mul ((1 / 2 : ℝ) * m) hdot
+  unfold kineticEnergyVec
+  convert hscaled using 1
+  all_goals
+    first
+    | (rw [dotProduct_comm (v t) a]; ring)
+    | rfl
+
+/-- Instantaneous work--energy theorem: `dT/dt = F · v`. -/
+theorem work_energy_power_theorem {n : ℕ} (m : ℝ)
+    {v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
+    (hv : HasDerivAt v a t)
+    (hNewton : force = m • a) :
+    HasDerivAt (fun s => kineticEnergyVec m (v s))
+      (dotProduct force (v t)) t := by
+  have hK := kineticEnergyVec_hasDerivAt m hv
+  convert hK using 1
+  rw [hNewton, smul_dotProduct, dotProduct_comm a (v t)]
+  simp
 
 theorem constant_acceleration_work_energy (m v₀ v₁ a s : ℝ)
     (hv : v₁ ^ 2 = v₀ ^ 2 + 2 * a * s) :
@@ -302,6 +658,70 @@ theorem freeEuler_angularMomentumNorm_rate_zero
   linear_combination (I₁ * ω₁) * h₁ + (I₂ * ω₂) * h₂ +
     (I₃ * ω₃) * h₃
 
+
+/-! ### 6A. Euler equations as genuine differential conservation laws -/
+
+/-- If the angular-velocity components really have derivatives `αᵢ` and
+satisfy the free Euler equations, then rotational energy has derivative zero. -/
+theorem freeEuler_rotationalEnergy_hasDerivAt_zero
+    (I : PrincipalInertia)
+    {ω₁ ω₂ ω₃ : ℝ → ℝ} {α₁ α₂ α₃ t : ℝ}
+    (hω₁ : HasDerivAt ω₁ α₁ t)
+    (hω₂ : HasDerivAt ω₂ α₂ t)
+    (hω₃ : HasDerivAt ω₃ α₃ t)
+    (h₁ : I.I₁ * α₁ + (I.I₃ - I.I₂) * ω₂ t * ω₃ t = 0)
+    (h₂ : I.I₂ * α₂ + (I.I₁ - I.I₃) * ω₃ t * ω₁ t = 0)
+    (h₃ : I.I₃ * α₃ + (I.I₂ - I.I₁) * ω₁ t * ω₂ t = 0) :
+    HasDerivAt (fun s => rotationalEnergy I (ω₁ s) (ω₂ s) (ω₃ s)) 0 t := by
+  have h₁sq := HasDerivAt.const_mul I.I₁ (hω₁.mul hω₁)
+  have h₂sq := HasDerivAt.const_mul I.I₂ (hω₂.mul hω₂)
+  have h₃sq := HasDerivAt.const_mul I.I₃ (hω₃.mul hω₃)
+  have hsum := (h₁sq.add h₂sq).add h₃sq
+  have henergy := HasDerivAt.const_mul (1 / 2 : ℝ) hsum
+  have hderiv :
+      (1 / 2 : ℝ) *
+        (I.I₁ * (α₁ * ω₁ t + ω₁ t * α₁) +
+          I.I₂ * (α₂ * ω₂ t + ω₂ t * α₂) +
+          I.I₃ * (α₃ * ω₃ t + ω₃ t * α₃)) =
+        I.I₁ * ω₁ t * α₁ + I.I₂ * ω₂ t * α₂ +
+          I.I₃ * ω₃ t * α₃ := by
+    ring
+  rw [hderiv] at henergy
+  have henergy' :
+      HasDerivAt (fun s => rotationalEnergy I (ω₁ s) (ω₂ s) (ω₃ s))
+        (I.I₁ * ω₁ t * α₁ + I.I₂ * ω₂ t * α₂ + I.I₃ * ω₃ t * α₃) t := by
+    simpa only [rotationalEnergy, Pi.mul_apply, Pi.add_apply, pow_two]
+      using henergy
+  have hrate :
+      I.I₁ * ω₁ t * α₁ + I.I₂ * ω₂ t * α₂ + I.I₃ * ω₃ t * α₃ = 0 :=
+    freeEuler_energy_rate_zero I.I₁ I.I₂ I.I₃
+      (ω₁ t) (ω₂ t) (ω₃ t) α₁ α₂ α₃ h₁ h₂ h₃
+  rw [hrate] at henergy'
+  exact henergy'
+
+
+/-- Global conservation of the free rigid body's rotational energy. -/
+theorem freeEuler_rotationalEnergy_conserved
+    (I : PrincipalInertia)
+    {ω₁ ω₂ ω₃ α₁ α₂ α₃ : ℝ → ℝ}
+    (hω₁ : ∀ t, HasDerivAt ω₁ (α₁ t) t)
+    (hω₂ : ∀ t, HasDerivAt ω₂ (α₂ t) t)
+    (hω₃ : ∀ t, HasDerivAt ω₃ (α₃ t) t)
+    (h₁ : ∀ t, I.I₁ * α₁ t + (I.I₃ - I.I₂) * ω₂ t * ω₃ t = 0)
+    (h₂ : ∀ t, I.I₂ * α₂ t + (I.I₁ - I.I₃) * ω₃ t * ω₁ t = 0)
+    (h₃ : ∀ t, I.I₃ * α₃ t + (I.I₂ - I.I₁) * ω₁ t * ω₂ t = 0)
+    (t₁ t₂ : ℝ) :
+    rotationalEnergy I (ω₁ t₁) (ω₂ t₁) (ω₃ t₁) =
+      rotationalEnergy I (ω₁ t₂) (ω₂ t₂) (ω₃ t₂) := by
+  let E : ℝ → ℝ := fun t => rotationalEnergy I (ω₁ t) (ω₂ t) (ω₃ t)
+  have hE : ∀ t, HasDerivAt E 0 t := by
+    intro t
+    exact freeEuler_rotationalEnergy_hasDerivAt_zero I
+      (hω₁ t) (hω₂ t) (hω₃ t) (h₁ t) (h₂ t) (h₃ t)
+  have hdiff : Differentiable ℝ E := fun t => (hE t).differentiableAt
+  have hderiv : ∀ t, deriv E t = 0 := fun t => (hE t).deriv
+  exact is_const_of_deriv_eq_zero hdiff hderiv t₁ t₂
+
 /-! ## 7. D'Alembert and Lagrange residuals -/
 
 theorem dalembert_implies_newton (F m a : ℝ)
@@ -343,6 +763,151 @@ theorem harmonicEnergyRate_eq_zero
     harmonicEnergyRate m k q v a = 0 := by
   unfold harmonicEnergyRate
   linear_combination v * hMotion
+
+
+/-! ### 7A. Genuine differential Lagrangian mechanics and energy conservation -/
+
+def harmonicLagrangian (m k q v : ℝ) : ℝ :=
+  (1 / 2 : ℝ) * m * v ^ 2 - (1 / 2 : ℝ) * k * q ^ 2
+
+section ScalarLagrangianCalculus
+
+-- Keep real-valued derivative statements on Mathlib's normed-space
+-- structures.  This avoids mixing extensionally equal algebraic and
+-- analytic `ℝ`-module instances while composing derivative rules.
+local instance : AddCommGroup ℝ := Real.normedAddCommGroup.toAddCommGroup
+local instance : Module ℝ ℝ := RCLike.toInnerProductSpaceReal.toModule
+
+/-- The partial derivative `∂L/∂v = m v`, expressed as an actual derivative. -/
+theorem harmonicLagrangian_hasDerivAt_velocity
+    (m k q v : ℝ) :
+    HasDerivAt (fun w => harmonicLagrangian m k q w) (m * v) v := by
+  have hsq := (hasDerivAt_id v).mul (hasDerivAt_id v)
+  have hkin := hsq.mul_const ((1 / 2 : ℝ) * m)
+  have hfull := hkin.sub
+    (hasDerivAt_const v ((1 / 2 : ℝ) * k * q ^ 2))
+  simp only [Pi.mul_apply, id_eq] at hfull
+  have hderiv :
+      (1 * v + v * 1) * ((1 / 2 : ℝ) * m) - 0 = m * v := by ring
+  rw [hderiv] at hfull
+  have hfun :
+      ((fun y : ℝ => y * y * ((1 / 2 : ℝ) * m)) -
+          fun _ : ℝ => (1 / 2 : ℝ) * k * q ^ 2) =
+        (fun w => harmonicLagrangian m k q w) := by
+    funext w
+    simp only [harmonicLagrangian, Pi.sub_apply, pow_two]
+    ring
+  rw [hfun] at hfull
+  exact hfull
+
+/-- The partial derivative `∂L/∂q = -k q`, expressed as an actual derivative. -/
+theorem harmonicLagrangian_hasDerivAt_position
+    (m k q v : ℝ) :
+    HasDerivAt (fun x => harmonicLagrangian m k x v) (-k * q) q := by
+  have hsq := (hasDerivAt_id q).mul (hasDerivAt_id q)
+  have hpot := hsq.mul_const ((1 / 2 : ℝ) * k)
+  have hfull := (hasDerivAt_const q ((1 / 2 : ℝ) * m * v ^ 2)).sub hpot
+  simp only [Pi.mul_apply, id_eq] at hfull
+  have hderiv :
+      0 - (1 * q + q * 1) * ((1 / 2 : ℝ) * k) = -k * q := by ring
+  rw [hderiv] at hfull
+  have hfun :
+      ((fun _ : ℝ => (1 / 2 : ℝ) * m * v ^ 2) -
+          fun y : ℝ => y * y * ((1 / 2 : ℝ) * k)) =
+        (fun x => harmonicLagrangian m k x v) := by
+    funext x
+    simp only [harmonicLagrangian, Pi.sub_apply, pow_two]
+    ring
+  rw [hfun] at hfull
+  exact hfull
+
+/-- For the harmonic oscillator, Newton's equation is the Euler--Lagrange
+relation `d/dt(∂L/∂v) = ∂L/∂q`. -/
+theorem harmonic_eulerLagrange_equation
+    (m k : ℝ) {q v : ℝ → ℝ} {a t : ℝ}
+    (hv : HasDerivAt v a t)
+    (hMotion : m * a + k * q t = 0) :
+    HasDerivAt (fun s => m * v s) (-k * q t) t := by
+  have hp := HasDerivAt.const_mul m hv
+  have hma : m * a = -k * q t := by
+    linarith
+  rw [hma] at hp
+  exact hp
+
+/-- A genuine conserved quantity: if `q' = v`, `v' = a`, and
+`m a + k q = 0`, then the mechanical energy has derivative zero. -/
+theorem harmonicEnergy_hasDerivAt_zero
+    (m k : ℝ) {q v : ℝ → ℝ} {a t : ℝ}
+    (hq : HasDerivAt q (v t) t)
+    (hv : HasDerivAt v a t)
+    (hMotion : m * a + k * q t = 0) :
+    HasDerivAt (fun s => harmonicEnergy m k (q s) (v s)) 0 t := by
+  have hkin :
+      HasDerivAt (fun s => (1 / 2 : ℝ) * m * (v s) ^ 2)
+        (m * v t * a) t := by
+    have hscaled := (hv.mul hv).mul_const ((1 / 2 : ℝ) * m)
+    have hderiv :
+        (a * v t + v t * a) * ((1 / 2 : ℝ) * m) =
+          m * v t * a := by ring
+    rw [hderiv] at hscaled
+    simp only [Pi.mul_apply] at hscaled
+    have hfun :
+        (fun s => v s * v s * ((1 / 2 : ℝ) * m)) =
+          (fun s => (1 / 2 : ℝ) * m * (v s) ^ 2) := by
+      funext s
+      simp only [pow_two]
+      ring
+    rw [hfun] at hscaled
+    exact hscaled
+  have hpot :
+      HasDerivAt (fun s => (1 / 2 : ℝ) * k * (q s) ^ 2)
+        (k * q t * v t) t := by
+    have hscaled := (hq.mul hq).mul_const ((1 / 2 : ℝ) * k)
+    have hderiv :
+        (v t * q t + q t * v t) * ((1 / 2 : ℝ) * k) =
+          k * q t * v t := by ring
+    rw [hderiv] at hscaled
+    simp only [Pi.mul_apply] at hscaled
+    have hfun :
+        (fun s => q s * q s * ((1 / 2 : ℝ) * k)) =
+          (fun s => (1 / 2 : ℝ) * k * (q s) ^ 2) := by
+      funext s
+      simp only [pow_two]
+      ring
+    rw [hfun] at hscaled
+    exact hscaled
+  have hsum := hkin.add hpot
+  have hrate : m * v t * a + k * q t * v t = 0 := by
+    linear_combination (v t) * hMotion
+  have hfun :
+      ((fun s => (1 / 2 : ℝ) * m * (v s) ^ 2) +
+          fun s => (1 / 2 : ℝ) * k * (q s) ^ 2) =
+        (fun s => harmonicEnergy m k (q s) (v s)) := by
+    funext s
+    simp only [harmonicEnergy, Pi.add_apply]
+  rw [hfun, hrate] at hsum
+  exact hsum
+
+
+/-- Global conservation of harmonic-oscillator energy, obtained from the
+pointwise derivative theorem and the mean-value theorem. -/
+theorem harmonicEnergy_conserved
+    (m k : ℝ) {q v a : ℝ → ℝ}
+    (hq : ∀ t, HasDerivAt q (v t) t)
+    (hv : ∀ t, HasDerivAt v (a t) t)
+    (hMotion : ∀ t, m * a t + k * q t = 0)
+    (t₁ t₂ : ℝ) :
+    harmonicEnergy m k (q t₁) (v t₁) =
+      harmonicEnergy m k (q t₂) (v t₂) := by
+  let E : ℝ → ℝ := fun t => harmonicEnergy m k (q t) (v t)
+  have hE : ∀ t, HasDerivAt E 0 t := by
+    intro t
+    exact harmonicEnergy_hasDerivAt_zero m k (hq t) (hv t) (hMotion t)
+  have hdiff : Differentiable ℝ E := fun t => (hE t).differentiableAt
+  have hderiv : ∀ t, deriv E t = 0 := fun t => (hE t).deriv
+  exact is_const_of_deriv_eq_zero hdiff hderiv t₁ t₂
+
+end ScalarLagrangianCalculus
 
 /-! ## 8. Central force reduction and the Kepler conic core -/
 
