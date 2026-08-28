@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Check site JavaScript and AI states
+        run: node tests/site-check.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site

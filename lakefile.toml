@@ -1,0 +1,13 @@
+name = "LeanPath"
+version = "0.1.0"
+defaultTargets = ["LeanPath"]
+
+[[require]]
+name = "Physlib"
+git = "https://github.com/leanprover-community/physlib.git"
+rev = "1395e18a75c63b257f5bb1124400bf4d14fa174e"
+
+[[lean_lib]]
+name = "LeanPath"
+srcDir = "docs/lean"
+roots = ["UnitAndDimension", "EuclideanStatics", "EuclideanDynamics"]

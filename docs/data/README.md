@@ -143,4 +143,6 @@
 
 三个最终展品分别是 [../lean/UnitAndDimension.lean](../lean/UnitAndDimension.lean)、[../lean/EuclideanStatics.lean](../lean/EuclideanStatics.lean) 和 [../lean/EuclideanDynamics.lean](../lean/EuclideanDynamics.lean)，在领取各单元宝箱后展示。第二部分采用 `MomentTensor n` 的反对称矩阵作为 `⋀²(ℝⁿ)` 的透明坐标表示；第三部分沿用这一一般维角动量模型，并增加运动学、守恒律、线性振动、刚体和开普勒圆锥的代数核心。图鉴的 `origin` 字段必须区分 LeanPath 自定义代码、Mathlib 基础定理与 PhysLean/Physlib 接口。这些文件应作为完整章节作品维护，不得只拼接题目答案；修改后需检查导入与全部定理。
 
+仓库根目录的 `lakefile.toml` 把三份文件列为同一个 `LeanPath` 库的三个根模块，`lean-toolchain`、Physlib commit 与 `lake-manifest.json` 共同固定构建环境。修改任一成果文件后必须在根目录执行 `lake build`；`.github/workflows/lean.yml` 会在相关 PR 与主分支推送中重复这一检查。
+
 第三部分成果代码尤其要区分两层：模型定义或物理输入假设，以及由这些假设真正证明的数学结论。当前证明层包括匀加速轨迹的 `HasDerivAt` 链、牛顿轨迹的动量定理、楔积求导与角动量定理、微分形式的动能定理、局部零导数推出区间守恒、碰撞动量守恒、正常模态与广义特征值、一般维惯性矩阵、欧拉方程能量守恒、有限维达朗贝尔充要条件、谐振子 Euler–Lagrange 方程与开普勒第三定律。不得把 ODE 存在唯一性、碰撞排除或经验模型有效性冒充为已经证明的结论。
