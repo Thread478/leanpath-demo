@@ -12,7 +12,7 @@
    Lean 服务器
        │
        ├─ Mathlib 主线环境
-       └─ Physlib 拓展环境（可选、自建）
+       └─ Physlib 拓展环境（架构预留、可选自建）
 ```
 
 Lean 负责 elaboration、类型检查与内核验证，并给出唯一的通过/失败结论。AI 只解释 Lean 诊断、评价已通过的写法或给渐进提示，不能更改 Lean 的判定。
@@ -39,16 +39,16 @@ leanRetryDelay: 900
 
 自动重连只针对 WebSocket 建连失败或提前关闭，不会对一份正在超时编译的源码重复提交，以免在公共服务拥堵时进一步增加负载。
 
-直接 `import Physlib...` 的题目带有：
+前端为未来直接 `import Physlib...` 的题目预留了以下字段：
 
 ```js
 optional: true,
 requires: "physlib"
 ```
 
-当 `physlibWebSocket` 为空时，它们被显示为“Physlib 拓展题”：可以阅读题目与代码模板，但不会阻塞后续主线写作题，也不会因服务器缺少 Physlib 而扣红心。
+当 `physlibWebSocket` 为空时，这类题会显示为“Physlib 拓展题”，不会阻塞主线或扣红心。不过，**当前公开的 31 道写作题全部使用 Mathlib 环境，没有任何一题带上述字段**。这是受测试的扩展机制，不是当前已有题目。
 
-## 3. 启用 Physlib 在线判题
+## 3. 将来启用 Physlib 在线判题
 
 `lean4web` 支持把任意 Lake project 作为服务器项目。因此正式启用 Physlib 的推荐结构是：
 
@@ -72,7 +72,7 @@ GitHub Pages / 其他静态站
 
 ### 3.1 建立 LeanPath 服务器项目
 
-在自建 `lean4web` 的 `Projects/LeanPath/` 中建立一个标准 Lake project。依赖版本应固定到你已经在本地验证过的 Physlib commit，而不是长期跟随 `master`。
+仓库根目录现在已经是标准 Lake project，并固定了三个完整成果使用的 Lean 与 Physlib 版本。若将来部署自建 `lean4web`，可复用这些版本；服务器依赖不应长期跟随 `master`。
 
 示意 `lakefile.toml`：
 
@@ -83,7 +83,7 @@ defaultTargets = ["LeanPath"]
 [[require]]
 name = "Physlib"
 git = "https://github.com/leanprover-community/physlib.git"
-rev = "<你已经验证过的 Physlib commit>"
+rev = "1395e18a75c63b257f5bb1124400bf4d14fa174e"
 
 [[lean_lib]]
 name = "LeanPath"
@@ -164,12 +164,13 @@ physlibServiceLabel: "Lean 4 + Mathlib + Physlib · 在线判题"
 `js/ai-feedback.js` 按以下顺序选择讲解能力：
 
 1. `runtime-config.js` 中配置的 `aiEndpoint`；
-2. 浏览器原生 `LanguageModel`（可用时在本地运行）；
-3. 明确标注为“本地规则提示（AI 未配置）”的非 AI 后备提示。
+2. 公共站点默认启用的 [Puter 浏览器 AI 网关](https://docs.puter.com/AI/chat/)；
+3. 浏览器原生 `LanguageModel`（可用时在本地运行）；
+4. 明确标注为“本地规则提示（在线 AI 已降级/未启用）”的非 AI 后备提示。
 
-`runtime-config.js` 会公开发布，严禁写入任何 API Key。云端 AI 必须放在服务端代理之后，并在代理中保存密钥、限制来源、设置速率与费用上限。
+Puter 使用用户付费模式：首次调用可能要求学习者授权 Puter 账户，调用消耗该用户自己的免费额度或账户额度，本站不保存 API Key。只有主动点击“AI 讲解”时才会发送本题源码与 Lean 诊断。若配置自建 endpoint，它拥有最高优先级，密钥必须保存在服务端，并应设置来源限制、速率限制和费用上限。
 
-## 6. AI Endpoint 协议
+## 6. 自建 AI Endpoint 协议
 
 页面发送：
 
