@@ -1,6 +1,15 @@
 import Mathlib
 import Physlib.Mathematics.Calculus.Gradient
 
+/-!
+# LeanPath Physics：欧式空间中的静力学
+
+本文件是第二单元的完整成果。内容先在一般有限维欧式空间中以反对称二阶张量表示力矩，
+再专门化到三维叉积模型，并依次形式化力系等效、刚体平衡、简支梁反力、静定性、功、
+势能、虚功与二次势能稳定性。注释中的公式用于说明物理意义，所有结论仍由后续 Lean
+定义、假设与证明精确确定。
+-/
+
 open InnerProductSpace
 
 namespace LeanPathPhysics.EuclideanStatics
@@ -106,38 +115,38 @@ theorem balanceN_origin_independent {n : ℕ}
     simp [wedge]
 
 
-/-! ### 1A. Bilinearity and the geometric meaning of a vanishing wedge -/
+/-! ### 1A. 双线性与楔积为零的几何意义 -/
 
-/-- The moment bivector is additive in its first slot. -/
+/-- 力矩二向量对第一个变量满足可加性。 -/
 theorem wedge_add_left {n : ℕ} (r₁ r₂ F : VecN n) :
     wedge (r₁ + r₂) F = wedge r₁ F + wedge r₂ F := by
   ext i j
   simp [wedge]
   ring
 
-/-- The moment bivector is additive in its second slot. -/
+/-- 力矩二向量对第二个变量满足可加性。 -/
 theorem wedge_add_right {n : ℕ} (r F₁ F₂ : VecN n) :
     wedge r (F₁ + F₂) = wedge r F₁ + wedge r F₂ := by
   ext i j
   simp [wedge]
   ring
 
-/-- Scalar multiplication may be pulled out of the first slot. -/
+/-- 第一个变量中的数乘可以提出到楔积之外。 -/
 theorem wedge_smul_left {n : ℕ} (a : ℝ) (r F : VecN n) :
     wedge (a • r) F = a • wedge r F := by
   ext i j
   simp [wedge]
   ring
 
-/-- Scalar multiplication may be pulled out of the second slot. -/
+/-- 第二个变量中的数乘可以提出到楔积之外。 -/
 theorem wedge_smul_right {n : ℕ} (a : ℝ) (r F : VecN n) :
     wedge r (a • F) = a • wedge r F := by
   ext i j
   simp [wedge]
   ring
 
-/-- If `r ≠ 0`, vanishing of `r ∧ F` forces `F` to lie on the line spanned by
-`r`.  Thus the bivector really detects failure of collinearity. -/
+/-- 若 `r ≠ 0`，则 `r ∧ F = 0` 强制 `F` 位于 `r` 张成的直线上。因此，楔积确实
+刻画了两个向量不共线的程度。 -/
 theorem wedge_eq_zero_implies_smul_of_ne_zero {n : ℕ}
     (r F : VecN n) (hr : r ≠ 0) (h : wedge r F = 0) :
     ∃ a : ℝ, F = a • r := by
@@ -159,7 +168,7 @@ theorem wedge_eq_zero_implies_smul_of_ne_zero {n : ℕ}
   apply (eq_div_iff hi).2
   nlinarith [hij]
 
-/-- For a nonzero first vector, `r ∧ F = 0` is equivalent to collinearity. -/
+/-- 当第一个向量非零时，`r ∧ F = 0` 与 `r`、`F` 共线等价。 -/
 theorem wedge_eq_zero_iff_smul_of_ne_zero {n : ℕ}
     (r F : VecN n) (hr : r ≠ 0) :
     wedge r F = 0 ↔ ∃ a : ℝ, F = a • r := by
@@ -337,14 +346,13 @@ theorem virtualPower_zero_iff_balance (o : Point3) (S : ForceSystem) :
     simp [dot]
 
 
-/-! ### 5A. Static equivalence of force systems -/
+/-! ### 5A. 力系的静力等效 -/
 
-/-- Two force systems are statically equivalent at `o` when they have the same
-resultant and the same total moment there. -/
+/-- 若两个力系在参考点 `o` 处具有相同的合力与总力矩，则称它们在 `o` 处静力等效。 -/
 def StaticallyEquivalentAt (o : Point3) (S T : ForceSystem) : Prop :=
   resultant S = resultant T ∧ totalMomentAt o S = totalMomentAt o T
 
-/-- Static equivalence does not depend on the chosen reference point. -/
+/-- 力系的静力等效性不依赖参考点的选择。 -/
 theorem staticallyEquivalentAt_change_origin (o q : Point3)
     (S T : ForceSystem) (h : StaticallyEquivalentAt o S T) :
     StaticallyEquivalentAt q S T := by
@@ -353,15 +361,14 @@ theorem staticallyEquivalentAt_change_origin (o q : Point3)
   · rw [totalMomentAt_change_origin o q S,
         totalMomentAt_change_origin o q T, h.1, h.2]
 
-/-- Hence equivalence checked at one point is equivalent to equivalence checked
-at any other point. -/
+/-- 因此，在一个参考点检验静力等效，与在任意另一个参考点检验静力等效相互等价。 -/
 theorem staticallyEquivalentAt_iff (o q : Point3) (S T : ForceSystem) :
     StaticallyEquivalentAt o S T ↔ StaticallyEquivalentAt q S T := by
   constructor
   · exact staticallyEquivalentAt_change_origin o q S T
   · exact staticallyEquivalentAt_change_origin q o S T
 
-/-- A pure couple has the explicit free moment `(p₁-p₂) × F`. -/
+/-- 纯力偶的自由矩可显式写成 `(p₁-p₂) × F`。 -/
 theorem couple_moment_formula (o p₁ p₂ : Point3) (F : Vec3) :
     totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩] =
       cross (p₁.coord - p₂.coord) F := by
@@ -370,7 +377,7 @@ theorem couple_moment_formula (o p₁ p₂ : Point3) (F : Vec3) :
     simp [totalMomentAt, momentAt, cross, cross_apply]
   all_goals ring
 
-/-- The moment vector of a couple is perpendicular to either force. -/
+/-- 力偶的矩向量与组成力偶的两个力均正交。 -/
 theorem couple_moment_orthogonal_force (o p₁ p₂ : Point3) (F : Vec3) :
     dot (totalMomentAt o [⟨p₁, F⟩, ⟨p₂, -F⟩]) F = 0 := by
   rw [couple_moment_formula]
@@ -446,9 +453,8 @@ theorem indeterminate_of_selfStress (A : Reaction →ₗ[ℝ] Equilibrium)
     simpa using hr₀
 
 
-/-- Once the equilibrium equations are consistent, static determinacy is
-*equivalent* to injectivity of the equilibrium operator.  This supplies the
-missing converse to `determinate_of_injective`. -/
+/-- 当平衡方程相容时，静定性与平衡算子的单射性等价。这补充了
+`determinate_of_injective` 的逆向结论。 -/
 theorem determinate_iff_injective_of_consistent
     (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
     (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
@@ -471,8 +477,7 @@ theorem determinate_iff_injective_of_consistent
   · intro hA
     exact determinate_of_injective A load hA r₀ hr₀
 
-/-- The same result in the standard linear-algebra language: for a consistent
-system, determinacy means that the self-stress kernel is trivial. -/
+/-- 用标准线性代数语言表述：对相容系统，静定性等价于自应力核平凡。 -/
 theorem determinate_iff_ker_eq_bot_of_consistent
     (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
     (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
@@ -480,10 +485,8 @@ theorem determinate_iff_ker_eq_bot_of_consistent
   rw [determinate_iff_injective_of_consistent A load r₀ hr₀]
   exact (LinearMap.ker_eq_bot (f := A)).symm
 
-/-- For a consistent equilibrium problem, indeterminacy is *equivalent* to the
-existence of a nonzero self-stress.  The forward direction extracts the
-difference of two solutions; the reverse direction shifts one solution along
-the kernel. -/
+/-- 对相容的平衡问题，超静定性与非零自应力的存在性等价。正向证明取两个解之差，
+反向证明则沿核中的非零方向平移一个已有解。 -/
 theorem indeterminate_iff_exists_selfStress_of_consistent
     (A : Reaction →ₗ[ℝ] Equilibrium) (load : Equilibrium)
     (r₀ : Reaction) (hr₀ : A r₀ + load = 0) :
@@ -545,8 +548,7 @@ theorem elasticForce_eq {n : ℕ} (k : ℝ)
   module
 
 
-/-- Positive stiffness gives a strict global minimum of the isotropic
-quadratic potential at the origin in every finite Euclidean dimension. -/
+/-- 在任意有限维欧式空间中，正刚度使各向同性二次势能在原点取得严格全局最小值。 -/
 theorem quadraticPotential_strict_min {n : ℕ} (k : ℝ)
     (hk : 0 < k) (x : EuclideanSpace ℝ (Fin n)) (hx : x ≠ 0) :
     quadraticPotential (n := n) k (0 : EuclideanSpace ℝ (Fin n)) <
@@ -555,8 +557,7 @@ theorem quadraticPotential_strict_min {n : ℕ} (k : ℝ)
   simp only [quadraticPotential, inner_zero_left]
   nlinarith
 
-/-- For nonzero stiffness, Hooke's conservative force has a unique equilibrium
-at the origin. -/
+/-- 当刚度非零时，Hooke 保守力仅在原点达到平衡。 -/
 theorem elasticForce_eq_zero_iff {n : ℕ} (k : ℝ) (hk : k ≠ 0)
     (x : EuclideanSpace ℝ (Fin n)) :
     elasticForce k x = 0 ↔ x = 0 := by
@@ -567,8 +568,8 @@ theorem elasticForce_eq_zero_iff {n : ℕ} (k : ℝ) (hk : k ≠ 0)
   · rintro rfl
     simp
 
-/-- The origin is therefore simultaneously the unique force equilibrium and,
-for positive stiffness, the strict energy minimizer away from the origin. -/
+/-- 因此，当刚度为正时，原点既是唯一的力平衡点，也是相对于所有非零位置的严格
+势能极小点。 -/
 theorem hooke_equilibrium_and_strict_stability {n : ℕ} (k : ℝ)
     (hk : 0 < k) (x : EuclideanSpace ℝ (Fin n)) (hx : x ≠ 0) :
     elasticForce (n := n) k 0 = 0 ∧
