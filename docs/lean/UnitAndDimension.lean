@@ -2,17 +2,16 @@ import Mathlib
 import Physlib.Units.WithDim.Speed
 
 /-!
-# LeanPath Physics: units and dimensions
+# LeanPath Physics：单位与量纲
 
-This file is the complete chapter-one exhibit.  It builds a small transparent
-model of SI dimensions and dimension-indexed quantities, proves the most useful
-dimension identities, and finally connects the model to a theorem originating
-in PhysLean and now maintained in the merged Physlib project.
+本文件是第一单元的完整成果。内容从透明的 SI 量纲模型出发，构造以量纲为类型指标的
+物理量，证明常用量纲恒等式与单位换算定理，并在最后连接源自 PhysLean、现由合并后
+Physlib 项目维护的换算定理。
 -/
 
 namespace LeanPathPhysics
 
-/-- The seven base quantities of the International System of Quantities. -/
+/-- 国际量制（ISQ）的七个基本量。 -/
 inductive BaseDimension where
   | time
   | length
@@ -23,7 +22,7 @@ inductive BaseDimension where
   | luminousIntensity
   deriving DecidableEq, Repr
 
-/-- The coherent SI unit symbol attached to each base quantity. -/
+/-- 每个基本量对应的 SI 一贯单位符号。 -/
 def baseUnitSymbol : BaseDimension → String
   | .time => "s"
   | .length => "m"
@@ -33,13 +32,13 @@ def baseUnitSymbol : BaseDimension → String
   | .amountOfSubstance => "mol"
   | .luminousIntensity => "cd"
 
-/-- A dimension is the integer exponent of every SI base dimension. -/
+/-- 量纲由七个 SI 基本量纲的整数指数共同确定。 -/
 structure Dimension where
   exponent : BaseDimension → ℤ
 
 namespace Dimension
 
-/-- Two dimensions are equal when all seven exponents are equal. -/
+/-- 若两个量纲的七个指数逐项相等，则这两个量纲相等。 -/
 @[ext]
 theorem ext (d₁ d₂ : Dimension)
     (h : ∀ b, d₁.exponent b = d₂.exponent b) : d₁ = d₂ := by
@@ -51,23 +50,23 @@ theorem ext (d₁ d₂ : Dimension)
       cases he
       rfl
 
-/-- The dimensionless dimension. -/
+/-- 无量纲量对应的零指数向量。 -/
 instance : One Dimension where
   one := ⟨fun _ => 0⟩
 
-/-- Multiplying dimensions adds their exponent vectors. -/
+/-- 量纲相乘对应指数向量相加。 -/
 instance : Mul Dimension where
   mul d₁ d₂ := ⟨fun b => d₁.exponent b + d₂.exponent b⟩
 
-/-- Inverting a dimension negates every exponent. -/
+/-- 量纲取逆对应每个指数取负。 -/
 instance : Inv Dimension where
   inv d := ⟨fun b => -d.exponent b⟩
 
-/-- Dividing dimensions subtracts exponent vectors. -/
+/-- 量纲相除对应指数向量相减。 -/
 instance : Div Dimension where
   div d₁ d₂ := d₁ * d₂⁻¹
 
-/-- Integer powers multiply every exponent by the power. -/
+/-- 量纲取整数次幂对应每个指数乘以该整数。 -/
 instance : HPow Dimension ℤ Dimension where
   hPow d n := ⟨fun b => n * d.exponent b⟩
 
@@ -84,27 +83,27 @@ instance : HPow Dimension ℤ Dimension where
 @[simp] theorem exponent_zpow (d : Dimension) (n : ℤ) (b) :
     (d ^ n).exponent b = n * d.exponent b := rfl
 
-/-- Dimension multiplication is associative. -/
+/-- 量纲乘法满足结合律。 -/
 theorem mul_assoc (a b c : Dimension) : (a * b) * c = a * (b * c) := by
   ext i
   simp [Int.add_assoc]
 
-/-- Dimension multiplication is commutative. -/
+/-- 量纲乘法满足交换律。 -/
 theorem mul_comm (a b : Dimension) : a * b = b * a := by
   ext i
   simp [Int.add_comm]
 
-/-- The zero exponent vector is a multiplicative identity. -/
+/-- 零指数向量是量纲乘法的单位元。 -/
 theorem one_mul (a : Dimension) : 1 * a = a := by
   ext i
   simp
 
-/-- Every dimension cancels its inverse. -/
+/-- 任意量纲与其逆量纲相乘后约去为无量纲量。 -/
 theorem inv_mul (a : Dimension) : a⁻¹ * a = 1 := by
   ext i
   simp
 
-/-- The basis dimension associated with one SI base quantity. -/
+/-- 与一个 SI 基本量对应的基量纲。 -/
 def basis (b : BaseDimension) : Dimension :=
   ⟨fun i => if i = b then 1 else 0⟩
 
@@ -120,7 +119,7 @@ end Dimension
 open BaseDimension
 open _root_.LeanPathPhysics.Dimension
 
-/-! ## SI base dimensions -/
+/-! ## 1. SI 基本量纲 -/
 
 def timeDim : Dimension := basis .time
 def lengthDim : Dimension := basis .length
@@ -131,7 +130,7 @@ def amountDim : Dimension := basis .amountOfSubstance
 def luminousIntensityDim : Dimension := basis .luminousIntensity
 def dimensionless : Dimension := 1
 
-/-! ## Frequently used derived dimensions -/
+/-! ## 2. 常用导出量纲 -/
 
 def areaDim : Dimension := lengthDim ^ (2 : ℤ)
 def volumeDim : Dimension := lengthDim ^ (3 : ℤ)
@@ -145,7 +144,7 @@ def pressureDim : Dimension := forceDim / areaDim
 def chargeDim : Dimension := currentDim * timeDim
 def voltageDim : Dimension := energyDim / chargeDim
 
-/-! ## Dimension identities behind familiar physical equations -/
+/-! ## 3. 常见物理方程背后的量纲恒等式 -/
 
 theorem speed_mul_time : speedDim * timeDim = lengthDim := by
   ext b
@@ -174,37 +173,37 @@ theorem pressure_mul_volume : pressureDim * volumeDim = energyDim := by
   ext b
   cases b <;> rfl
 
-/-! ## Dimension-indexed physical quantities -/
+/-! ## 4. 以量纲为类型指标的物理量 -/
 
-/-- `Quantity d` contains a real magnitude whose dimension is fixed by its type. -/
+/-- `Quantity d` 包含一个实数值，其量纲由类型指标 `d` 固定。 -/
 structure Quantity (d : Dimension) where
   value : ℝ
 
 namespace Quantity
 
-/-- Addition is available only for two quantities of the same dimension. -/
+/-- 只有量纲相同的两个物理量才能相加。 -/
 def add {d : Dimension} (x y : Quantity d) : Quantity d :=
   ⟨x.value + y.value⟩
 
-/-- Negation preserves dimension. -/
+/-- 物理量取负不改变量纲。 -/
 def neg {d : Dimension} (x : Quantity d) : Quantity d :=
   ⟨-x.value⟩
 
-/-- Subtraction is available only at one fixed dimension. -/
+/-- 只有量纲相同的两个物理量才能相减。 -/
 def sub {d : Dimension} (x y : Quantity d) : Quantity d :=
   ⟨x.value - y.value⟩
 
-/-- Multiplication computes the product dimension in its return type. -/
+/-- 物理量相乘时，返回类型记录两个量纲的乘积。 -/
 def mul {d₁ d₂ : Dimension} (x : Quantity d₁) (y : Quantity d₂) :
     Quantity (d₁ * d₂) :=
   ⟨x.value * y.value⟩
 
-/-- Division computes the quotient dimension in its return type. -/
+/-- 物理量相除时，返回类型记录两个量纲的商。 -/
 noncomputable def div {d₁ d₂ : Dimension} (x : Quantity d₁) (y : Quantity d₂) :
     Quantity (d₁ / d₂) :=
   ⟨x.value / y.value⟩
 
-/-- Multiplication by a pure number does not change dimension. -/
+/-- 物理量乘以纯数不改变量纲。 -/
 def scale {d : Dimension} (c : ℝ) (x : Quantity d) : Quantity d :=
   ⟨c * x.value⟩
 
@@ -217,12 +216,12 @@ def scale {d : Dimension} (c : ℝ) (x : Quantity d) : Quantity d :=
 
 end Quantity
 
-/-! ## Units as representations of one dimension -/
+/-! ## 5. 同一量纲的不同单位表示 -/
 
-/-- A linear unit selects a scale relative to a coherent SI unit.
+/-- 线性单位记录相对于 SI 一贯单位的比例因子。
 
-For example, one kilometre has scale `1000` relative to one metre.  Keeping the
-dimension in the type prevents converting a length with a time unit.
+例如，一千米相对于一米的比例因子为 `1000`。把量纲保留在类型中，可以从类型层面
+排除使用时间单位换算长度等错误。
 -/
 structure LinearUnit (d : Dimension) where
   symbol : String
@@ -230,15 +229,15 @@ structure LinearUnit (d : Dimension) where
 
 namespace LinearUnit
 
-/-- Express a magnitude written in `u` as a coherent SI magnitude. -/
+/-- 把以单位 `u` 表示的数值换算为 SI 一贯单位下的数值。 -/
 def toSI {d : Dimension} (u : LinearUnit d) (value : ℝ) : ℝ :=
   value * u.scaleToSI
 
-/-- Express a coherent SI magnitude in `u`. -/
+/-- 把 SI 一贯单位下的数值换算为以单位 `u` 表示的数值。 -/
 noncomputable def fromSI {d : Dimension} (u : LinearUnit d) (value : ℝ) : ℝ :=
   value / u.scaleToSI
 
-/-- Convert between two units of the same dimension. -/
+/-- 在同一量纲的两个单位之间换算数值。 -/
 noncomputable def convert {d : Dimension} (source target : LinearUnit d)
     (value : ℝ) : ℝ :=
   target.fromSI (source.toSI value)
@@ -250,10 +249,9 @@ theorem toSI_convert {d : Dimension} (source target : LinearUnit d)
 
 end LinearUnit
 
-/-- An affine unit additionally records a zero-point offset.
+/-- 仿射单位除比例因子外还记录零点偏移。
 
-This is needed for absolute Celsius temperatures.  It must not be replaced by a
-plain scale factor; temperature differences are a separate linear use case.
+绝对摄氏温度的换算需要这种结构，不能仅用比例因子代替；温差则属于另一种线性换算情形。
 -/
 structure AffineUnit (d : Dimension) where
   symbol : String
@@ -267,13 +265,13 @@ def toSI {d : Dimension} (u : AffineUnit d) (value : ℝ) : ℝ :=
 
 end AffineUnit
 
-/-- A unit system chooses one nonzero scale for every SI base quantity. -/
+/-- 单位制为每个 SI 基本量选择一个非零比例因子。 -/
 structure UnitSystem where
   name : String
   baseScaleToSI : BaseDimension → ℝ
   scale_ne_zero : ∀ b, baseScaleToSI b ≠ 0
 
-/-- The coherent SI system uses scale one for every base quantity. -/
+/-- SI 一贯单位制为每个基本量选择比例因子 `1`。 -/
 def siUnitSystem : UnitSystem where
   name := "SI"
   baseScaleToSI := fun _ => 1
@@ -281,7 +279,7 @@ def siUnitSystem : UnitSystem where
     intro b
     norm_num
 
-/-! ## The seven coherent SI base units -/
+/-! ## 6. 七个 SI 一贯基本单位 -/
 
 def second : Quantity timeDim := ⟨1⟩
 def meter : Quantity lengthDim := ⟨1⟩
@@ -299,7 +297,7 @@ def hourUnit : LinearUnit timeDim := ⟨"h", 3600⟩
 def metrePerSecondUnit : LinearUnit speedDim := ⟨"m/s", 1⟩
 noncomputable def kilometrePerHourUnit : LinearUnit speedDim := ⟨"km/h", 5 / 18⟩
 
-/-- Absolute degrees Celsius form an affine scale relative to kelvin. -/
+/-- 绝对摄氏温标相对于开尔文温标构成仿射单位。 -/
 def degreeCelsius : AffineUnit temperatureDim := ⟨"°C", 1, 273.15⟩
 
 theorem zero_celsius_in_kelvin : degreeCelsius.toSI 0 = 273.15 := by
@@ -314,7 +312,7 @@ theorem three_square_kilometres_in_square_metres :
     (3 : ℝ) * kilometreUnit.scaleToSI ^ 2 = 3_000_000 := by
   norm_num [kilometreUnit]
 
-/-! ## Scaled units and an exact conversion theorem -/
+/-! ## 7. 比例单位与精确换算定理 -/
 
 def kilometer : Quantity lengthDim := ⟨1000⟩
 def hour : Quantity timeDim := ⟨3600⟩
@@ -332,25 +330,23 @@ theorem thirtySix_kilometers_per_hour :
     Quantity.div, kilometer, hour, meter, second]
 
 
-/-! ## Structural dimensional analysis: integer nullspaces and Π groups -/
+/-! ## 8. 结构化量纲分析：整数核与 Π 群 -/
 
 namespace DimensionalAnalysis
 
-/-- Mass density has dimension `M L⁻³`. -/
+/-- 质量密度的量纲为 `M L⁻³`。 -/
 def densityDim : Dimension := massDim / volumeDim
 
-/-- Dynamic viscosity has dimension `M L⁻¹ T⁻¹ = pressure × time`. -/
+/-- 动力黏度的量纲为 `M L⁻¹ T⁻¹ = 压强 × 时间`。 -/
 def dynamicViscosityDim : Dimension := pressureDim * timeDim
 
-/-- The dimension of a monomial `T^a L^b g^c` built from period, length,
-and acceleration.  Integer exponents are enough to capture the squared-period
-form of the elementary pendulum Π group. -/
+/-- 由周期、长度和重力加速度组成的单项式 `T^a L^b g^c` 的量纲。
+整数指数已经足以表示单摆 Π 群中含周期平方的标准形式。 -/
 def pendulumMonomialDim (a b c : ℤ) : Dimension :=
   timeDim ^ a * lengthDim ^ b * accelerationDim ^ c
 
-/-- A pendulum monomial is dimensionless exactly when its time and length
-exponents satisfy the two linear balance equations.  This is the dimensional
-matrix written as an exact theorem rather than as an informal table. -/
+/-- 单摆单项式无量纲，当且仅当它的时间指数与长度指数满足两条线性平衡方程。
+这一结论把通常以表格给出的量纲矩阵写成了精确的定理。 -/
 theorem pendulumMonomial_dimensionless_iff (a b c : ℤ) :
     pendulumMonomialDim a b c = dimensionless ↔
       a - 2 * c = 0 ∧ b + c = 0 := by
@@ -367,8 +363,8 @@ theorem pendulumMonomial_dimensionless_iff (a b c : ℤ) :
       simp [pendulumMonomialDim, dimensionless, accelerationDim, speedDim,
         timeDim, lengthDim, Dimension.basis] <;> omega
 
-/-- The integer nullspace for `(T,L,g)` is one-dimensional: every
-integer-exponent dimensionless monomial is a power of `T² g / L`. -/
+/-- `(T,L,g)` 的整数核是一维的：每个具有整数指数的无量纲单项式都是
+`T² g / L` 的整数次幂。 -/
 theorem pendulum_dimensionless_iff_multiple (a b c : ℤ) :
     pendulumMonomialDim a b c = dimensionless ↔
       ∃ k : ℤ, a = 2 * k ∧ b = -k ∧ c = k := by
@@ -379,18 +375,17 @@ theorem pendulum_dimensionless_iff_multiple (a b c : ℤ) :
   · rintro ⟨k, rfl, rfl, rfl⟩
     constructor <;> ring
 
-/-- The canonical squared-period Π group `T² g / L` is dimensionless. -/
+/-- 标准的周期平方 Π 群 `T² g / L` 是无量纲量。 -/
 theorem pendulumPiSquared_dimensionless :
     pendulumMonomialDim 2 (-1) 1 = dimensionless := by
   rw [pendulum_dimensionless_iff_multiple]
   exact ⟨1, by norm_num, by norm_num, by norm_num⟩
 
-/-- The dimension of a monomial `ρ^a v^b L^c μ^d`. -/
+/-- 单项式 `ρ^a v^b L^c μ^d` 的量纲。 -/
 def reynoldsMonomialDim (a b c d : ℤ) : Dimension :=
   densityDim ^ a * speedDim ^ b * lengthDim ^ c * dynamicViscosityDim ^ d
 
-/-- The Reynolds dimensional matrix: mass, time and length balance give three
-independent integer equations. -/
+/-- Reynolds 量纲矩阵：质量、时间和长度的平衡给出三条相互独立的整数方程。 -/
 theorem reynoldsMonomial_dimensionless_iff (a b c d : ℤ) :
     reynoldsMonomialDim a b c d = dimensionless ↔
       a + d = 0 ∧ -b - d = 0 ∧ -3 * a + b + c - d = 0 := by
@@ -412,9 +407,8 @@ theorem reynoldsMonomial_dimensionless_iff (a b c d : ℤ) :
         dimensionless, pressureDim, forceDim, accelerationDim, speedDim,
         areaDim, volumeDim, massDim, lengthDim, timeDim, Dimension.basis] <;> omega
 
-/-- The integer nullspace for `(ρ,v,L,μ)` is one-dimensional.  Thus every
-integer-exponent dimensionless monomial is a power of the Reynolds number
-`ρ v L / μ`. -/
+/-- `(ρ,v,L,μ)` 的整数核是一维的。因此，每个具有整数指数的无量纲单项式
+都是 Reynolds 数 `ρ v L / μ` 的整数次幂。 -/
 theorem reynolds_dimensionless_iff_multiple (a b c d : ℤ) :
     reynoldsMonomialDim a b c d = dimensionless ↔
       ∃ k : ℤ, a = k ∧ b = k ∧ c = k ∧ d = -k := by
@@ -427,7 +421,7 @@ theorem reynolds_dimensionless_iff_multiple (a b c d : ℤ) :
     · ring
     · constructor <;> ring
 
-/-- The usual Reynolds number `ρ v L / μ` is dimensionless. -/
+/-- 通常的 Reynolds 数 `ρ v L / μ` 是无量纲量。 -/
 theorem reynoldsNumber_dimensionless :
     reynoldsMonomialDim 1 1 1 (-1) = dimensionless := by
   rw [reynolds_dimensionless_iff_multiple]
@@ -435,20 +429,18 @@ theorem reynoldsNumber_dimensionless :
 
 end DimensionalAnalysis
 
-/-! ## Conversion maps form a coherent groupoid on nondegenerate units -/
+/-! ## 9. 非退化单位之间的换算映射构成相干群胚 -/
 
 namespace LinearUnit
 
-/-- Converting a value from a nondegenerate unit back to itself changes
-nothing. -/
+/-- 数值从一个非退化单位换算回该单位自身时保持不变。 -/
 theorem convert_self {d : Dimension} (u : LinearUnit d) (value : ℝ)
     (hu : u.scaleToSI ≠ 0) :
     convert u u value = value := by
   unfold convert fromSI toSI
   field_simp [hu]
 
-/-- Unit conversion composes transitively: an intermediate nonzero unit scale
-cancels exactly. -/
+/-- 单位换算满足传递复合律：中间单位的非零比例因子会精确约去。 -/
 theorem convert_trans {d : Dimension} (source middle target : LinearUnit d)
     (value : ℝ) (hmiddle : middle.scaleToSI ≠ 0) :
     convert middle target (convert source middle value) =
@@ -456,7 +448,7 @@ theorem convert_trans {d : Dimension} (source middle target : LinearUnit d)
   unfold convert fromSI toSI
   rw [div_mul_cancel₀ (value * source.scaleToSI) hmiddle]
 
-/-- Conversion along two nondegenerate units is reversible. -/
+/-- 两个非退化单位之间的换算是可逆的。 -/
 theorem convert_roundtrip {d : Dimension} (source target : LinearUnit d)
     (value : ℝ) (hsource : source.scaleToSI ≠ 0)
     (htarget : target.scaleToSI ≠ 0) :
@@ -464,9 +456,8 @@ theorem convert_roundtrip {d : Dimension} (source target : LinearUnit d)
   rw [convert_trans source target source value htarget]
   exact convert_self source value hsource
 
-/-- Two coordinate descriptions related by unit conversion represent the same
-SI magnitude; conversely, for a nonzero target scale this relation determines
-the converted coordinate uniquely. -/
+/-- 由单位换算联系的两个坐标表示对应同一个 SI 数值；反之，当目标单位的比例因子
+非零时，这一关系唯一确定换算后的坐标。 -/
 theorem convert_characterization {d : Dimension}
     (source target : LinearUnit d) (x y : ℝ)
     (htarget : target.scaleToSI ≠ 0) :
@@ -484,14 +475,12 @@ theorem convert_characterization {d : Dimension}
 
 end LinearUnit
 
-/-! ## Bridge from the PhysLean lineage to current Physlib -/
+/-! ## 10. 从 PhysLean 历史来源连接到现行 Physlib -/
 
 open LTMCTUnitChoices
 
-/--
-This conversion originated in the PhysLean line of work and is available under
-the current `Physlib.*` module path after the Physlib/QuantumInfo merger.
--/
+/-- 这一换算定理源自 PhysLean 项目；Physlib 与 QuantumInfo 合并后，当前版本通过
+`Physlib.*` 模块路径提供该定理。 -/
 example : DimSpeed.oneKilometerPerHour SI = ⟨5 / 18⟩ := by
   exact DimSpeed.oneKilometerPerHour_in_SI
 

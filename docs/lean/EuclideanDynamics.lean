@@ -1,5 +1,14 @@
 import Mathlib
 
+/-!
+# LeanPath Physics：欧式空间中的动力学
+
+本文件是第三单元的完整成果。内容从欧式曲线的真实导数出发，依次形式化 Newton 方程、
+动量与角动量定理、功—能关系、线性振动、刚体转动、达朗贝尔原理、Lagrange 方程及
+Kepler 圆锥轨道的代数核心。文件明确区分物理建模假设与由 Lean 推出的数学结论；一般
+常微分方程的存在唯一性、碰撞奇点排除和经验模型有效性不在本文件的证明范围内。
+-/
+
 noncomputable section
 
 namespace LeanPath.Dynamics
@@ -9,16 +18,13 @@ abbrev TwoForm (n : ℕ) := Matrix (Fin n) (Fin n) ℝ
 abbrev EVecN (n : ℕ) := EuclideanSpace ℝ (Fin n)
 
 
-/-! ### 0A. Metric-native Euclidean differential geometry
+/-! ## 0. 欧式曲线的微分基础
 
-Unlike the coordinate helper `VecN`, `EVecN` is Mathlib's genuine
-`EuclideanSpace`: its norm and inner product belong to the same metric
-structure.  These two lemmas are therefore geometric statements about curves
-on a Euclidean sphere.
+与坐标辅助类型 `VecN` 不同，`EVecN` 是 Mathlib 中真正的 `EuclideanSpace`，其范数与
+内积来自同一个度量结构。因此，下面两个引理是关于欧式球面上曲线的内禀几何陈述。
 -/
 
-/-- The velocity of a differentiable curve on a Euclidean sphere is tangent
-to the sphere, hence orthogonal to the radius vector. -/
+/-- 欧式球面上的可微曲线，其速度向量切于球面，因而与径向向量正交。 -/
 theorem euclideanSphere_velocity_orthogonal {n : ℕ}
     {r : ℝ → EVecN n} {v : EVecN n} {t R : ℝ}
     (hr : HasDerivAt r v t)
@@ -34,9 +40,8 @@ theorem euclideanSphere_velocity_orthogonal {n : ℕ}
   have huniq := hnorm.unique hzero
   linarith
 
-/-- If `r' = v` and `v' = a` for a curve on a Euclidean sphere, then
-`⟪r,a⟫ = -⟪v,v⟫`.  This is the geometric normal-acceleration identity in the
-ambient Euclidean space. -/
+/-- 对欧式球面上的曲线，若 `r' = v` 且 `v' = a`，则
+`⟪r,a⟫ = -⟪v,v⟫`。这是环境欧式空间中的法向加速度恒等式。 -/
 theorem euclideanSphere_acceleration_normal_identity {n : ℕ}
     {r v : ℝ → EVecN n} {a : EVecN n} {t R : ℝ}
     (hr : ∀ s, HasDerivAt r (v s) s)
@@ -57,12 +62,10 @@ theorem euclideanSphere_acceleration_normal_identity {n : ℕ}
   have huniq := hprod.unique hzero
   linarith
 
-/-! ## 0. Differential calculus for Euclidean curves
+/-! ### 0A. 坐标模型中的内积乘积法则
 
-`VecN n = Fin n → ℝ` is a finite-dimensional real normed space.  The
-following lemma is the product rule for its standard coordinate dot product.
-It is the calculus engine used by the geometric and mechanical conservation
-laws below.
+`VecN n = Fin n → ℝ` 是有限维实赋范空间。下面的引理给出标准坐标点积的乘积法则，
+并作为后续几何恒等式与力学守恒律的微分基础。
 -/
 
 theorem dotProduct_hasDerivAt {n : ℕ}
@@ -80,7 +83,7 @@ theorem dotProduct_hasDerivAt {n : ℕ}
     exact (hu' i).mul (hv' i)
   simpa [dotProduct, Finset.sum_add_distrib] using hsum
 
-/-- A differentiable curve constrained to a sphere has tangent velocity. -/
+/-- 受球面约束的可微曲线具有切向速度。 -/
 theorem sphereCurve_velocity_orthogonal {n : ℕ}
     {r : ℝ → VecN n} {v : VecN n} {t R : ℝ}
     (hr : HasDerivAt r v t)
@@ -99,8 +102,8 @@ theorem sphereCurve_velocity_orthogonal {n : ℕ}
   rw [dotProduct_comm v (r t)] at huniq
   linarith
 
-/-- For a twice differentiable spherical curve, `r · a = -v · v`.
-This is the normal-acceleration identity behind circular and spherical motion. -/
+/-- 对二次可微的球面曲线，有 `r · a = -v · v`。这是圆周运动与球面运动背后的
+法向加速度恒等式。 -/
 theorem sphereCurve_acceleration_normal_identity {n : ℕ}
     {r v : ℝ → VecN n} {a : VecN n} {t R : ℝ}
     (hr : ∀ s, HasDerivAt r (v s) s)
@@ -122,7 +125,7 @@ theorem sphereCurve_acceleration_normal_identity {n : ℕ}
   have huniq := hprod.unique hzero
   linarith
 
-/-! ## 1. Kinematics and Newton's equation -/
+/-! ## 1. 运动学与 Newton 方程 -/
 
 structure ParticleState (n : ℕ) where
   position : VecN n
@@ -140,8 +143,7 @@ def SatisfiesNewton {n : ℕ} (force : VecN n) (m : ℝ)
   force = m • state.acceleration
 
 
-/-- A genuine Newtonian trajectory: position differentiates to velocity,
-velocity differentiates to acceleration, and the force law holds pointwise. -/
+/-- 真正的 Newton 轨迹：位置的导数是速度，速度的导数是加速度，并且力学方程逐点成立。 -/
 def SolvesNewtonCurve {n : ℕ} (force : ℝ → VecN n) (m : ℝ)
     (r v a : ℝ → VecN n) : Prop :=
   ∀ t, HasDerivAt r (v t) t ∧
@@ -182,10 +184,9 @@ theorem constantAccelerationTrajectory_zero (r₀ v₀ a : ℝ) :
   simp [constantAccelerationTrajectory]
 
 
-/-! ### 1A. Genuine differential kinematics
+/-! ### 1A. 以真实导数表述的运动学
 
-The scalar trajectory above is retained for elementary exercises.  These
-vector-valued versions make velocity and acceleration genuine derivatives.
+前面的标量轨迹用于初等练习；下面的向量值版本则把速度和加速度表述为真正的导数。
 -/
 
 def constantAccelerationTrajectoryVec {n : ℕ}
@@ -251,8 +252,7 @@ theorem constantAccelerationTrajectoryVec_solves_newton {n : ℕ}
     constantAccelerationVelocityVec_hasDerivAt v₀ a t, hNewton⟩
 
 
-/-- The polynomial trajectory is a global solution of Newton's equation for
-the constant force `F = m a`. -/
+/-- 该多项式轨迹是常力 `F = m a` 所对应 Newton 方程的全局解。 -/
 theorem constantAccelerationTrajectoryVec_solvesNewtonCurve {n : ℕ}
     (r₀ v₀ a : VecN n) (m : ℝ) :
     SolvesNewtonCurve (fun _ => m • a) m
@@ -272,7 +272,7 @@ theorem momentum_hasDerivAt {n : ℕ} (m : ℝ)
   change HasDerivAt (fun s : ℝ => m * v s i) (m * a i) t
   simpa using (hasDerivAt_pi.mp hv i).const_mul m
 
-/-- Differential form of the momentum theorem: `p' = F`. -/
+/-- 动量定理的微分形式：`p' = F`。 -/
 theorem momentum_theorem {n : ℕ} (m : ℝ)
     {v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
     (hv : HasDerivAt v a t) (hNewton : force = m • a) :
@@ -280,7 +280,7 @@ theorem momentum_theorem {n : ℕ} (m : ℝ)
   rw [hNewton]
   simpa [momentum] using momentum_hasDerivAt m hv
 
-/-! ## 2. Momentum and impulse -/
+/-! ## 2. 动量与冲量 -/
 
 def impulse (force duration : ℝ) : ℝ := force * duration
 
@@ -316,7 +316,7 @@ theorem inelastic_collision_velocity_unique (m₁ m₂ v₁ v₂ v : ℝ)
   apply (eq_div_iff hm).2
   simpa [mul_comm] using h
 
-/-! ## 3. Angular momentum as an antisymmetric tensor -/
+/-! ## 3. 以反对称张量表示角动量 -/
 
 def wedge {n : ℕ} (r p : VecN n) : TwoForm n :=
   fun i j => r i * p j - r j * p i
@@ -341,10 +341,10 @@ theorem central_force_zero_torque {n : ℕ} (c : ℝ) (r : VecN n) :
   ring
 
 
-/-! ### 3A. Differential angular-momentum theorem
+/-! ### 3A. 角动量定理的微分形式
 
-This is the Leibniz rule for `r ∧ p`, followed by the physical identities
-`r' = v`, `p = m v`, and `p' = F`.
+证明先对 `r ∧ p` 使用 Leibniz 乘积法则，再代入物理恒等式
+`r' = v`、`p = m v` 与 `p' = F`。
 -/
 
 theorem wedge_hasDerivAt {n : ℕ}
@@ -366,7 +366,7 @@ theorem wedge_hasDerivAt {n : ℕ}
   · simp [wedge]
     ring
 
-/-- The torque theorem `d(r ∧ p)/dt = r ∧ F`. -/
+/-- 力矩定理：`d(r ∧ p)/dt = r ∧ F`。 -/
 theorem angularMomentum_torque_theorem {n : ℕ} (m : ℝ)
     {r v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
     (hr : HasDerivAt r (v t) t)
@@ -384,7 +384,7 @@ theorem angularMomentum_torque_theorem {n : ℕ} (m : ℝ)
   rw [hNewton]
   simpa [angularMomentum, momentum] using hL
 
-/-- Central force implies vanishing derivative of angular momentum. -/
+/-- 中心力使角动量的导数为零。 -/
 theorem central_force_angularMomentum_hasDerivAt_zero {n : ℕ} (m c : ℝ)
     {r v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
     (hr : HasDerivAt r (v t) t)
@@ -400,9 +400,8 @@ theorem central_force_angularMomentum_hasDerivAt_zero {n : ℕ} (m c : ℝ)
   exact hL
 
 
-/-- Global angular-momentum conservation for a differentiable central-force
-trajectory.  The conclusion is equality at arbitrary times, not merely a
-zero derivative at one time. -/
+/-- 可微中心力轨迹的全局角动量守恒。结论给出任意两个时刻的角动量相等，而不只是
+某一个时刻导数为零。 -/
 theorem central_force_angularMomentum_conserved {n : ℕ} (m : ℝ)
     {r v a force : ℝ → VecN n}
     (hr : ∀ t, HasDerivAt r (v t) t)
@@ -474,13 +473,13 @@ theorem twoBodyAngularMomentum_origin_independent {n : ℕ}
   simp [twoBodyAngularMomentumAt, wedge, hi, hj]
   ring
 
-/-! ## 4. Work, kinetic energy and mechanical energy -/
+/-! ## 4. 功、动能与机械能 -/
 
 def kineticEnergy (m speed : ℝ) : ℝ :=
   (1 / 2 : ℝ) * m * speed ^ 2
 
 
-/-! ### 4A. Differential work--energy theorem -/
+/-! ### 4A. 功—能定理的微分形式 -/
 
 def kineticEnergyVec {n : ℕ} (m : ℝ) (v : VecN n) : ℝ :=
   (1 / 2 : ℝ) * m * dotProduct v v
@@ -499,7 +498,7 @@ theorem kineticEnergyVec_hasDerivAt {n : ℕ} (m : ℝ)
     | (rw [dotProduct_comm (v t) a]; ring)
     | rfl
 
-/-- Instantaneous work--energy theorem: `dT/dt = F · v`. -/
+/-- 瞬时功—能定理：`dT/dt = F · v`。 -/
 theorem work_energy_power_theorem {n : ℕ} (m : ℝ)
     {v : ℝ → VecN n} {a force : VecN n} {t : ℝ}
     (hv : HasDerivAt v a t)
@@ -537,7 +536,7 @@ theorem dampingPower_nonpos (c speed : ℝ) (hc : 0 ≤ c) :
   unfold dampingPower
   exact neg_nonpos.mpr (mul_nonneg hc (sq_nonneg speed))
 
-/-! ## 5. Mass, stiffness and a generalized eigenpair -/
+/-! ## 5. 质量矩阵、刚度矩阵与广义特征对 -/
 
 abbrev Vec2 := ℝ × ℝ
 
@@ -593,7 +592,7 @@ theorem stiffnessEnergy_nonneg (k : ℝ) (q : Vec2) (hk : 0 ≤ k) :
     nlinarith [sq_nonneg (q.1 - q.2), sq_nonneg q.1, sq_nonneg q.2]
   exact mul_nonneg hk hcore
 
-/-! ## 6. Inertia tensor and Euler equations -/
+/-! ## 6. 惯性张量与 Euler 方程 -/
 
 structure PrincipalInertia where
   I₁ : ℝ
@@ -659,10 +658,9 @@ theorem freeEuler_angularMomentumNorm_rate_zero
     (I₃ * ω₃) * h₃
 
 
-/-! ### 6A. Euler equations as genuine differential conservation laws -/
+/-! ### 6A. 由真实导数表述的 Euler 方程与守恒律 -/
 
-/-- If the angular-velocity components really have derivatives `αᵢ` and
-satisfy the free Euler equations, then rotational energy has derivative zero. -/
+/-- 若角速度各分量确实具有导数 `αᵢ`，并满足自由刚体 Euler 方程，则转动能的导数为零。 -/
 theorem freeEuler_rotationalEnergy_hasDerivAt_zero
     (I : PrincipalInertia)
     {ω₁ ω₂ ω₃ : ℝ → ℝ} {α₁ α₂ α₃ t : ℝ}
@@ -700,7 +698,7 @@ theorem freeEuler_rotationalEnergy_hasDerivAt_zero
   exact henergy'
 
 
-/-- Global conservation of the free rigid body's rotational energy. -/
+/-- 自由刚体转动能的全局守恒。 -/
 theorem freeEuler_rotationalEnergy_conserved
     (I : PrincipalInertia)
     {ω₁ ω₂ ω₃ α₁ α₂ α₃ : ℝ → ℝ}
@@ -722,7 +720,7 @@ theorem freeEuler_rotationalEnergy_conserved
   have hderiv : ∀ t, deriv E t = 0 := fun t => (hE t).deriv
   exact is_const_of_deriv_eq_zero hdiff hderiv t₁ t₂
 
-/-! ## 7. D'Alembert and Lagrange residuals -/
+/-! ## 7. 达朗贝尔原理与 Lagrange 残差 -/
 
 theorem dalembert_implies_newton (F m a : ℝ)
     (h : ∀ δ : ℝ, (F - m * a) * δ = 0) : F = m * a := by
@@ -765,20 +763,19 @@ theorem harmonicEnergyRate_eq_zero
   linear_combination v * hMotion
 
 
-/-! ### 7A. Genuine differential Lagrangian mechanics and energy conservation -/
+/-! ### 7A. 以真实导数表述的 Lagrange 力学与能量守恒 -/
 
 def harmonicLagrangian (m k q v : ℝ) : ℝ :=
   (1 / 2 : ℝ) * m * v ^ 2 - (1 / 2 : ℝ) * k * q ^ 2
 
 section ScalarLagrangianCalculus
 
--- Keep real-valued derivative statements on Mathlib's normed-space
--- structures.  This avoids mixing extensionally equal algebraic and
--- analytic `ℝ`-module instances while composing derivative rules.
+-- 实值导数命题统一使用 Mathlib 的赋范空间结构，从而避免在复合求导法则时混用
+-- 外延相等但实例不同的代数 `ℝ`-模结构与分析 `ℝ`-模结构。
 local instance : AddCommGroup ℝ := Real.normedAddCommGroup.toAddCommGroup
 local instance : Module ℝ ℝ := RCLike.toInnerProductSpaceReal.toModule
 
-/-- The partial derivative `∂L/∂v = m v`, expressed as an actual derivative. -/
+/-- 把偏导数 `∂L/∂v = m v` 表述为真正的导数命题。 -/
 theorem harmonicLagrangian_hasDerivAt_velocity
     (m k q v : ℝ) :
     HasDerivAt (fun w => harmonicLagrangian m k q w) (m * v) v := by
@@ -800,7 +797,7 @@ theorem harmonicLagrangian_hasDerivAt_velocity
   rw [hfun] at hfull
   exact hfull
 
-/-- The partial derivative `∂L/∂q = -k q`, expressed as an actual derivative. -/
+/-- 把偏导数 `∂L/∂q = -k q` 表述为真正的导数命题。 -/
 theorem harmonicLagrangian_hasDerivAt_position
     (m k q v : ℝ) :
     HasDerivAt (fun x => harmonicLagrangian m k x v) (-k * q) q := by
@@ -821,8 +818,8 @@ theorem harmonicLagrangian_hasDerivAt_position
   rw [hfun] at hfull
   exact hfull
 
-/-- For the harmonic oscillator, Newton's equation is the Euler--Lagrange
-relation `d/dt(∂L/∂v) = ∂L/∂q`. -/
+/-- 对谐振子，Newton 方程等价于 Euler–Lagrange 关系
+`d/dt(∂L/∂v) = ∂L/∂q`。 -/
 theorem harmonic_eulerLagrange_equation
     (m k : ℝ) {q v : ℝ → ℝ} {a t : ℝ}
     (hv : HasDerivAt v a t)
@@ -834,8 +831,8 @@ theorem harmonic_eulerLagrange_equation
   rw [hma] at hp
   exact hp
 
-/-- A genuine conserved quantity: if `q' = v`, `v' = a`, and
-`m a + k q = 0`, then the mechanical energy has derivative zero. -/
+/-- 真正的守恒量命题：若 `q' = v`、`v' = a` 且 `m a + k q = 0`，则机械能的
+导数为零。 -/
 theorem harmonicEnergy_hasDerivAt_zero
     (m k : ℝ) {q v : ℝ → ℝ} {a t : ℝ}
     (hq : HasDerivAt q (v t) t)
@@ -889,8 +886,7 @@ theorem harmonicEnergy_hasDerivAt_zero
   exact hsum
 
 
-/-- Global conservation of harmonic-oscillator energy, obtained from the
-pointwise derivative theorem and the mean-value theorem. -/
+/-- 由逐点导数定理与中值定理推出谐振子能量的全局守恒。 -/
 theorem harmonicEnergy_conserved
     (m k : ℝ) {q v a : ℝ → ℝ}
     (hq : ∀ t, HasDerivAt q (v t) t)
@@ -909,7 +905,7 @@ theorem harmonicEnergy_conserved
 
 end ScalarLagrangianCalculus
 
-/-! ## 8. Central force reduction and the Kepler conic core -/
+/-! ## 8. 中心力约化与 Kepler 圆锥轨道的代数核心 -/
 
 structure RegularKeplerData where
   mass : ℝ
